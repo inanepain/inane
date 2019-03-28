@@ -95,7 +95,7 @@ class Logger {
 	/**
 	 * Print
 	 * 
-	 * @param unknown $var
+	 * @param mixed $var
 	 * @param string $label
 	 * @return \Inane\Debug\Logger
 	 */
@@ -110,7 +110,7 @@ class Logger {
 	/**
 	 * Print
 	 * 
-	 * @param unknown $var
+	 * @param mixed $var
 	 * @return \Inane\Debug\Logger
 	 */
 	protected function doPrint($var) {
@@ -121,7 +121,7 @@ class Logger {
 	/**
 	 * Dump
 	 * 
-	 * @param unknown $var
+	 * @param mixed $var
 	 * @return \Inane\Debug\Logger
 	 */
 	protected function doDump($var) {
@@ -135,10 +135,10 @@ class Logger {
 	/**
 	 * Create footer for dump
 	 * 
-	 * @param unknown $die
+	 * @param bool|null $die
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function footer($die = null) {
+	protected function footer(?boolean $die) {
 		if ($die === null)
 			$die = $this->_die;
 		
@@ -177,20 +177,23 @@ class Logger {
 	
 	/**
 	 * Output variable using var_dump
+	 * 
+	 * Does a ver_dump inside some formatting.
 	 *
-	 * @param unknown $var
+	 * @param mixed $var
 	 * @param string $label
 	 * @param bool $die
+	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public static function echo($var, $label = null, $die = null) {
+	public static function echo($var, $label = null, $die = null): \Inane\Debug\Logger {
 		return static::log()->dumper($var, $label, $die);
 	}
 
 	/**
 	 * Output variable using log
 	 *
-	 * @param unknown $var        	
+	 * @param mixed $var        	
 	 * @param string $label        	
 	 * @param bool $die        	
 	 * @return \Inane\Debug\Logger
@@ -202,7 +205,7 @@ class Logger {
 	/**
 	 * Output variable using print_r
 	 *
-	 * @param unknown $var        	
+	 * @param mixed $var        	
 	 * @param string $label        	
 	 * @param bool $die        	
 	 * @return \Inane\Debug\Logger
@@ -214,7 +217,7 @@ class Logger {
 	/**
 	 * Output variable using var_dump
 	 *
-	 * @param unknown $var        	
+	 * @param mixed $var        	
 	 * @param string $label        	
 	 * @param bool $die        	
 	 * @return \Inane\Debug\Logger
