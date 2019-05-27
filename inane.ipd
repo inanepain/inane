@@ -2,5 +2,6 @@
 	"name": "Inane Classes",
 	"code": "inane-classes",
 	"description": "Some useful class for php",
-	"version": "0.13.2"
+	"version": "0.14.0",
+	"date": "2019-05-27"
 }

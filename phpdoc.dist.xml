@@ -24,6 +24,17 @@
         </paths>
     </logging>
     <transformations>
+    <!--
+    * abstract
+    * checkstyle
+    *** clean
+    *** new-black
+    * old-ocean
+    *** responsive
+    *** responsive-twig
+    * xml
+    *** zend
+    -->
         <!--
              clean
              responsive-twig

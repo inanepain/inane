@@ -5,7 +5,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @author Philip Michael Raab <philip@inane.co.za>
+ * @author Philip Michael Raab <peep@inane.co.za>
  * @package Inane\Debug
  *
  * @license MIT
@@ -20,18 +20,21 @@ namespace Inane\Debug;
  *
  * @package Inane\Debug
  * @namespace \Inane\Debug
- * @version 0.4.0
+ * @version 0.5.0
  */
 class Logger {
 	/**
-	 *
 	 * @var Logger The reference to *Singleton* instance of this class
+	 * @access private
+	 * @static
 	 */
 	private static $instance;
 
 	/**
 	 * Returns the *Singleton* instance of this class.
 	 *
+	 * @access public
+	 * @static
 	 * @return Logger The *Singleton* instance.
 	 */
 	public static function log() {
@@ -59,7 +62,7 @@ class Logger {
 	}
 
 	/**
-	 * Private unserialize method to prevent unserializing of the *Singleton*
+	 * Private wakeup method to prevent unserialize called on the *Singleton* 
 	 * instance.
 	 *
 	 * @return void
@@ -84,7 +87,7 @@ class Logger {
 	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function header($label = '') {
+	protected function header($label = ''): Logger {
 		if ($label != '')
 			$label = "<h4 class=\"debug-header\">{$label}</h4>";
 		
@@ -93,7 +96,7 @@ class Logger {
 	}
 
 	/**
-	 * Print
+	 * Log with a label using `print_r`
 	 * 
 	 * @param mixed $var
 	 * @param string $label
@@ -108,23 +111,23 @@ class Logger {
 	}
 
 	/**
-	 * Print
+	 * Log without a label using `print_r`
 	 * 
 	 * @param mixed $var
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function doPrint($var) {
+	protected function doPrint($var): Logger {
 		$this->_output .= print_r($var, true);
 		return $this;
 	}
 
 	/**
-	 * Dump
+	 * Log using `var_dump`
 	 * 
 	 * @param mixed $var
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function doDump($var) {
+	protected function doDump($var): Logger {
 		echo $this->_output;
 		$this->_output = '';
 		
@@ -138,7 +141,7 @@ class Logger {
 	 * @param bool|null $die
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function footer(?bool $die) {
+	protected function footer($die): Logger {
 		if ($die === null)
 			$die = $this->_die;
 		
@@ -159,10 +162,11 @@ class Logger {
 	/**
 	 * Build out
 	 * 
-	 * @param string $return
-	 * @return string|boolean
+	 * @param bool $return
+	 * 
+	 * @return string|bool
 	 */
-	protected function out($return = false) {
+	protected function out(bool $return = false) {
 		$out = $this->_output;
 		$this->_output = '';
 		
@@ -176,7 +180,7 @@ class Logger {
 	}
 	
 	/**
-	 * Output variable using var_dump
+	 * Output variable using `var_dump`
 	 * 
 	 * Does a ver_dump inside some formatting.
 	 *
@@ -186,7 +190,7 @@ class Logger {
 	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public static function echo($var, $label = null, $die = null): \Inane\Debug\Logger {
+	public static function dump($var, $label = null, $die = null): Logger {
 		return static::log()->dumper($var, $label, $die);
 	}
 
@@ -195,8 +199,9 @@ class Logger {
 	 *
 	 * @param mixed $var        	
 	 * @param string $label        	
-	 * @param bool $die        	
-	 * @return \Inane\Debug\Logger
+	 * @param bool $die
+	 * 
+	 * @return string|bool
 	 */
 	public function logger($var, $label = null, $die = null) {
 		return $this->doLogging($var, $label)->out(true);
@@ -207,10 +212,12 @@ class Logger {
 	 *
 	 * @param mixed $var        	
 	 * @param string $label        	
-	 * @param bool $die        	
-	 * @return \Inane\Debug\Logger
+	 * @param bool $die
+	 * @param bool $return
+	 *         	
+	 * @return string|bool
 	 */
-	public function printer($var, $label = null, $die = null, $return = false) {
+	public function printer($var, $label = null, $die = null, bool $return = false) {
 		return $this->header($label)->doPrint($var)->footer($die)->out($return);
 	}
 
@@ -219,10 +226,11 @@ class Logger {
 	 *
 	 * @param mixed $var        	
 	 * @param string $label        	
-	 * @param bool $die        	
+	 * @param bool $die
+	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public function dumper($var, $label = null, $die = null) {
+	public function dumper($var, $label = null, $die = null): Logger {
 		return $this->header($label)->doDump($var)->footer($die);
 	}
 }
