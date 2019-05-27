@@ -18,7 +18,7 @@ namespace Inane\Debug;
 /**
  * Timer
  * 
- * Time durration of events
+ * Time duration of events
  *
  * @package Inane\Debug
  * @namespace \Inane\Debug
