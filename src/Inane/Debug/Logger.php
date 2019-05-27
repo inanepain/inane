@@ -138,7 +138,7 @@ class Logger {
 	 * @param bool|null $die
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function footer(?boolean $die) {
+	protected function footer(?bool $die) {
 		if ($die === null)
 			$die = $this->_die;
 		
