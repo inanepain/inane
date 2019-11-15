@@ -190,7 +190,7 @@ class Logger {
 	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public static function dump($var, $label = null, $die = null): Logger {
+	public static function echo($var, $label = null, $die = null): \Inane\Debug\Logger {
 		return static::log()->dumper($var, $label, $die);
 	}
 

@@ -35,7 +35,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Inane\\": "src/Inane"
+			"Inane\\": "src/"
 		}
 	},
 	"minimum-stability": "stable",
