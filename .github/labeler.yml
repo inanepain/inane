@@ -1,0 +1,12 @@
+# Add 'label1' to any changes within 'example' folder or any subfolders
+http:
+  - inane/src/Inane/HTTP/**/*
+
+file:
+  - inane/src/Inane/File/**/*
+  
+ string:
+  - inane/src/Inane/String/**/*
+  
+ debug:
+  - inane/src/Inane/Debug/**/*
