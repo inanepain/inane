@@ -6,7 +6,7 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.14.1 - Dev
+## 0.14.2 - 2020-01-29
 
  - **Fix** Some spelling
  - **Upd** Depricate Logger::echo
