@@ -20,7 +20,7 @@ namespace Inane\Debug;
  *
  * @package Inane\Debug
  * @namespace \Inane\Debug
- * @version 0.5.0
+ * @version 0.5.1
  */
 class Logger {
 	/**
@@ -67,7 +67,7 @@ class Logger {
 	 *
 	 * @return void
 	 */
-	private function __wakeup() {
+	private function __wakeup(): void {
 	}
 	
 	/**
@@ -102,7 +102,7 @@ class Logger {
 	 * @param string $label
 	 * @return \Inane\Debug\Logger
 	 */
-	protected function doLogging($var, $label = '') {
+	protected function doLogging($var, string $label = ''): Logger {
 		if ($label != '')
 			$label .= ': ';
 		
@@ -182,7 +182,10 @@ class Logger {
 	/**
 	 * Output variable using `var_dump`
 	 * 
-	 * Does a ver_dump inside some formatting.
+	 * Does a var_dump inside some formatting.
+	 * 
+	 * @deprecated
+	 * @see Logger::dump
 	 *
 	 * @param mixed $var
 	 * @param string $label
@@ -193,6 +196,21 @@ class Logger {
 	public static function echo($var, $label = null, $die = null): \Inane\Debug\Logger {
 		return static::log()->dumper($var, $label, $die);
 	}
+
+	/**
+	 * Output variable using `var_dump`
+	 * 
+	 * Does a var_dump inside some formatting. 
+	 *
+	 * @param mixed $var
+	 * @param string $label
+	 * @param bool $die
+	 * 
+	 * @return \Inane\Debug\Logger
+	 */
+	public static function dump($var, $label = null, $die = null): \Inane\Debug\Logger {
+		return static::log()->dumper($var, $label, $die);
+	}	
 
 	/**
 	 * Output variable using log
