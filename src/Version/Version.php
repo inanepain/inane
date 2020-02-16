@@ -15,7 +15,7 @@
  */
 namespace Inane\Version;
 
-use Zend\Http;
+use Laminas\Http;
 
 /**
  * InaneClasses Version
@@ -28,7 +28,7 @@ final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.14.2';
+	const VERSION = '0.14.3';
 	
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from
@@ -85,7 +85,7 @@ final class Version {
 		self::$latestVersion = 'not available';
 		
 		if (null === $httpClient && !ini_get('allow_url_fopen')) {
-			trigger_error(sprintf('allow_url_fopen is not set, and no Zend\Http\Client ' . 'was passed. You must either set allow_url_fopen in ' . 'your PHP configuration or pass a configured ' . 'Zend\Http\Client as the second argument to %s.', __METHOD__), E_USER_WARNING);
+			trigger_error(sprintf('allow_url_fopen is not set, and no Laminas\Http\Client ' . 'was passed. You must either set allow_url_fopen in ' . 'your PHP configuration or pass a configured ' . 'Laminas\Http\Client as the second argument to %s.', __METHOD__), E_USER_WARNING);
 			
 			return self::$latestVersion;
 		}

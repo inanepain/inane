@@ -27,6 +27,14 @@ use Inane\Observer\InaneObserver;
  * @version 0.7.2
  */
 class FileServer extends InaneSubject {
+	/**
+	 * Component Version
+	 * 
+	 * @readonly
+	 * @var string
+	 */
+	public const VERSION = '0.7.2';
+
 	private $observers = [];
 	
 	/**
@@ -223,7 +231,7 @@ class FileServer extends InaneSubject {
 		return $this;
 	}
 
-	protected function sendHeaders(\Zend\Http\Headers $headers, $status) {
+	protected function sendHeaders(\Laminas\Http\Headers $headers, $status) {
 		$headerArray = explode("\n", $headers->toString());
 		if ($status == 206)
 			header("HTTP/1.1 206 Patial Content");
@@ -239,17 +247,17 @@ class FileServer extends InaneSubject {
 	/**
 	 * Server the file via http
 	 * 
-	 * @param \Zend\Http\Request $request	zf2 request used to get range
-	 * @return \Zend\Http\Response
+	 * @param \Laminas\Http\Request $request	zf2 request used to get range
+	 * @return \Laminas\Http\Response
 	 */
-	public function serve(\Zend\Http\Request $request = null) {
+	public function serve(\Laminas\Http\Request $request = null) {
 		if ($request == null)
-			$request = new \Zend\Http\Request();
+			$request = new \Laminas\Http\Request();
 		
 		$requestHeaders = $request->getHeaders();
 		
-		$response = new \Zend\Http\Response();
-		$headers = new \Zend\Http\Headers();
+		$response = new \Laminas\Http\Response();
+		$headers = new \Laminas\Http\Headers();
 		
 		if (! $this->_file->isValid()) {
 			$response->setStatusCode(404);
@@ -272,7 +280,7 @@ class FileServer extends InaneSubject {
 			
 
 			$download_range = 'bytes ' . $byte_from . "-" . $byte_to . "/" . $fileSize; // the download range
-			$headers->addHeader(new \Zend\Http\Header\ContentRange($download_range));
+			$headers->addHeader(new \Laminas\Http\Header\ContentRange($download_range));
 		} else {
 			$response->setStatusCode(200);
 			
@@ -282,7 +290,7 @@ class FileServer extends InaneSubject {
 		}
 		
 		// send the headers
-		$headers->addHeader(new \Zend\Http\Header\AcceptRanges('bytes'));
+		$headers->addHeader(new \Laminas\Http\Header\AcceptRanges('bytes'));
 		$headers->addHeaderLine('Content-type', $this->_file->getMimetype());
 		$headers->addHeaderLine("Pragma", "no-cache");
 		$headers->addHeaderLine('Cache-Control', 'public, must-revalidate, max-age=0');

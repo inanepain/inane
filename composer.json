@@ -1,7 +1,6 @@
 {
 	"name": "inanepain/inane",
 	"description": "Offers: File Metadata, Server http file with resume, Enum, zf2 config reader, observer pattern, zf3 custom config autoload and string tools",
-	"version": "0.14.2",
 	"type": "library",
 	"keywords": [
 		"http",
@@ -16,7 +15,6 @@
 		"string"
 	],
 	"homepage": "https://git.inane.co.za:3000/Cathedral/inaneclasses",
-	"time": "2020-01-29",
 	"license": "MIT",
 	"authors": [{
 		"name": "Philip Michael Raab",
@@ -31,7 +29,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
-		"zendframework/zend-http": "^2.8"
+		"laminas/laminas-http": "^2.8"
 	},
 	"autoload": {
 		"psr-4": {

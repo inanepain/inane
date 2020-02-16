@@ -20,7 +20,7 @@ namespace Inane\Debug;
  *
  * @package Inane\Debug
  * @namespace \Inane\Debug
- * @version 0.5.1
+ * @version 0.6.0
  */
 class Logger {
 	/**
@@ -29,6 +29,13 @@ class Logger {
 	 * @static
 	 */
 	private static $instance;
+
+	/**
+	 * @var array The source of the log call
+	 * @access protected
+	 * @static
+	 */
+	protected $source;
 
 	/**
 	 * Returns the *Singleton* instance of this class.
@@ -50,6 +57,15 @@ class Logger {
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
 	protected function __construct() {
+		$d = debug_backtrace();
+		$d2 = $d[2];
+		$d3 = $d[3];
+		$this->source = [
+			'file' => $d2['file'],
+			'line' => $d2['line'],
+			'class' => $d3['class'],
+			'function' => $d3['function'],
+		];
 	}
 
 	/**
@@ -89,7 +105,12 @@ class Logger {
 	 */
 	protected function header($label = ''): Logger {
 		if ($label != '')
-			$label = "<h4 class=\"debug-header\">{$label}</h4>";
+			$label = "<h3 class=\"debug-header\">{$label}</h3>";
+
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>Class: </strong><span>{$this->source['class']}</span></div>";
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>Function: </strong><span>{$this->source['function']}</span></div>";
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>Line: </strong><span>{$this->source['line']}</span></div>";
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>File: </strong><span>{$this->source['file']}</span></div>";
 		
 		$this->_output = "<div class=\"inane-debug\">{$label}<pre class=\"debug-code\"><code>";
 		return $this;
@@ -193,7 +214,7 @@ class Logger {
 	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public static function echo($var, $label = null, $die = null): \Inane\Debug\Logger {
+	public static function echo($var, $label = null, $die = null): Logger {
 		return static::log()->dumper($var, $label, $die);
 	}
 
@@ -208,7 +229,7 @@ class Logger {
 	 * 
 	 * @return \Inane\Debug\Logger
 	 */
-	public static function dump($var, $label = null, $die = null): \Inane\Debug\Logger {
+	public static function dump($var, $label = null, $die = null): Logger {
 		return static::log()->dumper($var, $label, $die);
 	}	
 
