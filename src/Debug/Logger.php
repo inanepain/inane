@@ -107,10 +107,8 @@ class Logger {
 		if ($label != '')
 			$label = "<h3 class=\"debug-header\">{$label}</h3>";
 
-		$label .= "<div><strong style='width: 80px;display: inline-block;'>Class: </strong><span>{$this->source['class']}</span></div>";
-		$label .= "<div><strong style='width: 80px;display: inline-block;'>Function: </strong><span>{$this->source['function']}</span></div>";
-		$label .= "<div><strong style='width: 80px;display: inline-block;'>Line: </strong><span>{$this->source['line']}</span></div>";
-		$label .= "<div><strong style='width: 80px;display: inline-block;'>File: </strong><span>{$this->source['file']}</span></div>";
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>Class: </strong><span>{$this->source['class']}:{$this->source['function']}:{$this->source['line']}:</span></div>";
+		$label .= "<div><strong style='width: 80px;display: inline-block;'>File: </strong><span>{$this->source['file']}:{$this->source['line']}:</span></div>";
 		
 		$this->_output = "<div class=\"inane-debug\">{$label}<pre class=\"debug-code\"><code>";
 		return $this;
