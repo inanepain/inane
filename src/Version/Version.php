@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the InaneClasses package.
+ * This file is part of the InaneTools package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -22,13 +22,13 @@ use Laminas\Http;
  *
  * @package Inane\Version
  * @namespace \Inane\Version
- * @version 0.1.1
+ * @version 0.1.2
  */
 final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.14.3';
+	const VERSION = '0.15.0';
 	
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from
@@ -148,7 +148,7 @@ final class Version {
 	 */
 	protected static function getLatestFromUrl(Http\Client $httpClient = null, $url = null) {
 		if ($url === null)
-			$url = 'http://inane.co.za/project/version/inaneclasses';
+			$url = 'https://inane.co.za/ts/v/inaneclasses';
 		
 		if ($httpClient === null) {
 			$apiResponse = file_get_contents($url);

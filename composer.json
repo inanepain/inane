@@ -40,7 +40,7 @@
 	"repositories": [{
 		"type": "composer",
 		"url": "https://packer.inane.co.za",
-		"name": "Packer"
+		"name": "Inane Packer"
 	}],
 	"config": {
 		"preferred-install": "dist",
