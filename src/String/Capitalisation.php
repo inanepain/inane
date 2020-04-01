@@ -1,6 +1,6 @@
 <?php
  /**
- * This file is part of the InaneClasses package.
+ * This file is part of the InaneTools package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -23,7 +23,7 @@ use Inane\Type\Enum;
  * 
  * @package Inane\String
  * @namespace \Inane\String
- * @version 0.1.1
+ * @version 0.2.0
  * 
  * @method static Capitalisation Ignore()
  * @method static Capitalisation UPPERCASE()
@@ -39,4 +39,16 @@ class Capitalisation extends Enum {
 	const StudlyCaps = 'StudlyCaps';
 	const camelCase = 'camelCase';
 	const RaNDom = 'RaNDom';
+	
+	/**
+	 * @var string[] the descriptions
+	 */
+	protected static $descriptions = [
+		'Ignore' => 'Don\'t change case of string.',
+		'UPPERCASE' => 'CHANGE STRING TO UPPRCASE',
+		'lowercase' => 'change string to lowercase',
+		'StudlyCaps' => 'Change String To Studlycaps',
+		'camelCase' => 'change String To Camelcase',
+		'RaNDom' => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
+	];
 }
