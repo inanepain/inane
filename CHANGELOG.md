@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.16.0 - 2020-04-07
+
+ - **New** UUID
+
 ## 0.14.3 - 2020-01-30
 
  - **Upd** Move requierment to laminas
