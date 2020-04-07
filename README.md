@@ -1,8 +1,8 @@
 # Inane Classes
 
-Version: `0.14.3` 30 Jan 2020
+Version: `0.16.1` 07 Apr 2020
 
-For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Cathedral/inaneclasses/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
+For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
 Check out the [CHANGELOG](CHANGELOG.md) if you wanna see the road travilled thus far.
 
