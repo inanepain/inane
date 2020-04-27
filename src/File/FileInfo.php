@@ -23,7 +23,7 @@ use Inane\String\Capitalisation;
  *
  * @package Inane\File
  * @namespace \Inane\File
- * @version 0.4.0
+ * @version 0.5.0
  */
 class FileInfo extends \SplFileInfo
 {
@@ -101,12 +101,33 @@ class FileInfo extends \SplFileInfo
      * @param number $decimals
      * @return string
      */
-    protected function humanSize($size, $decimals = 2)
+    protected function humanSize($size,int $decimals = 2): string
     {
         $sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((strlen($size) - 1) / 3);
         $formatedSize = sprintf("%.{$decimals}f", $size / pow(1024, $factor));
         
         return rtrim($formatedSize, '0.').' '.@$sizes[$factor];
+    }
+    
+    /**
+     * Get files in dir
+     *
+     * @param string $filter
+     * @return array|null
+     */
+    public function getFiles(string $filter = '*'): ?array {
+        return glob(parent::getPathname().'/'.$filter) ?? null;
+    }
+
+    /**
+     * Ges file in dir
+     *
+     * @param string $file the file to get
+     * @return string|null
+     */
+    public function getFile(string $file): ?string {
+        $file = array_pop(glob(parent::getPathname().'/'.$file));
+        return $file;
     }
 }

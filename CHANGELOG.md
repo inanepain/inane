@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.16.3 - 2020-04-27
+
+ - **Upd** FileInfo: added getFiles, getFile functions.
+
 ## 0.16.1 - 2020-04-07
 
  - **New** UUID
