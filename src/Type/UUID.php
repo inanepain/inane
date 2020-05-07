@@ -42,11 +42,11 @@ class UUID {
 		if (!self::is_valid($namespace)) return null;
 		
 		// Get hexadecimal components of namespace
-		$nhex = str_replace(array(
+		$nhex = str_replace([
 			'-',
 			'{',
 			'}'
-		), '', $namespace);
+		], '', $namespace);
 		
 		// Binary Value
 		$nstr = '';
@@ -121,11 +121,11 @@ class UUID {
 		if (!self::is_valid($namespace)) return null;
 		
 		// Get hexadecimal components of namespace
-		$nhex = str_replace(array(
+		$nhex = str_replace([
 			'-',
 			'{',
 			'}'
-		), '', $namespace);
+		], '', $namespace);
 		
 		// Binary Value
 		$nstr = '';
