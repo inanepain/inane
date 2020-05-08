@@ -18,6 +18,12 @@ namespace Inane\Type;
 use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
 
+use function get_class;
+use function array_keys;
+use function in_array;
+use function array_key_exists;
+use function array_search;
+
 /**
  * Base Enum class
  *
@@ -139,7 +145,7 @@ abstract class Enum implements \JsonSerializable
     {
         return $variable instanceof self
             && $this->getValue() === $variable->getValue()
-            && static::class === \get_class($variable);
+            && static::class === get_class($variable);
     }
 
     /**
@@ -151,7 +157,7 @@ abstract class Enum implements \JsonSerializable
      */
     public static function keys()
     {
-        return \array_keys(static::toArray());
+        return array_keys(static::toArray());
     }
 
     /**
@@ -204,7 +210,7 @@ abstract class Enum implements \JsonSerializable
      */
     public static function isValid($value)
     {
-        return \in_array($value, static::toArray(), true);
+        return in_array($value, static::toArray(), true);
     }
 
     /**
@@ -219,7 +225,7 @@ abstract class Enum implements \JsonSerializable
     {
         $array = static::toArray();
 
-        return isset($array[$key]) || \array_key_exists($key, $array);
+        return isset($array[$key]) || array_key_exists($key, $array);
     }
 
     /**
@@ -233,7 +239,7 @@ abstract class Enum implements \JsonSerializable
      */
     public static function search($value)
     {
-        return \array_search($value, static::toArray(), true);
+        return array_search($value, static::toArray(), true);
     }
 
     /**
@@ -249,7 +255,7 @@ abstract class Enum implements \JsonSerializable
     public static function __callStatic($name, $arguments)
     {
         $array = static::toArray();
-        if (isset($array[$name]) || \array_key_exists($name, $array)) {
+        if (isset($array[$name]) || array_key_exists($name, $array)) {
             return new static($array[$name]);
         }
 

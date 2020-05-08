@@ -15,6 +15,11 @@
  */
 namespace Inane\Debug;
 
+use function microtime;
+use function round;
+use function count;
+use function number_format;
+
 /**
  * Timer
  * 

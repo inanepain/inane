@@ -17,6 +17,16 @@ namespace Inane\Version;
 
 use Laminas\Http;
 
+use function strtolower;
+use function preg_replace;
+use function version_compare;
+use function ini_get;
+use function trigger_error;
+use function sprintf;
+use function file_get_contents;
+
+use const E_USER_WARNING;
+
 /**
  * InaneClasses Version
  *

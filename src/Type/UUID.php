@@ -17,6 +17,17 @@
 
 namespace Inane\Type;
 
+use function strlen;
+use function chr;
+use function hexdec;
+use function md5;
+use function sprintf;
+use function substr;
+use function mt_rand;
+use function str_replace;
+use function sha1;
+use function preg_match;
+
 /**
  * UUID
  *

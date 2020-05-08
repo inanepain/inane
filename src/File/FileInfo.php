@@ -18,6 +18,19 @@ namespace Inane\File;
 
 use Inane\String\Capitalisation;
 
+use function strtoupper;
+use function strtolower;
+use function md5_file;
+use function file_exists;
+use function floor;
+use function pow;
+use function sprintf;
+use function rtrim;
+use function glob;
+use function array_pop;
+
+use const FILEINFO_MIME_TYPE;
+
 /**
  * File metadata
  *

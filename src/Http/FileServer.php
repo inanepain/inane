@@ -19,6 +19,18 @@ use Inane\File\FileInfo;
 use Inane\Observer\InaneSubject;
 use Inane\Observer\InaneObserver;
 
+use function round;
+use function preg_replace;
+use function explode;
+use function fopen;
+use function fseek;
+use function feof;
+use function set_time_limit;
+use function flush;
+use function fread;
+use function fclose;
+use function usleep;
+
 /**
  * Serve file over http with resume support
  * 
