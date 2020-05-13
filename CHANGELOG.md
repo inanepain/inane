@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.16.4 - 2020-05-13
+
+ - **Upd** FileServer: serve now also takes a response object which it returns updated.
+
 ## 0.16.3 - 2020-04-27
 
  - **Upd** FileInfo: added getFiles, getFile functions.

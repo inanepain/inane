@@ -36,7 +36,7 @@ use function usleep;
  * 
  * @package Inane\Http\FileServer
  * @namespace \Inane\Http
- * @version 0.7.2
+ * @version 0.8.0
  */
 class FileServer extends InaneSubject {
 	/**
@@ -45,7 +45,7 @@ class FileServer extends InaneSubject {
 	 * @readonly
 	 * @var string
 	 */
-	public const VERSION = '0.7.2';
+	public const VERSION = '0.8.0';
 
 	private $observers = [];
 	
@@ -259,17 +259,16 @@ class FileServer extends InaneSubject {
 	/**
 	 * Server the file via http
 	 * 
-	 * @param \Laminas\Http\Request $request	zf2 request used to get range
+	 * @param \Laminas\Http\Request $request used to get range
+     * @param \Laminas\Http\Response $response to update
 	 * @return \Laminas\Http\Response
 	 */
-	public function serve(\Laminas\Http\Request $request = null) {
-		if ($request == null)
-			$request = new \Laminas\Http\Request();
-		
+	public function serve(?\Laminas\Http\Request $request = null, ?\Laminas\Http\Response $response = null): \Laminas\Http\Response {
+		if (!$request) $request = new \Laminas\Http\Request();
 		$requestHeaders = $request->getHeaders();
-		
-		$response = new \Laminas\Http\Response();
-		$headers = new \Laminas\Http\Headers();
+        
+        if (!$response) $response = new \Laminas\Http\Response();
+		$headers = $response->getHeaders();
 		
 		if (! $this->_file->isValid()) {
 			$response->setStatusCode(404);
