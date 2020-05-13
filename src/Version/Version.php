@@ -17,6 +17,16 @@ namespace Inane\Version;
 
 use Laminas\Http;
 
+use function strtolower;
+use function preg_replace;
+use function version_compare;
+use function ini_get;
+use function trigger_error;
+use function sprintf;
+use function file_get_contents;
+
+use const E_USER_WARNING;
+
 /**
  * InaneClasses Version
  *
@@ -28,7 +38,7 @@ final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.16.3';
+	const VERSION = '0.16.4';
 	
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from

@@ -17,6 +17,13 @@
 
 namespace Inane\Util;
 
+use function count;
+use function array_shift;
+use function array_pop;
+use function is_array;
+use function in_array;
+use function array_key_exists;
+
 /**
  * ArrayUtil
  *

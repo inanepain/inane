@@ -17,6 +17,17 @@
 
 namespace Inane\Type;
 
+use function strlen;
+use function chr;
+use function hexdec;
+use function md5;
+use function sprintf;
+use function substr;
+use function mt_rand;
+use function str_replace;
+use function sha1;
+use function preg_match;
+
 /**
  * UUID
  *
@@ -42,11 +53,11 @@ class UUID {
 		if (!self::is_valid($namespace)) return null;
 		
 		// Get hexadecimal components of namespace
-		$nhex = str_replace(array(
+		$nhex = str_replace([
 			'-',
 			'{',
 			'}'
-		), '', $namespace);
+		], '', $namespace);
 		
 		// Binary Value
 		$nstr = '';
@@ -121,11 +132,11 @@ class UUID {
 		if (!self::is_valid($namespace)) return null;
 		
 		// Get hexadecimal components of namespace
-		$nhex = str_replace(array(
+		$nhex = str_replace([
 			'-',
 			'{',
 			'}'
-		), '', $namespace);
+		], '', $namespace);
 		
 		// Binary Value
 		$nstr = '';

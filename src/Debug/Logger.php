@@ -15,6 +15,10 @@
  */
 namespace Inane\Debug;
 
+use function debug_backtrace;
+use function print_r;
+use function var_dump;
+
 /**
  * Log to html with pre & code tags
  *
@@ -44,7 +48,7 @@ class Logger {
 	 * @static
 	 * @return Logger The *Singleton* instance.
 	 */
-	public static function log() {
+	public static function log(): Logger {
 		if (null === static::$instance) {
 			static::$instance = new Logger();
 		}

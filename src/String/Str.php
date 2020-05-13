@@ -18,6 +18,22 @@ namespace Inane\String;
 
 use \Inane\String\Capitalisation;
 
+use function in_array;
+use function strlen;
+use function str_replace;
+use function strstr;
+use function strrpos;
+use function substr_replace;
+use function strtoupper;
+use function strtolower;
+use function lcfirst;
+use function ucwords;
+use function rand;
+use function array_merge;
+use function count;
+use function mt_rand;
+use function trim;
+
 /**
  *
  * @package Inane\String\Str
@@ -145,7 +161,7 @@ class Str
      */
     public function length(): int
     {
-        return \strlen($this->_str);
+        return strlen($this->_str);
     }
 
     /**
@@ -184,7 +200,7 @@ class Str
      */
     public function replace(string $search, string $replace): Str
     {
-        $this->_str = \str_replace($search, $replace, $this->_str);
+        $this->_str = str_replace($search, $replace, $this->_str);
 
         return $this;
     }
@@ -323,7 +339,7 @@ class Str
      */
     public function trim(string $chars = ' ,:-./\\`";'): Str
     {
-        $this->_str = \trim($this->_str, $chars);
+        $this->_str = trim($this->_str, $chars);
 
         return $this;
     }
