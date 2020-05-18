@@ -234,7 +234,7 @@ class FileServer extends InaneSubject {
 	 * @param bool $state optional true|false, empty returns current state
 	 * @return FileServer|bool
 	 */
-	public function forceDownload($state = null) {
+	public function forceDownload(?bool $state = null) {
 		if ($state === null)
 			return $this->_forceDownload;
 		
