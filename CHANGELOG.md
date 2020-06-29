@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.17.0 - 2020-06-29
+
+ - **New** PropertyTrail: Adds __get/__set methods and property parser for method names
+
 ## 0.16.4 - 2020-05-13
 
  - **Upd** FileServer: serve now also takes a response object which it returns updated.
