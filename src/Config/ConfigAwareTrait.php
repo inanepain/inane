@@ -25,7 +25,7 @@ namespace Inane\Config;
  */
 trait ConfigAwareTrait {
 	protected $config;
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see \Inane\Config\ConfigAwareInterface::setConfig()

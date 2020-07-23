@@ -18,7 +18,7 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown when performing an invalid operation on an empty container, such as removing an element.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
  * @namespace \Inane\Exception

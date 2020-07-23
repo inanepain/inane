@@ -18,7 +18,7 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if an error which can only be found on runtime occurs.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
  * @namespace \Inane\Exception

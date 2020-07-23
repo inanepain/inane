@@ -33,7 +33,7 @@ use function usleep;
 
 /**
  * Serve file over http with resume support
- * 
+ *
  * @package Inane\Http\FileServer
  * @namespace \Inane\Http
  * @version 0.8.0
@@ -41,49 +41,49 @@ use function usleep;
 class FileServer extends InaneSubject {
 	/**
 	 * Component Version
-	 * 
+	 *
 	 * @readonly
 	 * @var string
 	 */
 	public const VERSION = '0.8.0';
 
 	private $observers = [];
-	
+
 	/**
 	 * File Information
-	 * 
+	 *
 	 * @var FileInfo
 	 */
 	protected $_file;
-	
+
 	/**
 	 * Alternative file name for download
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $_name;
-	
+
 	/**
 	 * Force download for text type contect
 	 *
 	 * @var bool
 	 */
 	protected $_forceDownload = true;
-	
+
 	/**
 	 * Limit speed of transfer (0 = unlimited)
 	 *
 	 * @var int
 	 */
 	protected $_bandwidth = 0;
-	
+
 	/**
 	 * Sleep time to limit bandwidth
 	 *
 	 * @var int
 	 */
 	protected $_sleep = 0;
-	
+
 	/**
 	 * File size served
 	 *
@@ -112,7 +112,7 @@ class FileServer extends InaneSubject {
 		$this->_progress += $progress;
 		if ($this->_progress > $this->_file->getSize())
 			$this->_progress = $this->_file->getSize();
-		
+
 		$percent = round($this->_progress / $this->_file->getSize() * 100, 0);
 		if ($percent != $this->_percent) {
 			$this->notify();
@@ -123,7 +123,7 @@ class FileServer extends InaneSubject {
 
 	/**
 	 * Prepare a file for serving
-	 * 
+	 *
 	 * @param FileInfo|string $file FileInfo object OR path to file
 	 */
 	public function __construct($file) {
@@ -142,7 +142,7 @@ class FileServer extends InaneSubject {
 	public function attach(InaneObserver $observer_in) {
 		//could also use array_push($this->observers, $observer_in);
 		$this->observers[] = $observer_in;
-		
+
 		return $this;
 	}
 
@@ -157,7 +157,7 @@ class FileServer extends InaneSubject {
 				unset($this->observers[$okey]);
 			}
 		}
-		
+
 		return $this;
 	}
 
@@ -169,26 +169,26 @@ class FileServer extends InaneSubject {
 		foreach ( $this->observers as $obs ) {
 			$obs->update($this);
 		}
-		
+
 		return $this;
 	}
 
 	/**
 	 * Filename of download
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getName() {
 		if (isset($this->_name))
 			return $this->_name;
-		
+
 		return $this->_file->getFilename();
 	}
 
 	/**
 	 * Set a different name for download
 	 *   or null for realname
-	 * 
+	 *
 	 * @param string $name
 	 * @return \Inane\Http\FileServer
 	 */
@@ -205,7 +205,7 @@ class FileServer extends InaneSubject {
 
 	/**
 	 * Gets download limit
-	 * 
+	 *
 	 * @return the int
 	 */
 	public function getBandwidth() {
@@ -214,9 +214,9 @@ class FileServer extends InaneSubject {
 
 	/**
 	 * Sets download limit 0 = unlimited
-	 * 
+	 *
 	 * This is a rough kb/s speed. But very rough
-	 * 
+	 *
 	 * @param  $_bandwidth
 	 * @return \Inane\Http\FileServer
 	 */
@@ -224,7 +224,7 @@ class FileServer extends InaneSubject {
 		$this->_sleep = $this->_bandwidth = $_bandwidth * 4.3;
 		if ($this->_bandwidth > 0)
 			$this->_sleep = (8 / $this->_bandwidth) * 1e6;
-		
+
 		return $this;
 	}
 
@@ -237,9 +237,9 @@ class FileServer extends InaneSubject {
 	public function forceDownload(?bool $state = null) {
 		if ($state === null)
 			return $this->_forceDownload;
-		
+
 		$this->_forceDownload = $state;
-		
+
 		return $this;
 	}
 
@@ -247,7 +247,7 @@ class FileServer extends InaneSubject {
 		$headerArray = explode("\n", $headers->toString());
 		if ($status == 206)
 			header("HTTP/1.1 206 Patial Content");
-		else 
+		else
 			header("HTTP/1.1 200 OK");
 		foreach ( $headerArray as $headerLine ) {
 			if (strlen($headerLine) > 0) {
@@ -258,70 +258,69 @@ class FileServer extends InaneSubject {
 
 	/**
 	 * Server the file via http
-	 * 
+	 *
 	 * @param \Laminas\Http\Request $request used to get range
      * @param \Laminas\Http\Response $response to update
 	 * @return \Laminas\Http\Response
 	 */
 	public function serve(?\Laminas\Http\Request $request = null, ?\Laminas\Http\Response $response = null): \Laminas\Http\Response {
-		if (!$request) $request = new \Laminas\Http\Request();
+		if (! $request) $request = new \Laminas\Http\Request();
 		$requestHeaders = $request->getHeaders();
-        
-        if (!$response) $response = new \Laminas\Http\Response();
+
+        if (! $response) $response = new \Laminas\Http\Response();
 		$headers = $response->getHeaders();
-		
+
 		if (! $this->_file->isValid()) {
 			$response->setStatusCode(404);
 			$response->setContent('file invalid:' . $this->_file->getPathname());
 			return $response;
 		}
-		
+
 		$fileSize = $this->_file->getSize();
-		
+
 		if ($requestHeaders->has('Range')) { // check if http_range is sent by browser (or download manager)
 			$response->setStatusCode(206);
-			
+
 			list($unit, $range) = explode('=', $requestHeaders->get('Range')->toString());
 			$ranges = explode(',', $range);
 			$ranges = explode('-', $ranges[0]);
-			
+
 			$byte_from = (int) $ranges[0];
 			$byte_to = (int) ($ranges[1] == '' ? $fileSize - 1 : $ranges[1]);
 			$download_size = $byte_to - $byte_from + 1; // the download length
-			
 
 			$download_range = 'bytes ' . $byte_from . "-" . $byte_to . "/" . $fileSize; // the download range
 			$headers->addHeader(new \Laminas\Http\Header\ContentRange($download_range));
 		} else {
 			$response->setStatusCode(200);
-			
+
 			$byte_from = 0; // no range, download from 0
 			$byte_to = $this->_file->getSize() - 1; // the last byte
 			$download_size = $fileSize;
 		}
-		
+
 		// send the headers
 		$headers->addHeader(new \Laminas\Http\Header\AcceptRanges('bytes'));
 		$headers->addHeaderLine('Content-type', $this->_file->getMimetype());
 		$headers->addHeaderLine("Pragma", "no-cache");
 		$headers->addHeaderLine('Cache-Control', 'public, must-revalidate, max-age=0');
 		$headers->addHeaderLine("Content-Length", $download_size);
-		
+
 		if ($this->forceDownload()) {
 			$headers->addHeaderLine("Content-Description", 'File Transfer');
 			$headers->addHeaderLine('Content-Disposition', 'attachment; filename="' . $this->getName() . '";');
 			$headers->addHeaderLine("Content-Transfer-Encoding", "binary");
 		}
-		
+
 		$fp = fopen($this->_file->getPathname(), "r"); // open file
 		fseek($fp, $byte_from); // seek to start byte
 		$this->_progress = $byte_from;
-		
+
 		if ($this->_bandwidth > 0) {
 			$this->sendHeaders($headers, $response->getStatusCode());
-			
+
 			$buffer_size = 1024 * 8; // 8kb
-			
+
 			while ( ! feof($fp) ) { // start buffered download
 				set_time_limit(0); // reset time limit for big files
 				print(fread($fp, $buffer_size));
@@ -331,16 +330,16 @@ class FileServer extends InaneSubject {
 			}
 			$this->addProgress(1);
 			fclose($fp); // close file
-			
+
 			exit();
 		}
-		
+
 		$countent = fread($fp, $download_size);
-		
+
 		fclose($fp); // close the file
 		$response->setHeaders($headers);
 		$response->setContent($countent);
-		
+
 		return $response;
 	}
 }

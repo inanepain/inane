@@ -22,7 +22,7 @@ use function number_format;
 
 /**
  * Timer
- * 
+ *
  * Time duration of events
  *
  * @package Inane\Debug
@@ -34,27 +34,27 @@ class Timer {
 	 *
 	 * @var integer
 	 */
-	
+
 	protected static $precision = 5;
-	
+
 	/**
 	 *
 	 * @var float
 	 */
 	protected $endTime;
-	
+
 	/**
 	 *
 	 * @var array
 	 */
 	protected $interval = [];
-	
+
 	/**
 	 *
 	 * @var float
 	 */
 	protected $startTime;
-	
+
 	// Hold the class instance.
 	/**
 	 *
@@ -72,7 +72,7 @@ class Timer {
 			'label' => $label,
 			'time' => microtime(true)
 		];
-		
+
 		return self::getInstance();
 	}
 
@@ -81,7 +81,7 @@ class Timer {
 	 */
 	public static function end(): Timer {
 		self::getInstance()->endTime = microtime(true);
-		
+
 		return self::getInstance();
 	}
 
@@ -94,22 +94,22 @@ class Timer {
 		if (self::$instance == null) {
 			self::$instance = new Timer();
 		}
-		
+
 		return self::$instance;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public static function report() {
 		$duration = round(self::getInstance()->endTime - self::getInstance()->startTime, self::$precision);
 		$intervals = count(self::getInstance()->interval);
-		
+
 		echo $duration . ' sec<br/>' . PHP_EOL;
-		
+
 		if ($intervals > 0) {
 			echo round($duration / $intervals, self::$precision) . ' sec/interval<br/>' . PHP_EOL;
-			
+
 			$lastInterval = self::getInstance()->startTime;
 			foreach (self::getInstance()->interval as $interval) {
 				echo $interval['label'] . ' => ' . $interval['time'] . ' (AT: ' . number_format($interval['time'] - self::getInstance()->startTime, self::$precision) . ', FOR: ' . number_format($lastInterval - self::getInstance()->startTime, self::$precision) . ')<br/>' . PHP_EOL;
@@ -126,7 +126,7 @@ class Timer {
 		self::$instance = null;
 		self::$precision = $precision;
 		self::getInstance()->startTime = microtime(true);
-		
+
 		return self::getInstance();
 	}
 

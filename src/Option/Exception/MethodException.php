@@ -21,7 +21,7 @@ use Exception;
 
 /**
  * MethodException
- * 
+ *
  * Parsed Method is Invalid
  *
  * @package Inane\Option\Property
@@ -48,8 +48,8 @@ class MethodException extends Exception {
 
     /**
      * magic method: __toString
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function __toString() {
         return __CLASS__ . ":\n [{$this->code}]: {$this->message}";

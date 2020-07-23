@@ -18,7 +18,7 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if a callback refers to an undefined method or if some arguments are missing.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
  * @namespace \Inane\Exception

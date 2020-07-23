@@ -18,7 +18,7 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if a value is not a valid key. This represents errors that cannot be detected at compile time.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
  * @namespace \Inane\Exception

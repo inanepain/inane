@@ -27,12 +27,12 @@ namespace Inane\Type;
  * @version 0.3.0
  */
 class Once {
-	
+
 	/**
 	 * @var string holder for the value that may only be used once
 	 */
 	private $_value;
-	
+
 	/**
 	 * @var string the value that may only be used once
 	 */
@@ -42,7 +42,7 @@ class Once {
 	 * Once Factory
 	 *
 	 * @param string $value the value that may only be used once
-	 * 
+	 *
 	 * @return Once
 	 */
 	public static function getOnce(string $value): Once {
@@ -60,9 +60,9 @@ class Once {
 
 	/**
 	 * Magic method to get property
-	 * 
+	 *
 	 * For using getters when accessing properties
-	 * 
+	 *
 	 * @param string $name return the value
 	 * @return string|NULL
 	 */
@@ -72,7 +72,7 @@ class Once {
 			$this->$name = null;
 			return $value;
 		}
-		
+
 		return null;
 	}
 
@@ -99,9 +99,9 @@ class Once {
 	public function reset(string $value): Once {
 		if ($value)
 			$this->_value = $value;
-		
+
 		$this->value = $this->_value;
-		
+
 		return $this;
 	}
 }

@@ -74,7 +74,7 @@ class Str
      */
     public function __get($property)
     {
-        if (!in_array($property, ['length', 'string'])) {
+        if (! in_array($property, ['length', 'string'])) {
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
         }
 
@@ -95,7 +95,7 @@ class Str
      */
     public function __set($property, $value)
     {
-        if (!in_array($property, ['string'])) {
+        if (! in_array($property, ['string'])) {
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
         }
 

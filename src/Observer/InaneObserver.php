@@ -17,7 +17,7 @@ namespace Inane\Observer;
 
 /**
  * Observer pattern: Observer
- * 
+ *
  * @package Inane\Observer\InaneObserver
  * @namespace \Inane\Observer
  * @version 0.1.0
