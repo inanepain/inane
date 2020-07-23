@@ -34,7 +34,6 @@ use function preg_match;
  * generates VALID RFC 4211 COMPLIANT Universally Unique IDentifiers (UUID) version 3, 4 and 5.
  *
  * @package Inane\Type
- * @namespace \Inane\Type
  * @version 1.0.0
  */
 class UUID {

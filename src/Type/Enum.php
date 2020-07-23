@@ -30,7 +30,6 @@ use function array_search;
  * Create an enum by implementing this class and adding class constants.
  *
  * @package Inane\Type
- * @namespace \Inane\Type
  * @version 0.3.0
  */
 abstract class Enum implements \JsonSerializable

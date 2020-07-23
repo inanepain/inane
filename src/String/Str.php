@@ -37,7 +37,6 @@ use function trim;
 /**
  *
  * @package Inane\String\Str
- * @namespace \Inane\String
  * @property-read public length
  * @property public string
  * @version 0.0.9

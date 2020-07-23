@@ -21,7 +21,6 @@ namespace Inane\Exception;
  *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface {}

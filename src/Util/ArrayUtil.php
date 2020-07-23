@@ -28,7 +28,6 @@ use function array_key_exists;
  * ArrayUtil
  *
  * @package Inane\Util
- * @namespace \Inane\Util
  * @version 0.1.0
  */
 class ArrayUtil {

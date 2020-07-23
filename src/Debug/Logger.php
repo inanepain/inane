@@ -23,7 +23,6 @@ use function var_dump;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @namespace \Inane\Debug
  * @version 0.6.0
  */
 class Logger {

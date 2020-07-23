@@ -22,7 +22,6 @@ use Inane\Type\Enum;
  * String Capitalisation
  *
  * @package Inane\String
- * @namespace \Inane\String
  * @version 0.2.0
  *
  * @method static Capitalisation Ignore()

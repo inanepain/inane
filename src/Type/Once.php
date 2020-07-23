@@ -22,7 +22,6 @@ namespace Inane\Type;
  * Thus only letting its value be used once
  *
  * @package Inane\Type
- * @namespace \Inane\Type
  * @method static string value()
  * @version 0.3.0
  */

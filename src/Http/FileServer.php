@@ -35,7 +35,6 @@ use function usleep;
  * Serve file over http with resume support
  *
  * @package Inane\Http\FileServer
- * @namespace \Inane\Http
  * @version 0.8.0
  */
 class FileServer extends InaneSubject {

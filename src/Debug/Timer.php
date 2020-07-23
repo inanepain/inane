@@ -26,7 +26,6 @@ use function number_format;
  * Time duration of events
  *
  * @package Inane\Debug
- * @namespace \Inane\Debug
  * @version 0.1.0
  */
 class Timer {

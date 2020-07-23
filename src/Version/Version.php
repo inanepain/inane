@@ -31,7 +31,6 @@ use const E_USER_WARNING;
  * InaneClasses Version
  *
  * @package Inane\Version
- * @namespace \Inane\Version
  * @version 0.1.2
  */
 final class Version {

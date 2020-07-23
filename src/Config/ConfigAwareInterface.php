@@ -70,7 +70,6 @@ namespace Inane\Config;
  * ConfigAwareInterface
  *
  * @package Inane\Config
- * @namespace \Inane\Config
  * @version 0.2.0
  */
 interface ConfigAwareInterface {

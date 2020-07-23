@@ -35,7 +35,6 @@ use const FILEINFO_MIME_TYPE;
  * File metadata
  *
  * @package Inane\File
- * @namespace \Inane\File
  * @version 0.5.0
  */
 class FileInfo extends \SplFileInfo
