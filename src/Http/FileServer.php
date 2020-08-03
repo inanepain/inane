@@ -205,7 +205,7 @@ class FileServer extends InaneSubject {
 	/**
 	 * Gets download limit
 	 *
-	 * @return the int
+	 * @return int
 	 */
 	public function getBandwidth() {
 		return $this->_bandwidth;

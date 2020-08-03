@@ -146,7 +146,7 @@ class Str
     }
 
     /**
-     * @return the string
+     * @return string
      */
     public function getString(): string
     {

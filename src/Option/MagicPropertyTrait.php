@@ -39,19 +39,25 @@ trait MagicPropertyTrait {
     /**
      * Getter method indentifier
      */
-    protected static string $MAGIC_PROPERTY_GET = 'get';
+    protected static $MAGIC_PROPERTY_GET = 'get';
+    
+//     protected static string $MAGIC_PROPERTY_GET = 'get';
 
     /**
      * Setter method indentifier
      */
-    protected static string $MAGIC_PROPERTY_SET = 'set';
+    protected static $MAGIC_PROPERTY_SET = 'set';
+    
+//     protected static string $MAGIC_PROPERTY_SET = 'set';
 
     /**
      * If property does not exist an exception is thrown
      *
      * @var bool
      */
-    protected static bool $verify = true;
+    protected static $verify = true;
+    
+//     protected static bool $verify = true;
 
     /**
      * Gets the method name based on the property name

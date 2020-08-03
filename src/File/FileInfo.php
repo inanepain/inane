@@ -44,7 +44,7 @@ class FileInfo extends \SplFileInfo
      *
      * @param Capitalisation    $case Optional: Capitalisation only UPPERCASE and lowercase have any effect
      * {@inheritDoc}
-     * @see SplFileInfo::getExtension()
+     * @see \SplFileInfo::getExtension()
      */
     public function getExtension(Capitalisation $case = null)
     {

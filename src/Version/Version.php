@@ -153,7 +153,7 @@ final class Version {
 	 * @param Http\Client $httpClient Configured HTTP client
 	 * @param string $url the url used to get the latest version
 	 *
-	 * @return boolean|string|\Inane\Version\false API response or false on error
+	 * @return boolean|string API response or false on error
 	 */
 	protected static function getLatestFromUrl(Http\Client $httpClient = null, $url = null) {
 		if ($url === null)
