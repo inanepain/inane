@@ -5,12 +5,14 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 
+ * PHP version 7
  *
  * @author Philip Michael Raab <peep@inane.co.za>
  * @package Inane\Option
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <peep@inane.co.za>
  */
@@ -38,17 +40,21 @@ use function ucwords;
 trait MagicPropertyTrait {
     /**
      * Getter method indentifier
+     * 
+     * @var string
      */
     protected static $MAGIC_PROPERTY_GET = 'get';
-    
-//     protected static string $MAGIC_PROPERTY_GET = 'get';
+
+    //     protected static string $MAGIC_PROPERTY_GET = 'get';
 
     /**
      * Setter method indentifier
+     * 
+     * @var string
      */
     protected static $MAGIC_PROPERTY_SET = 'set';
-    
-//     protected static string $MAGIC_PROPERTY_SET = 'set';
+
+    //     protected static string $MAGIC_PROPERTY_SET = 'set';
 
     /**
      * If property does not exist an exception is thrown
@@ -56,8 +62,8 @@ trait MagicPropertyTrait {
      * @var bool
      */
     protected static $verify = true;
-    
-//     protected static bool $verify = true;
+
+    //     protected static bool $verify = true;
 
     /**
      * Gets the method name based on the property name
@@ -71,9 +77,9 @@ trait MagicPropertyTrait {
      */
     protected function parseMethodName(string $property, string $prepend = ''): string {
         $methodName = $prepend . str_replace(' ', '', ucwords(str_replace('_', ' ', $property)));
-        if (! $prepend) $methodName = lcfirst($methodName);
+        if (!$prepend) $methodName = lcfirst($methodName);
 
-        if (! in_array($methodName, get_class_methods(__CLASS__))) throw new MethodException($methodName);
+        if (!in_array($methodName, get_class_methods(__CLASS__))) throw new MethodException($methodName);
 
         return $methodName;
     }
@@ -83,15 +89,15 @@ trait MagicPropertyTrait {
      *
      * @param string $property - propert name
      *
-     * @return mixed
+     * @return mixed the value of $property
      *
      * @throws PropertyException
      * @throws MethodException
      */
     public function __get(string $property) {
         if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-            if (! in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 13, new PropertyException());
-        } else if (static::$verify && ! property_exists(__CLASS__, $property)) throw new PropertyException($property, 11);
+            if (!in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 13, new PropertyException());
+        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new PropertyException($property, 11);
 
         $method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_GET);
         return $this->$method();
@@ -103,15 +109,15 @@ trait MagicPropertyTrait {
      * @param string $property - propert name
      * @param mixed $value - new property value
      *
-     * @return $this
+     * @return mixed usually $this to support chaining
      *
      * @throws PropertyException
      * @throws MethodException
      */
     public function __set(string $property, $value) {
         if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-            if (! in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 14, new PropertyException());
-        } else if (static::$verify && ! property_exists(__CLASS__, $property)) throw new PropertyException($property, 12);
+            if (!in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 14, new PropertyException());
+        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new PropertyException($property, 12);
 
         $method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_SET);
         return $this->$method($value);

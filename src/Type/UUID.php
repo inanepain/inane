@@ -5,6 +5,8 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 
+ * PHP version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\Type
@@ -13,6 +15,8 @@
  * @license http://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
+ * 
+ * @version GIT: $Id$
  */
 
 namespace Inane\Type;
@@ -38,144 +42,152 @@ use function preg_match;
  */
 class UUID {
 
-	/**
-	 * Generates a named based uuid
-	 *
-	 * Given the same input the output will also be the same.
-	 *
-	 * @param string $namespace another uuid
-	 * @param string $name text
-	 *
-	 * @return null|string
-	 */
-	public static function v3(string $namespace, string $name): ?string {
-		if (! self::isValid($namespace)) return null;
+    /**
+     * Generates a named based uuid
+     *
+     * Using MD5 as the hashing algorithm.
+     * Given the same input the output will also be the same.
+     *
+     * @param string $namespace another uuid
+     * @param string $name text
+     *
+     * @return null|string
+     */
+    public static function v3(string $namespace, string $name): ?string {
+        if (!self::isValid($namespace)) return null;
 
-		// Get hexadecimal components of namespace
-		$nhex = str_replace([
-			'-',
-			'{',
-			'}'
-		], '', $namespace);
+        // Get hexadecimal components of namespace
+        $nhex = str_replace([
+            '-',
+            '{',
+            '}'
+        ], '', $namespace);
 
-		// Binary Value
-		$nstr = '';
+        // Binary Value
+        $nstr = '';
 
-		// Convert Namespace UUID to bits
-		for($i = 0; $i < strlen($nhex); $i += 2) {
-			$nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
-		}
+        // Convert Namespace UUID to bits
+        for ($i = 0; $i < strlen($nhex); $i += 2) {
+            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
+        }
 
-		// Calculate hash value
-		$hash = md5($nstr . $name);
+        // Calculate hash value
+        $hash = md5($nstr . $name);
 
-		return sprintf('%08s-%04s-%04x-%04x-%12s',
+        return sprintf(
+            '%08s-%04s-%04x-%04x-%12s',
 
-				// 32 bits for "time_low"
-				substr($hash, 0, 8),
+            // 32 bits for "time_low"
+            substr($hash, 0, 8),
 
-				// 16 bits for "time_mid"
-				substr($hash, 8, 4),
+            // 16 bits for "time_mid"
+            substr($hash, 8, 4),
 
-				// 16 bits for "time_hi_and_version",
-				// four most significant bits holds version number 3
-				(hexdec(substr($hash, 12, 4)) & 0x0fff) | 0x3000,
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 3
+            (hexdec(substr($hash, 12, 4)) & 0x0fff) | 0x3000,
 
-				// 16 bits, 8 bits for "clk_seq_hi_res",
-				// 8 bits for "clk_seq_low",
-				// two most significant bits holds zero and one for variant DCE1.1
-				(hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
 
-				// 48 bits for "node"
-				substr($hash, 20, 12));
-	}
+            // 48 bits for "node"
+            substr($hash, 20, 12)
+        );
+    }
 
-	/**
-	 * Generates a pseudo-random uuid
-	 *
-	 * @return string
-	 */
-	public static function v4(): string {
-		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+    /**
+     * Generates a pseudo-random uuid
+     *
+     * @return string
+     */
+    public static function v4(): string {
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 
-				// 32 bits for "time_low"
-				mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            // 32 bits for "time_low"
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
 
-				// 16 bits for "time_mid"
-				mt_rand(0, 0xffff),
+            // 16 bits for "time_mid"
+            mt_rand(0, 0xffff),
 
-				// 16 bits for "time_hi_and_version",
-				// four most significant bits holds version number 4
-				mt_rand(0, 0x0fff) | 0x4000,
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand(0, 0x0fff) | 0x4000,
 
-				// 16 bits, 8 bits for "clk_seq_hi_res",
-				// 8 bits for "clk_seq_low",
-				// two most significant bits holds zero and one for variant DCE1.1
-				mt_rand(0, 0x3fff) | 0x8000,
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand(0, 0x3fff) | 0x8000,
 
-				// 48 bits for "node"
-				mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
-	}
+            // 48 bits for "node"
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
+        );
+    }
 
-	/**
-	 * Generates a named based uuid
-	 *
-	 * Given the same input the output will also be the same.
-	 *
-	 * @param string $namespace another uuid
-	 * @param string $name text
-	 *
-	 * @return null|string
-	 */
-	public static function v5(string $namespace, string $name): ?string {
-		if (! self::isValid($namespace)) return null;
+    /**
+     * Generates a named based uuid
+     *
+     * Using SHA-1 as the hashing algorithm.
+     * Given the same input the output will also be the same.
+     *
+     * @param string $namespace another uuid
+     * @param string $name text
+     *
+     * @return null|string
+     */
+    public static function v5(string $namespace, string $name): ?string {
+        if (!self::isValid($namespace)) return null;
 
-		// Get hexadecimal components of namespace
-		$nhex = str_replace([
-			'-',
-			'{',
-			'}'
-		], '', $namespace);
+        // Get hexadecimal components of namespace
+        $nhex = str_replace([
+            '-',
+            '{',
+            '}'
+        ], '', $namespace);
 
-		// Binary Value
-		$nstr = '';
+        // Binary Value
+        $nstr = '';
 
-		// Convert Namespace UUID to bits
-		for($i = 0; $i < strlen($nhex); $i += 2) {
-			$nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
-		}
+        // Convert Namespace UUID to bits
+        for ($i = 0; $i < strlen($nhex); $i += 2) $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
 
-		// Calculate hash value
-		$hash = sha1($nstr . $name);
+        // Calculate hash value
+        $hash = sha1($nstr . $name);
 
-		return sprintf('%08s-%04s-%04x-%04x-%12s',
+        return sprintf(
+            '%08s-%04s-%04x-%04x-%12s',
+            // 32 bits for "time_low"
+            substr($hash, 0, 8),
 
-				// 32 bits for "time_low"
-				substr($hash, 0, 8),
+            // 16 bits for "time_mid"
+            substr($hash, 8, 4),
 
-				// 16 bits for "time_mid"
-				substr($hash, 8, 4),
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 5
+            (hexdec(substr($hash, 12, 4)) & 0x0fff) | 0x5000,
 
-				// 16 bits for "time_hi_and_version",
-				// four most significant bits holds version number 5
-				(hexdec(substr($hash, 12, 4)) & 0x0fff) | 0x5000,
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            (hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
 
-				// 16 bits, 8 bits for "clk_seq_hi_res",
-				// 8 bits for "clk_seq_low",
-				// two most significant bits holds zero and one for variant DCE1.1
-				(hexdec(substr($hash, 16, 4)) & 0x3fff) | 0x8000,
+            // 48 bits for "node"
+            substr($hash, 20, 12)
+        );
+    }
 
-				// 48 bits for "node"
-				substr($hash, 20, 12));
-	}
-
-	/**
-	 * Test if a uuid is valid
-	 *
-	 * @param string $uuid
-	 * @return boolean
-	 */
-	public static function isValid(string $uuid): bool {
-		return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?' . '[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
-	}
+    /**
+     * Test if a uuid is valid
+     *
+     * @param string $uuid The universally unique identifier to validate
+     * @return boolean
+     */
+    public static function isValid(string $uuid): bool {
+        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?' . '[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
+    }
 }
