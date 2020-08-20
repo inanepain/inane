@@ -13,18 +13,17 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
- 
+
 namespace Inane\String;
 
 use Inane\Type\Enum;
 
 /**
  * String Capitalisation
- * 
+ *
  * @package Inane\String
- * @namespace \Inane\String
  * @version 0.2.0
- * 
+ *
  * @method static Capitalisation Ignore()
  * @method static Capitalisation UPPERCASE()
  * @method static Capitalisation lowercase()
@@ -39,7 +38,7 @@ class Capitalisation extends Enum {
 	const StudlyCaps = 'StudlyCaps';
 	const camelCase = 'camelCase';
 	const RaNDom = 'RaNDom';
-	
+
 	/**
 	 * @var string[] the descriptions
 	 */

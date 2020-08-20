@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown to indicate range errors during program execution. Normally this means there was an arithmetic error other than under/overflow. This is the runtime version of DomainException.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class RangeException extends \RangeException implements ExceptionInterface {}

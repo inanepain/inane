@@ -21,7 +21,7 @@ use Exception;
 
 /**
  * PropertyException
- * 
+ *
  * Adds Getters / Setters via magic get / get methods
  *
  * @package Inane\Option\Property
@@ -35,11 +35,11 @@ class PropertyException extends Exception {
 
     /**
      * __construct
-     * 
-     * @param null|string $message 
-     * @param int $code 
-     * @param Exception|null $previous 
-     * @return void 
+     *
+     * @param null|string $message
+     * @param int $code
+     * @param Exception|null $previous
+     * @return void
      */
     public function __construct(?string $message = null, $code = 0, Exception $previous = null) {
         if ($previous === null) $this->message = str_replace('magic_property_properties', 'Object', $this->message);
@@ -56,8 +56,8 @@ class PropertyException extends Exception {
 
     /**
      * magic method: __toString
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public function __toString() {
         return __CLASS__ . ":\n [{$this->code}]: {$this->message}";

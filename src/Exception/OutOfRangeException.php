@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown when an illegal index was requested. This represents errors that should be detected at compile time.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class OutOfRangeException extends \OutOfRangeException implements ExceptionInterface {}

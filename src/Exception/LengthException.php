@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if a length is invalid.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class LengthException extends \LengthException implements ExceptionInterface {}

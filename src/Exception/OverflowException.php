@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown when adding an element to a full container.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class OverflowException extends \OverflowException implements ExceptionInterface {}

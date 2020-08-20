@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if a callback refers to an undefined function or if some arguments are missing.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class BadFunctionCallException extends \BadFunctionCallException implements ExceptionInterface {}

@@ -17,17 +17,17 @@
 /**
  * Examples (controller & Service)
  * Using a config key: myconfig
- * 
+ *
  * config/autoload/myconfig.global.php
- * 
+ *
  * return array(
  *    'myconfig' => ['test' => true],
  *);
- * 
+ *
  * Module.php
- * 
+ *
  * use Inane\Config\ConfigAwareInterface;
- * 
+ *
  * public function getControllerConfig() {
  *		return array(
  *			'initializers' => array(
@@ -50,15 +50,15 @@
  * 					}
  * 				}));
  * 	}
- * 
+ *
  * IndexController.php
- * 
+ *
  * use Inane\Config\ConfigAwareInterface;
- * 
+ *
  * class IndexController extends AbstractActionController implements ConfigAwareInterface {
- * 
+ *
  * protected $config;
- * 
+ *
  * 	public function setConfig($config) {
  * 		$this->config = $config;
  * 	}
@@ -67,10 +67,9 @@
 namespace Inane\Config;
 
 /**
- * ConfigAwareInterface 
- * 
+ * ConfigAwareInterface
+ *
  * @package Inane\Config
- * @namespace \Inane\Config
  * @version 0.2.0
  */
 interface ConfigAwareInterface {

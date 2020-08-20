@@ -13,16 +13,15 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
- 
+
 namespace Inane\Type;
 
 /**
  * Flags or Options or parameters
- * 
+ *
  * @package Inane\Type
- * @namespace \Inane\Type
  * @version 0.1.0
  */
 class Flag {
-	
+
 }

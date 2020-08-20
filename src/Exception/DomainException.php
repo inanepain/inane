@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception thrown if a value does not adhere to a defined valid data domain.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class DomainException extends \DomainException implements ExceptionInterface {}

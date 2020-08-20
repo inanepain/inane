@@ -18,10 +18,9 @@ namespace Inane\Exception;
 
 /**
  * Exception that represents error in the program logic. This kind of exception should lead directly to a fix in your code.
- * 
+ *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
- * @namespace \Inane\Exception
  * @version 0.2.0
  */
 class LogicException extends \LogicException implements ExceptionInterface {}

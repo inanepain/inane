@@ -8,7 +8,7 @@
  * @license http://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
- * 
+ *
  * @link    http://github.com/myclabs/php-enum
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  */
@@ -30,7 +30,6 @@ use function array_search;
  * Create an enum by implementing this class and adding class constants.
  *
  * @package Inane\Type
- * @namespace \Inane\Type
  * @version 0.3.0
  */
 abstract class Enum implements \JsonSerializable
@@ -82,7 +81,7 @@ abstract class Enum implements \JsonSerializable
             $value = $value->getValue();
         }
 
-        if (!$this->isValid($value)) {
+        if (! $this->isValid($value)) {
             /** @psalm-suppress InvalidCast */
             throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
         }
@@ -192,7 +191,7 @@ abstract class Enum implements \JsonSerializable
     {
         $class = static::class;
 
-        if (!isset(static::$cache[$class])) {
+        if (! isset(static::$cache[$class])) {
             $reflection            = new \ReflectionClass($class);
             static::$cache[$class] = $reflection->getConstants();
         }

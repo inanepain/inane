@@ -35,7 +35,6 @@ use const FILEINFO_MIME_TYPE;
  * File metadata
  *
  * @package Inane\File
- * @namespace \Inane\File
  * @version 0.5.0
  */
 class FileInfo extends \SplFileInfo
@@ -45,7 +44,7 @@ class FileInfo extends \SplFileInfo
      *
      * @param Capitalisation    $case Optional: Capitalisation only UPPERCASE and lowercase have any effect
      * {@inheritDoc}
-     * @see SplFileInfo::getExtension()
+     * @see \SplFileInfo::getExtension()
      */
     public function getExtension(Capitalisation $case = null)
     {
@@ -119,10 +118,10 @@ class FileInfo extends \SplFileInfo
         $sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((strlen($size) - 1) / 3);
         $formatedSize = sprintf("%.{$decimals}f", $size / pow(1024, $factor));
-        
+
         return rtrim($formatedSize, '0.').' '.@$sizes[$factor];
     }
-    
+
     /**
      * Get files in dir
      *

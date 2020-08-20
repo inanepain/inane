@@ -5,12 +5,14 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 
+ * PHP version 7
  *
  * @author Philip Michael Raab <peep@inane.co.za>
  * @package Inane\Option
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <peep@inane.co.za>
  */
@@ -29,7 +31,7 @@ use function ucwords;
 
 /**
  * MagicPropertyTrait
- * 
+ *
  * Adds Getters / Setters via magic get / get methods
  *
  * @package Inane\Option\Property
@@ -38,29 +40,39 @@ use function ucwords;
 trait MagicPropertyTrait {
     /**
      * Getter method indentifier
+     * 
+     * @var string
      */
-    protected static string $MAGIC_PROPERTY_GET = 'get';
+    protected static $MAGIC_PROPERTY_GET = 'get';
+
+    //     protected static string $MAGIC_PROPERTY_GET = 'get';
 
     /**
      * Setter method indentifier
+     * 
+     * @var string
      */
-    protected static string $MAGIC_PROPERTY_SET = 'set';
+    protected static $MAGIC_PROPERTY_SET = 'set';
+
+    //     protected static string $MAGIC_PROPERTY_SET = 'set';
 
     /**
      * If property does not exist an exception is thrown
-     * 
+     *
      * @var bool
      */
-    protected static bool $verify = true;
+    protected static $verify = true;
+
+    //     protected static bool $verify = true;
 
     /**
      * Gets the method name based on the property name
      *
      * @param string $property - propert name
      * @param string $prepend - string identifying method (get/set/store/fetch/put/...)
-     * 
+     *
      * @return string - the method name
-     * 
+     *
      * @throws MethodException
      */
     protected function parseMethodName(string $property, string $prepend = ''): string {
@@ -76,9 +88,9 @@ trait MagicPropertyTrait {
      * magic method: __get
      *
      * @param string $property - propert name
-     * 
-     * @return mixed
-     * 
+     *
+     * @return mixed the value of $property
+     *
      * @throws PropertyException
      * @throws MethodException
      */
@@ -93,12 +105,12 @@ trait MagicPropertyTrait {
 
     /**
      * magic method: __set
-     * 
+     *
      * @param string $property - propert name
      * @param mixed $value - new property value
-     * 
-     * @return $this 
-     * 
+     *
+     * @return mixed usually $this to support chaining
+     *
      * @throws PropertyException
      * @throws MethodException
      */
