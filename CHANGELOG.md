@@ -6,9 +6,18 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.19.0 - 2020-10-06
+
+ - **Upd** Enum 0.4.0: Added default value, optional value to be used as needed. Usage identical to description.
+
+## 0.18.0 - 2020-08-20
+
+ - **New** IpTrait: Adds getIp
+ - **New** LogTrait: Adds log
+
 ## 0.17.0 - 2020-06-29
 
- - **New** PropertyTrail: Adds __get/__set methods and property parser for method names
+ - **New** PropertyTrait: Adds __get/__set methods and property parser for method names
 
 ## 0.16.4 - 2020-05-13
 
