@@ -6,9 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.20.0 - 2020-11-24
+## 0.20.1 - 2020-11-24
 
  - **New** BitwiseFlag 0.1.0: Bitwise Flag abstract class
+ - **New** BitwiseFlagTrait 0.1.0: Bitwise Flag as trait
 
 ## 0.19.0 - 2020-10-06
 
