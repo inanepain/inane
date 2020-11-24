@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.20.0 - 2020-11-24
+
+ - **New** BitwiseFlag 0.1.0: Bitwise Flag abstract class
+
 ## 0.19.0 - 2020-10-06
 
  - **Upd** Enum 0.4.0: Added default value, optional value to be used as needed. Usage identical to description.
