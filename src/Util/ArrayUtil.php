@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the InaneTools package.
  *
@@ -7,7 +6,7 @@
  * file that was distributed with this source code.
  *
  * @author Philip Michael Raab <philip@inane.co.za>
- * @package Forms\Options
+ * @package Inane\Util
  *
  * @license MIT
  * @license http://inane.co.za/license/MIT
