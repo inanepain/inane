@@ -66,7 +66,7 @@ class Logger {
 		$this->source = [
 			'file' => $d2['file'],
 			'line' => $d2['line'],
-			'class' => $d3['class'],
+			'class' => $d3['class'] ?? '',
 			'function' => $d3['function'],
 		];
 	}
