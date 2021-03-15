@@ -23,7 +23,7 @@ use function var_dump;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 0.6.0
+ * @version 0.6.1
  */
 class Logger {
 	/**
@@ -86,7 +86,7 @@ class Logger {
 	 *
 	 * @return void
 	 */
-	private function __wakeup(): void {
+	public function __wakeup(): void {
 	}
 
 	/**
