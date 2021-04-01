@@ -22,7 +22,7 @@ use Exception;
 /**
  * PropertyException
  *
- * Adds Getters / Setters via magic get / get methods
+ * Adds Getters / Setters via magic get / set methods
  *
  * @package Inane\Option\Property
  * @version 0.1.0
