@@ -29,68 +29,150 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.0.0
+ * @version 1.0.1
  */
 class Writer {
 
     private static $logger = null;
-
-    protected $message = '';
-
     protected $method = '';
-    protected $file = '';
     protected $die = true;
 
-    protected function __construct() {
-        
+    /**
+     * Buffer for write
+     * 
+     * @var string
+     */
+    protected $message = '';
+
+    // Settings
+    /**
+     * File: path to file for write
+     *
+     * @var string
+    */
+    protected $optionFile = '';
+    /**
+     * Timestamp: timestamp added to entries when writting to file
+     *
+     * @var bool
+    */
+    protected bool $optionTimestamp = true;
+
+    /**
+     * Protected Contructor
+     * @return void
+     */
+    protected function __construct() {   
     }
 
-    public static function echo() {
+    /**
+     * Factory: Writer::echo
+     * 
+     * Creates a writer in echo mode
+     * 
+     * Sends text to default output
+     * 
+     * @return Writer 
+     */
+    public static function echo(): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'ECHO';
         if (static::$logger->message != '') static::$logger->message = "<pre>".static::$logger->message."</pre>";
         return static::$logger;
     }
 
-    public static function buffer() {
+    /**
+     * Factory: Writer::buffer
+     * 
+     * Creates a writer in buffer mode
+     * In this mode text builds in buffer untill explicitly flushed
+     * 
+     * @TODO: Improve buffering: store in array possible that on final out format...
+     * 
+     * @return Writer 
+     */
+    public static function buffer(): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'BUFFER';
         return static::$logger;
     }
 
-    public static function file(?string $file = null) {
+    /**
+     * Factory: Writer::file
+     * 
+     * Creates a writer in file mode
+     * This mode writes to a file and not to stream
+     * 
+     * @param null|string $file log file, path saved for durration of session
+     * @return Writer 
+     */
+    public static function file(?string $file = null): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'FILE';
 
         if ($file === null && !defined('CONFIG_LOGGER_DEFAULT')) $file = 'log/debug.log';
         else if ($file === null && defined('CONFIG_LOGGER_DEFAULT')) $file = CONFIG_LOGGER_DEFAULT;
 
-        static::$logger->file = $file;
+        static::$logger->optionFile = $file;
         return static::$logger;
     }
 
-    protected function parseData($mixed) {
-        if (is_array($mixed)) $mixed = json_encode($mixed, JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES);
-        return $mixed;
+    // Setting adjustment comments
+    public function setTimestamp(bool $state): self {
+        $this->optionTimestamp = $state;
+        return $this;
     }
-
-    protected function label(string $label) {
-        if ($this->method == 'ECHO') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
-        else if ($this->method == 'FILE') $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
-        else $this->message .= "${label}: ";
-    }
-
-    protected function getMessage(bool $clear = true) {
+    
+    /**
+     * Get text in message buffer
+     * 
+     * @param bool $clear optionally clear the buffer after message retrieved
+     * @return string the buffered text
+     */
+    protected function getMessage(bool $clear = true): string {
         $message = $this->message;
         if ($clear) $this->message = '';
         return $message . PHP_EOL;
     }
 
+    /**
+     * Formate Data
+     * Used to massage to data to better display in selected output
+     * 
+     * @param mixed $mixed 
+     * @return mixed 
+     */
+    protected function formateData($mixed) {
+        if (is_array($mixed)) $mixed = json_encode($mixed, JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES);
+        return $mixed;
+    }
+
+    /**
+     * Label
+     * Adds lable to output
+     * 
+     * @param string $label 
+     * @return void 
+     */
+    protected function label(string $label) {
+        if ($this->method == 'ECHO') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
+        else if ($this->method == 'FILE' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
+        else $this->message .= "${label}: ";
+    }
+
+    /**
+     * Formater: core ver_dump
+     * 
+     * @param mixed $mixed 
+     * @param null|string $label 
+     * @param null|bool $die 
+     * @return $this 
+     */
     public function dump($mixed, ?string $label = null, ?bool $die = null) {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
-        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->parseData($mixed);
+        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
 
         if ($label) $this->label($label);
         if ($this->method == 'ECHO') $this->message .= '<pre>';
@@ -104,11 +186,19 @@ class Writer {
         return $this;
     }
 
+    /**
+     * Formater: core print_r
+     * 
+     * @param mixed $mixed 
+     * @param null|string $label 
+     * @param null|bool $die 
+     * @return $this 
+     */
     public function print($mixed, ?string $label = null, ?bool $die = null) {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
-        if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->parseData($mixed);
+        if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
     
         if ($label) $this->label($label);
         if ($this->method == 'ECHO') $this->message .=  '<pre>';
@@ -124,11 +214,18 @@ class Writer {
         if ($this->method == 'ECHO') {
             echo $this->getMessage();
         } else if ($this->method == 'FILE') {
-            file_put_contents($this->file, $this->getMessage(), FILE_APPEND);
+            file_put_contents($this->optionFile, $this->getMessage(), FILE_APPEND);
         }
     }
 
-    public function die(?bool $die = null) {
+    /**
+     * Die
+     *  indipendant of main functions die param
+     * 
+     * @param null|bool $die 
+     * @return $this Writer
+     */
+    public function die(?bool $die = null): Writer {
         if ($die !== null) $this->die = $die;
         if ($this->die === true) die();
         return $this;
