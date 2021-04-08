@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.21.0.1 - 2021-04-08
+
+- Added Writer: tweaking odds & ends
+
 ## 0.20.1 - 2020-11-24
 
  - **New** BitwiseFlag 0.1.0: Bitwise Flag abstract class
