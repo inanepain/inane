@@ -15,13 +15,15 @@
  */
 namespace Inane\Debug;
 
-use function var_dump;
 use function file_put_contents;
-use function print_r;
-use function ob_start;
-use function ob_get_clean;
+use function in_array;
 use function is_array;
 use function json_encode;
+use function ob_get_clean;
+use function ob_start;
+use function print_r;
+use function strtoupper;
+use function var_dump;
 
 use const PHP_EOL;
 
@@ -29,7 +31,7 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.0.2
+ * @version 1.1.0
  */
 class Writer {
     /**
@@ -40,11 +42,18 @@ class Writer {
     private static $logger = null;
 
     /**
-     * Writer Method: (echo, file, buffer)
+     * Writer Method: (ECHO, FILE, BUFFER)
      *
      * @var string
      */
     protected $method = '';
+
+    /**
+     * Format: (TEXT, HTML, JSON)
+     *
+     * @var string
+     */
+    protected $format = 'HTML';
 
     /**
      * Die's default
@@ -82,17 +91,31 @@ class Writer {
     }
 
     /**
+     * Checks and sets the format
+     *
+     * @param String|null $format
+     * @return void
+     */
+    protected function setFormat(?String $format): void {
+        if ($format && in_array(strtoupper($format), ['HTML','TEXT','JSON'])) static::$logger->format = strtoupper($format);
+    }
+
+    /**
      * Factory: Writer::echo
      * 
      * Creates a writer in echo mode
      * 
      * Sends text to default output
      * 
+     * @param String|null $format: default: HTML, (TEXT, JSON)
+     * 
      * @return Writer 
      */
-    public static function echo(): Writer {
+    public static function echo(?String $format): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'ECHO';
+        static::$logger->setFormat($format);
+
         if (static::$logger->message != '') static::$logger->message = "<pre>".static::$logger->message."</pre>";
         return static::$logger;
     }
@@ -105,11 +128,14 @@ class Writer {
      * 
      * @TODO: Improve buffering: store in array possible that on final out format...
      * 
+     * @param String|null $format: default: HTML, (TEXT, JSON)
+     * 
      * @return Writer 
      */
-    public static function buffer(): Writer {
+    public static function buffer(?String $format): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'BUFFER';
+        static::$logger->setFormat($format);
         return static::$logger;
     }
 
@@ -125,6 +151,7 @@ class Writer {
     public static function file(?string $file = null): self {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'FILE';
+        static::$logger->format = 'TEXT';
 
         if ($file === null && !defined('CONFIG_LOGGER_DEFAULT')) $file = 'log/debug.log';
         else if ($file === null && defined('CONFIG_LOGGER_DEFAULT')) $file = get_defined_constants(true)['user']['CONFIG_LOGGER_DEFAULT'];
@@ -176,8 +203,8 @@ class Writer {
      * @return void 
      */
     protected function label(string $label): void {
-        if ($this->method == 'ECHO') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
-        else if ($this->method == 'FILE' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
+        if ($this->format == 'HTML') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
+        else if ($this->format == 'TEXT' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
         else $this->message .= "${label}: ";
     }
 
@@ -196,11 +223,11 @@ class Writer {
         // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
 
         if ($label) $this->label($label);
-        if ($this->method == 'ECHO') $this->message .= '<pre>';
+        if ($this->format == 'HTML') $this->message .= '<pre>';
         ob_start();
         var_dump($mixed);
         $this->message .= ob_get_clean();
-        if ($this->method == 'ECHO') $this->message .= '</pre>';
+        if ($this->format == 'HTML') $this->message .= '</pre>';
 
         if ($this->method != 'BUFFER') $this->out();
         if ($_die === true) die();
@@ -220,11 +247,12 @@ class Writer {
         if ($die !== null) $_die = $die;
 
         if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
+        else if ($this->format == 'JSON' && is_array($mixed)) $mixed = $this->formateData($mixed);
     
         if ($label) $this->label($label);
-        if ($this->method == 'ECHO') $this->message .=  '<pre>';
+        if ($this->format == 'HTML') $this->message .=  '<pre>';
         $this->message .= print_r($mixed, true);
-        if ($this->method == 'ECHO') $this->message .=  '</pre>';
+        if ($this->format == 'HTML') $this->message .=  '</pre>';
 
         if ($this->method != 'BUFFER') $this->out();
         if ($_die === true) die();
