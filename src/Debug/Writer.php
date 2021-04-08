@@ -29,12 +29,28 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.0.1
+ * @version 1.0.2
  */
 class Writer {
-
+    /**
+     * Single instance of writer 
+     * 
+     * @var Writer
+     */
     private static $logger = null;
+
+    /**
+     * Writer Method: (echo, file, buffer)
+     *
+     * @var string
+     */
     protected $method = '';
+
+    /**
+     * Die's default
+     * 
+     * @var bool
+     */
     protected $die = true;
 
     /**
@@ -106,20 +122,25 @@ class Writer {
      * @param null|string $file log file, path saved for durration of session
      * @return Writer 
      */
-    public static function file(?string $file = null): Writer {
+    public static function file(?string $file = null): self {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'FILE';
 
         if ($file === null && !defined('CONFIG_LOGGER_DEFAULT')) $file = 'log/debug.log';
-        else if ($file === null && defined('CONFIG_LOGGER_DEFAULT')) $file = CONFIG_LOGGER_DEFAULT;
+        else if ($file === null && defined('CONFIG_LOGGER_DEFAULT')) $file = get_defined_constants(true)['user']['CONFIG_LOGGER_DEFAULT'];
 
         static::$logger->optionFile = $file;
         return static::$logger;
     }
 
-    // Setting adjustment comments
-    public function setTimestamp(bool $state): self {
-        $this->optionTimestamp = $state;
+    /**
+     * Show/Hide Time in log files
+     *
+     * @param bool $show
+     * @return Writer
+     */
+    public function setTimestamp(bool $show): self {
+        $this->optionTimestamp = $show;
         return $this;
     }
     
@@ -154,21 +175,21 @@ class Writer {
      * @param string $label 
      * @return void 
      */
-    protected function label(string $label) {
+    protected function label(string $label): void {
         if ($this->method == 'ECHO') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
         else if ($this->method == 'FILE' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
         else $this->message .= "${label}: ";
     }
 
     /**
-     * Formater: core ver_dump
+     * Formater: core var_dump
      * 
      * @param mixed $mixed 
      * @param null|string $label 
      * @param null|bool $die 
-     * @return $this 
+     * @return Writer
      */
-    public function dump($mixed, ?string $label = null, ?bool $die = null) {
+    public function dump($mixed, ?string $label = null, ?bool $die = null): self {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
@@ -192,9 +213,9 @@ class Writer {
      * @param mixed $mixed 
      * @param null|string $label 
      * @param null|bool $die 
-     * @return $this 
+     * @return Writer 
      */
-    public function print($mixed, ?string $label = null, ?bool $die = null) {
+    public function print($mixed, ?string $label = null, ?bool $die = null): self {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
@@ -210,7 +231,12 @@ class Writer {
         return $this;
     }
 
-    protected function out() {
+    /**
+     * Send data to relavent writer
+     *
+     * @return void
+     */
+    protected function out(): void {
         if ($this->method == 'ECHO') {
             echo $this->getMessage();
         } else if ($this->method == 'FILE') {
