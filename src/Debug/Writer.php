@@ -31,7 +31,7 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.1.0
+ * @version 1.1.1
  */
 class Writer {
     /**
@@ -111,7 +111,7 @@ class Writer {
      * 
      * @return Writer 
      */
-    public static function echo(?String $format): Writer {
+    public static function echo(?String $format = null): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'ECHO';
         static::$logger->setFormat($format);
@@ -132,7 +132,7 @@ class Writer {
      * 
      * @return Writer 
      */
-    public static function buffer(?String $format): Writer {
+    public static function buffer(?String $format = null): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'BUFFER';
         static::$logger->setFormat($format);
