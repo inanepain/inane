@@ -14,15 +14,16 @@
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
-namespace Inane\Exception;
+namespace Inane\Config\Exception;
 
-use InvalidArgumentException as BaseInvalidArgumentException;
+use Inane\Exception\ExceptionInterface;
+use Inane\Exception\RuntimeException as ExceptionRuntimeException;
 
 /**
- * Exception thrown if an argument is not of the expected type.
+ * Exception thrown if an error which can only be found on runtime occurs.
  *
  * @package Inane\Exception
  * @implements \Inane\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface {}
+class RuntimeException extends ExceptionRuntimeException implements ExceptionInterface {}

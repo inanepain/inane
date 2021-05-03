@@ -14,9 +14,10 @@
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
-namespace Inane\Exception;
+namespace Inane\Config\Exception;
 
-use InvalidArgumentException as BaseInvalidArgumentException;
+use Inane\Exception\ExceptionInterface;
+use Inane\Exception\InvalidArgumentException as BaseInvalidArgumentException;
 
 /**
  * Exception thrown if an argument is not of the expected type.
