@@ -31,7 +31,7 @@ class Client {
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val", false);
             else if ($value == '') header($header, false);
-            else header("$header: $value", false);
+            else header($header, $value);
         }
         echo $response->getBody();
         exit;
