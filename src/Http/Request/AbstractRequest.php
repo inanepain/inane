@@ -62,7 +62,7 @@ abstract class AbstractRequest implements IRequest {
         if (!$this->_allowAllProperties && !in_array($property, $this->_magic_properties_allowed)) throw new PropertyException($property, 10);
         else if (!$this->_properties->offsetExists($property)) throw new PropertyException($property, 20);
 
-        return $this->_properties->get($property, null);
+        return $this->_properties->offsetGet($property, null);
     }
 
     function __construct(bool $allowAllProperties = true) {
