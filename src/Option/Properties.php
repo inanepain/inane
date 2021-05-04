@@ -29,6 +29,8 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
      */
     private $_data = [];
 
+    private $allowModifications = true;
+
     /**
      * get value
      * @param mixed $key key
@@ -76,7 +78,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
      * 
      * @return void 
      */
-    public function __construct(array $data) {
+    public function __construct(array $data, bool $allowModifications = true) {
         foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value);
         else $this->_data[$key] = $value;
     }
