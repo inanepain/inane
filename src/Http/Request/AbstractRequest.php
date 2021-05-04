@@ -12,6 +12,7 @@ use function preg_match_all;
 use function str_replace;
 use function strtoupper;
 use function filter_input;
+use function is_null;
 use function in_array;
 
 abstract class AbstractRequest implements IRequest {
@@ -119,6 +120,14 @@ abstract class AbstractRequest implements IRequest {
     public function getPost() {
         if (!$this->_post) $this->_post = new Properties($_POST);
         return $this->_post;
+    }
+
+    protected $_query;
+    public function getQuery(?string $param = null) {
+        if (!$this->_query) $this->_query = new Properties($_GET);
+
+        if (!is_null($param)) return $this->_query[$param];
+        return $this->_query;
     }
 
     protected $_files;
