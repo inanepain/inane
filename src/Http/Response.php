@@ -42,9 +42,10 @@ class Response {
         }
     }
 
-    public function addHeader($name, $value, bool $replace = true) {
+    public function addHeader($name, $value, bool $replace = true): self {
         if ($replace == false && array_key_exists($name, $this->getHeaders())) return;
         $this->headers[$name] = $value;
+        return $this;
     }
 
     public function setStatusCode($statusCode) {
