@@ -15,7 +15,7 @@
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
-namespace Utilities;
+namespace Inane\View;
 
 use Exception;
 
