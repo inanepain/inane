@@ -29,7 +29,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      */
     private $_data = [];
 
-    private $allowModifications = true;
+    private $allowModifications;
 
     /**
      * get value
@@ -85,6 +85,8 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @return void 
      */
     public function __construct(array $data, bool $allowModifications = true) {
+        $this->allowModifications = (bool) $allowModifications;
+
         foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value);
         else $this->_data[$key] = $value;
     }
