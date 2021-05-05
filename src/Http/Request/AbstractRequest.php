@@ -4,7 +4,7 @@ namespace Inane\Http\Request;
 
 use Inane\Http\Exception\PropertyException;
 use Inane\Http\Response;
-use Inane\Option\Properties;
+use Inane\Config\Options;
 
 use function array_keys;
 use function strtolower;
@@ -15,6 +15,11 @@ use function filter_input;
 use function is_null;
 use function in_array;
 
+/**
+ * AbstractRequest
+ * 
+ * @version 0.5.0
+ */
 abstract class AbstractRequest implements IRequest {
     public const METHOD_COPY = 'COPY';
     public const METHOD_DELETE = 'DELETE';
@@ -36,7 +41,7 @@ abstract class AbstractRequest implements IRequest {
     /**
      * properties
      * 
-     * @var Properties
+     * @var Options
      */
     protected $_properties = [];
 
@@ -76,7 +81,7 @@ abstract class AbstractRequest implements IRequest {
 
         if ($this->_allowAllProperties) $this->_magic_properties_allowed = array_keys($data);
 
-        $this->_properties = new Properties($data);
+        $this->_properties = new Options($data);
     }
 
     private function toCamelCase($string) {
@@ -118,13 +123,13 @@ abstract class AbstractRequest implements IRequest {
 
     protected $_post;
     public function getPost() {
-        if (!$this->_post) $this->_post = new Properties($_POST);
+        if (!$this->_post) $this->_post = new Options($_POST);
         return $this->_post;
     }
 
     protected $_query;
     public function getQuery(?string $param = null) {
-        if (!$this->_query) $this->_query = new Properties($_GET);
+        if (!$this->_query) $this->_query = new Options($_GET);
 
         if (!is_null($param)) return $this->_query[$param];
         return $this->_query;

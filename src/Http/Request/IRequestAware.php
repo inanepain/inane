@@ -1,6 +1,11 @@
 <?php
 namespace Inane\Http\Request;
 
+/**
+ * IRequestAware
+ * 
+ * @version 0.5.0
+ */
 interface IRequestAware {
     /**
      * set: request

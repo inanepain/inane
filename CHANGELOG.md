@@ -6,6 +6,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.22.0 - 2021-05-05 (DEV)
+
+- Config\Options: array type for configurations, settings and options
+- Http          : a bunch a stuff for requests, responses and formatting those responses
+
 ## 0.21.0.3 - 2021-04-16
 
 - Added Writer: tweaking odds & ends

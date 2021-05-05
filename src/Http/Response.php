@@ -2,7 +2,7 @@
 
 namespace Inane\Http;
 
-use Inane\Option\Properties;
+use Inane\Config\Options;
 use SimpleXMLElement;
 
 use function array_key_exists;
@@ -24,7 +24,7 @@ class Response {
     }
 
     public static function fromArray(array $array) {
-        $config = New Properties($array);
+        $config = New Options($array);
         return new self($config->get('body', ''), $config->get('status', 200), $config->get('headers', []));
     }
 
