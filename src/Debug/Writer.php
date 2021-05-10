@@ -31,7 +31,7 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.1.1
+ * @version 1.2.0
  */
 class Writer {
     /**
@@ -226,6 +226,32 @@ class Writer {
         if ($this->format == 'HTML') $this->message .= '<pre>';
         ob_start();
         var_dump($mixed);
+        $this->message .= ob_get_clean();
+        if ($this->format == 'HTML') $this->message .= '</pre>';
+
+        if ($this->method != 'BUFFER') $this->out();
+        if ($_die === true) die();
+        return $this;
+    }
+
+    /**
+     * Formater: core var_export
+     * 
+     * @param mixed $mixed 
+     * @param null|string $label 
+     * @param null|bool $die 
+     * @return Writer
+     */
+    public function export($mixed, ?string $label = null, ?bool $die = null): self {
+        static $_die = false;
+        if ($die !== null) $_die = $die;
+
+        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
+
+        if ($label) $this->label($label);
+        if ($this->format == 'HTML') $this->message .= '<pre>';
+        ob_start();
+        var_export($mixed);
         $this->message .= ob_get_clean();
         if ($this->format == 'HTML') $this->message .= '</pre>';
 
