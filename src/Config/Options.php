@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Options
+ * 
+ * Replaces Inane\Config\Config
+ * @since 0.22.0
+ * 
+ * PHP version 8
+ */
 namespace Inane\Config;
 
 use ArrayAccess;

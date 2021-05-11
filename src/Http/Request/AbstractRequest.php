@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * AbstractRequest
+ * 
+ * PHP version 8
+ */
 namespace Inane\Http\Request;
 
 use Inane\Http\Exception\PropertyException;
@@ -14,11 +18,13 @@ use function strtoupper;
 use function filter_input;
 use function is_null;
 use function in_array;
+use function http_build_query;
+use function str_starts_with;
 
 /**
  * AbstractRequest
  * 
- * @version 0.5.0
+ * @version 0.6.0
  */
 abstract class AbstractRequest implements IRequest {
     public const METHOD_COPY = 'COPY';
@@ -48,6 +54,11 @@ abstract class AbstractRequest implements IRequest {
     protected $_magic_properties_allowed = ['method'];
 
     /**
+     * strings to remove from property names
+     */
+    static array $_propertyClean = ['request_', 'http_'];
+
+    /**
      * Response
      * 
      * @var Response
@@ -65,7 +76,9 @@ abstract class AbstractRequest implements IRequest {
      */
     public function __get(string $property) {
         if (!$this->_allowAllProperties && !in_array($property, $this->_magic_properties_allowed)) throw new PropertyException($property, 10);
-        else if (!$this->_properties->offsetExists($property)) throw new PropertyException($property, 20);
+        
+        // TODO: Temp only => to upgrade implementations
+        if (str_starts_with($property, 'http')) throw new PropertyException($property, 20);
 
         return $this->_properties->offsetGet($property, null);
     }
@@ -85,7 +98,7 @@ abstract class AbstractRequest implements IRequest {
     }
 
     private function toCamelCase($string) {
-        $result = str_replace('request_', '', strtolower($string));
+        $result = str_replace(static::$_propertyClean, '', strtolower($string));
 
         preg_match_all('/_[a-z]/', $result, $matches);
 
@@ -97,6 +110,11 @@ abstract class AbstractRequest implements IRequest {
         return $result;
     }
 
+    /**
+     * get: request => body
+     * 
+     * @return void|array body
+     */
     public function getBody() {
         if ($this->method === static::METHOD_GET) return;
 
@@ -109,7 +127,7 @@ abstract class AbstractRequest implements IRequest {
     }
 
     public function getAccept() {
-        $accept = explode(',', $this->httpAccept);
+        $accept = explode(',', $this->accept);
         $type = 'text/html';
         if (in_array('application/json', $accept) || in_array('*/*', $accept)) $type = 'application/json';
         else if (in_array('application/xml', $accept)) $type = 'application/xml';
@@ -128,6 +146,12 @@ abstract class AbstractRequest implements IRequest {
     }
 
     protected $_query;
+    /**
+     * get: Query Params
+     * 
+     * @param null|string $param get specific param
+     * @return mixed param/params
+     */
     public function getQuery(?string $param = null) {
         if (!$this->_query) $this->_query = new Options($_GET);
 
@@ -135,9 +159,22 @@ abstract class AbstractRequest implements IRequest {
         return $this->_query;
     }
 
-    protected $_files;
-    public function getFiles() {
-        // if (!$this->_files) $this->_files = new Config($_FILES);
+    /**
+     * get: query string with any modifications
+     *
+     * @return string query string
+     */
+    public function buildQuery(): string {
+        return http_build_query($this->getQuery()->toArray());
+    }
+
+    protected array $_files;
+    /**
+     * get: uploaded files, if any
+     *
+     * @return array files
+     */
+    public function getFiles(): array {
         if (!$this->_files) $this->_files = $_FILES;
         return $this->_files;
     }

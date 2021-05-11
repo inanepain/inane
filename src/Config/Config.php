@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Config
+ * 
+ * PHP version 7
+ * 
+ * @deprecated 0.22.0
+ * @see \Inane\Config\Options
+ */
 namespace Inane\Config;
 
 use ArrayAccess;
@@ -26,6 +33,9 @@ use function reset;
  *
  * Implements Countable, Iterator and ArrayAccess
  * to facilitate easy access to the data.
+ * 
+ * @deprecated 0.22.0
+ * @see \Inane\Config\Options
  *
  * @package Inane\Config
  * @version 0.2.0
@@ -58,6 +68,9 @@ class Config implements Countable, Iterator, ArrayAccess {
      *
      * Data is read-only unless $allowModifications is set to true
      * on construction.
+     * 
+     * @deprecated 0.22.0
+     * @see \Inane\Config\Options
      *
      * @param array $array
      * @param bool $allowModifications
