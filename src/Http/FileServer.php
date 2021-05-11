@@ -4,6 +4,10 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 
+ * @see Client
+ * 
+ * @deprecated 0.22.0
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\Http
@@ -34,6 +38,9 @@ use function usleep;
 /**
  * Serve file over http with resume support
  *
+ * @see Client
+ * 
+ * @deprecated 0.22.0
  * @package Inane\Http\FileServer
  * @version 0.8.0
  */
@@ -123,6 +130,7 @@ class FileServer extends InaneSubject {
 	/**
 	 * Prepare a file for serving
 	 *
+     * @deprecated 0.22.0
 	 * @param FileInfo|string $file FileInfo object OR path to file
 	 */
 	public function __construct($file) {
@@ -334,8 +342,8 @@ class FileServer extends InaneSubject {
 		}
 
 		$countent = fread($fp, $download_size);
-
 		fclose($fp); // close the file
+
 		$response->setHeaders($headers);
 		$response->setContent($countent);
 

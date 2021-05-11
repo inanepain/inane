@@ -134,8 +134,8 @@ abstract class AbstractRequest implements IRequest {
         return $type;
     }
 
-    public function getResponse($body = '', $status = 200) {
-        if (!$this->response) $this->response = new Response($body, $status, ['Content-Type' => $this->getAccept()]);
+    public function getResponse(?string $body = null, $status = 200) {
+        if (!$this->response) $this->response = $body == null ? new Response() : new Response($body, $status, ['Content-Type' => $this->getAccept()]);
         return $this->response;
     }
 

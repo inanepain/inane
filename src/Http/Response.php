@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Response
+ * 
+ * PHP version 7
+ */
 namespace Inane\Http;
 
 use Inane\Config\Options;
@@ -12,7 +16,16 @@ use function is_string;
 use function is_numeric;
 use function htmlspecialchars;
 
+/**
+ * Response
+ * 
+ * @version 0.5.0
+ */
 class Response {
+    const OK = 200;
+    const PARTIAL_CONTENT = 206;
+    const NOT_FOUND = 404;
+
     protected $headers = [];
     protected $body;
     protected $statusCode = 200;
