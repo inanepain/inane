@@ -21,6 +21,7 @@ use SplObserver;
 use SplSubject;
 
 use function explode;
+use function is_string;
 use function fclose;
 use function feof;
 use function flush;
@@ -39,6 +40,9 @@ use function usleep;
  * Client
  * 
  * Sends Http messages
+ * 
+ * @see /Users/philip/Temp/mime/mt.php
+ * for mimetype updating
  * 
  * @package Http
  * @version 1.5.0
@@ -196,30 +200,39 @@ class Client implements SplSubject {
     /**
      * send response
      *
+     * @param Response|string $message response / file
+     * @param int $options flags
+     * @return void
+     */
+    public function send(Response|string $message, int $options = 0): void {
+        $this->flags = $options;
+
+        if (is_string($message)) $this->sendFile($message);
+        else $this->sendResponse($message);
+
+        exit(0);
+    }
+
+    /**
+     * send response
+     *
      * @param Response $response
      * @return void
      */
-    public function send(Response $response): void {
-        if (!$this->isFlagSet(Client::THROTTLE_SPEED)) {
-            $this->sendHeaders($response);
-            echo $response->getBody();
-        }
-        exit(0);
+    protected function sendResponse(Response $response): void {
+        $this->sendHeaders($response);
+        echo $response->getBody();
     }
 
     /**
      * send file
      *
      * @param string $srcfile
-     * @param int $options flags
      * @return void
      */
-    public function sendFile(string $srcfile, int $options = 0): void {
-        $this->flags = $options;
-
+    protected function sendFile(string $srcfile): void {
         $file = new FileInfo($srcfile);
-        $file->setInfoClass('\Inane\File\FileInfo');
-
+        
         $request = new Request();
         $response = $request->getResponse();
 
@@ -257,12 +270,8 @@ class Client implements SplSubject {
         }
 
         // set headers
-        $mimetype = $file->getMimetype();
-        if ($file->getExtension() == 'css') $mimetype = 'text/css';
-        else if ($file->getExtension() == 'js') $mimetype = 'application/javascript';
-
         $response->addHeader('Accept-Ranges', 'bytes');
-        $response->addHeader('Content-type', $mimetype);
+        $response->addHeader('Content-type', $file->getMimetype());
         $response->addHeader("Pragma", "no-cache");
         $response->addHeader('Cache-Control', 'public, must-revalidate, max-age=0');
         $response->addHeader("Content-Length", $download_size);
@@ -277,10 +286,36 @@ class Client implements SplSubject {
         fseek($fp, $byte_from); // seek to start byte
         $this->_progress = $byte_from;
 
-        if ($this->isFlagSet(Client::THROTTLE_SPEED)) {
-            if (ob_get_level() == 0) ob_start();
+        // if ($this->isFlagSet(Client::THROTTLE_SPEED)) {
+        //     if (ob_get_level() == 0) ob_start();
+        //     $this->sendHeaders($response);
+        //     $buffer_size = 1024 * 8; // 8kb
+
+        //     while (!feof($fp)) { // start buffered download
+        //         set_time_limit(0); // reset time limit for big files
+        //         print(fread($fp, $buffer_size));
+        //         ob_flush();
+        //         flush();
+        //         $this->addProgress($buffer_size, $download_size);
+        //         usleep($this->sleep); // sleep for speed limitation
+        //     }
+        //     ob_end_flush();
+        //     $this->addProgress(1, $download_size);
+        if ($this->isFlagSet(Client::THROTTLE_SPEED)) $this->sendBuffer($response, $fp);
+        else {
+            $body = fread($fp, $download_size);
+            $response->setBody($body);
+            $this->sendResponse($response);
+        }
+        
+        fclose($fp);
+    }
+
+    protected function sendBuffer($response, $fp) {
+        if (ob_get_level() == 0) ob_start();
             $this->sendHeaders($response);
             $buffer_size = 1024 * 8; // 8kb
+            $download_size = $response->getHeader('Content-Length');
 
             while (!feof($fp)) { // start buffered download
                 set_time_limit(0); // reset time limit for big files
@@ -292,12 +327,5 @@ class Client implements SplSubject {
             }
             ob_end_flush();
             $this->addProgress(1, $download_size);
-        } else {
-            $countent = fread($fp, $download_size);
-            $response->setBody($countent);
-        }
-        
-        fclose($fp); // close file
-        $this->send($response);
     }
 }
