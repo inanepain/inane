@@ -14,18 +14,17 @@ use ArrayIterator;
 use Countable;
 use Iterator;
 
-use function reset;
 use function count;
-use function next;
 use function current;
 use function key;
-use function is_null;
+use function next;
+use function reset;
 
 /**
  * Options
  * 
  * @package Inane\Config
- * @version 0.8.0
+ * @version 0.8.1
  */
 class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable {
 
@@ -131,7 +130,9 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @return bool valid
      */
     public function valid() {
-        return !is_null(key($this->_data));
+        // return !is_null(key($this->_data));
+        // fixed: ArrayAccess loop
+        return $this->offsetExists(key($this->_data));
     }
 
     /**
