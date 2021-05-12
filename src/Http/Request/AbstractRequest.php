@@ -24,7 +24,7 @@ use function str_starts_with;
 /**
  * AbstractRequest
  * 
- * @version 0.6.0
+ * @version 0.7.0
  */
 abstract class AbstractRequest implements IRequest {
     public const METHOD_COPY = 'COPY';
@@ -145,17 +145,24 @@ abstract class AbstractRequest implements IRequest {
         return $this->_post;
     }
 
+    /**
+     * Query Params
+     * 
+     * @var Options
+     */
     protected $_query;
+
     /**
      * get: Query Params
      * 
      * @param null|string $param get specific param
+     * @param null|string $default 
      * @return mixed param/params
      */
-    public function getQuery(?string $param = null) {
+    public function getQuery(?string $param = null, ?string $default = null): mixed {
         if (!$this->_query) $this->_query = new Options($_GET);
 
-        if (!is_null($param)) return $this->_query[$param];
+        if (!is_null($param)) return $this->_query->get($param, $default);
         return $this->_query;
     }
 
