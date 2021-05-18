@@ -52,7 +52,7 @@ abstract class Enum implements JsonSerializable {
      * @var array
      */
     protected static $instances = [];
-    
+
     /**
      * Enum value
      *
@@ -187,10 +187,10 @@ abstract class Enum implements JsonSerializable {
     /**
      * Undocumented function
      *
-     * @param null|self $variable
+     * @param mixed $variable
      * @return bool
      */
-    final public function equals(?self $variable = null): bool {
+    final public function equals(?mixed $variable = null): bool {
         return $variable instanceof self
             && $this->getValue() === $variable->getValue()
             && static::class === get_class($variable);
