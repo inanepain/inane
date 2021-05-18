@@ -190,7 +190,7 @@ abstract class Enum implements JsonSerializable {
      * @param mixed $variable
      * @return bool
      */
-    final public function equals(?mixed $variable = null): bool {
+    final public function equals(mixed $variable = null): bool {
         return $variable instanceof self
             && $this->getValue() === $variable->getValue()
             && static::class === get_class($variable);
