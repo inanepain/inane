@@ -9,36 +9,39 @@
 namespace Inane\Http;
 
 use Inane\Config\Options;
+use Inane\Exception\UnexpectedValueException;
+use Inane\Exception\BadMethodCallException;
 use SimpleXMLElement;
 
 use function array_key_exists;
-use function in_array;
-use function json_encode;
-use function is_string;
-use function is_numeric;
 use function htmlspecialchars;
+use function in_array;
+use function is_numeric;
+use function is_string;
+use function json_encode;
 
 /**
  * Response
  * 
  * @version 0.5.0
+ * 
+ * @package Http
  */
 class Response {
-    const OK = 200;
-    const CREATED = 201;
-    const PARTIAL_CONTENT = 206;
-    const UNAUTHORIZED = 401;
-    const NOT_FOUND = 404;
-    const IM_A_TEAPOT = 418;
-
     protected $headers = [];
     protected $body;
-    protected $statusCode = 200;
+    /**
+     * Http Status
+     * 
+     * @var StatusCode
+     */
+    protected StatusCode $status;
 
-    public function __construct(string $body = '', int $statusCode = 200, array $headers = []) {
+    public function __construct(string $body = '', int|StatusCode $status = 200, array $headers = []) {
         $this->body = $body;
         $this->headers = $headers;
-        $this->statusCode = $statusCode;
+
+        $this->setStatus($status);
     }
 
     public static function fromArray(array $array) {
@@ -66,12 +69,48 @@ class Response {
         return $this;
     }
 
-    public function setStatusCode($statusCode) {
-        $this->statusCode = $statusCode;
+    /**
+     * get: status
+     * 
+     * @param StatusCode|int $status 
+     * @return Response 
+     * @throws UnexpectedValueException 
+     * @throws BadMethodCallException 
+     */
+    public function setStatus(StatusCode|int $status): self {
+        if ($status instanceof StatusCode) $this->status = $status;
+        else $this->status = StatusCode::from($status);
+        return $this;
     }
 
-    public function getStatusCode() {
-        return $this->statusCode;
+    /**
+     * get: statud
+     * 
+     * @return StatusCode status
+     */
+    public function getStatus(): StatusCode {
+        return $this->status;
+    }
+
+    /**
+     * set: status code
+     * @param mixed $statusCode 
+     * @return self 
+     * @throws UnexpectedValueException 
+     * @throws BadMethodCallException 
+     * @deprecated 0.5.0
+     */
+    public function setStatusCode($statusCode):self {
+        return $this->setStatus($statusCode);
+    }
+
+    /**
+     * get: status code
+     *
+     * @return int
+     */
+    public function getStatusCode(): int {
+        return $this->getStatus()->getValue();
     }
 
     public function getHeaders() {

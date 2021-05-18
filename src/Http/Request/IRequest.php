@@ -4,7 +4,7 @@ namespace Inane\Http\Request;
 /**
  * iRequest
  * 
- * @package Inane\Http\Request
+ * @package Http
  * @version 0.5.0
  */
 interface IRequest {

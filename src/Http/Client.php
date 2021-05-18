@@ -190,11 +190,11 @@ class Client implements SplSubject {
      * @return void
      */
     protected function sendHeaders(Response $response): void {
-        if ($response->getStatusCode() == Response::PARTIAL_CONTENT)
-            header("HTTP/1.1 206 Patial Content");
-        else if ($response->getStatusCode() == Response::OK)
-            header("HTTP/1.1 200 OK");
-        else http_response_code($response->getStatusCode());
+        if ($response->getStatus()->equals(StatusCode::PARTIAL_CONTENT()))
+            header($response->getStatus()->getDefault());
+        else if ($response->getStatus() == StatusCode::OK())
+        header($response->getStatus()->getDefault());
+        else http_response_code($response->getStatus()->getValue());
 
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val");
@@ -243,7 +243,7 @@ class Client implements SplSubject {
         $response = $request->getResponse();
 
         if (!$file->isValid()) {
-            $response->setStatusCode(Response::NOT_FOUND);
+            $response->setStatus(StatusCode::NOT_FOUND());
             $response->setBody('file invalid:' . $this->_file->getPathname());
             $this->send($response);
         }
@@ -251,7 +251,7 @@ class Client implements SplSubject {
         $fileSize = $file->getSize();
 
         if ($request->range != null) {
-            $response->setStatusCode(Response::PARTIAL_CONTENT);
+            $response->setStatus(StatusCode::PARTIAL_CONTENT());
             $this->_progress = 0;
             $this->_percent = 0;
             [
@@ -269,7 +269,7 @@ class Client implements SplSubject {
             $download_range = 'bytes ' . $byte_from . "-" . $byte_to . "/" . $fileSize; // the download range
             $response->addHeader('Content-Range', $download_range);
         } else {
-            $response->setStatusCode(Response::OK);
+            $response->setStatus(StatusCode::OK());
             $byte_from = 0; // no range, download from 0
             $download_size = $fileSize;
             $byte_to = $fileSize - 1;

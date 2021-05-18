@@ -25,6 +25,8 @@ use function str_starts_with;
  * AbstractRequest
  * 
  * @version 0.7.0
+ * 
+ * @package Http
  */
 abstract class AbstractRequest implements IRequest {
     public const METHOD_COPY = 'COPY';

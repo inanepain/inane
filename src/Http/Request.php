@@ -13,6 +13,8 @@ use Inane\Http\Request\AbstractRequest;
  * 
  * @covers fqcn
  * @version 0.5.0
+ * 
+ * @package Http
  */
 class Request extends AbstractRequest {
     
