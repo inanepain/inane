@@ -5,7 +5,7 @@
  *
  * Http Client
  * 
- * PHP version 7
+ * PHP version 8
  *
  * @author Philip Michael Raab <philipr@digitalcabinet.co.za>
  * @package Http
@@ -21,7 +21,6 @@ use SplObserver;
 use SplSubject;
 
 use function explode;
-use function is_string;
 use function fclose;
 use function feof;
 use function flush;
@@ -32,6 +31,7 @@ use function header;
 use function http_response_code;
 use function is_array;
 use function is_null;
+use function is_string;
 use function round;
 use function set_time_limit;
 use function usleep;
@@ -183,6 +183,12 @@ class Client implements SplSubject {
         return $this;
     }
 
+    /**
+     * send headers
+     *
+     * @param Response $response
+     * @return void
+     */
     protected function sendHeaders(Response $response): void {
         if ($response->getStatusCode() == Response::PARTIAL_CONTENT)
             header("HTTP/1.1 206 Patial Content");

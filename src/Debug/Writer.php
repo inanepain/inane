@@ -34,6 +34,10 @@ use const PHP_EOL;
  * @version 1.2.0
  */
 class Writer {
+    public const FORMAT_HTML = 'HTML';
+    public const FORMAT_TEXT = 'TEXT';
+    public const FORMAT_JSON = 'JSON';
+    
     /**
      * Single instance of writer 
      * 

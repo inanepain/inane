@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Options
  * 
@@ -7,21 +8,35 @@
  * 
  * PHP version 8
  */
+
 namespace Inane\Config;
 
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use Inane\Exception\InvalidArgumentException;
+use Inane\Exception\RuntimeException;
 use Iterator;
 
+use function array_pop;
 use function count;
 use function current;
+use function in_array;
+use function is_array;
+use function is_int;
 use function key;
 use function next;
 use function reset;
 
 /**
  * Options
+ * 
+ * Provides a property based interface to an array.
+ * The data are read-only unless $allowModifications is set to true
+ * on construction.
+ *
+ * Implements Countable, Iterator and ArrayAccess
+ * to facilitate easy access to the data.
  * 
  * @package Inane\Config
  * @version 0.8.1
@@ -35,6 +50,11 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      */
     private $_data = [];
 
+    /**
+     * Whether modifications to configuration data are allowed
+     * 
+     * @var bool
+     */
     private $allowModifications;
 
     /**
@@ -57,10 +77,14 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @access public 
      */
     public function __set($key, $value) {
-        if (is_array($value)) $value = new static($value);
+        if ($this->allowModifications) {
+            if (is_array($value)) $value = new static($value);
 
-        if (null === $key) $this->data[] = $value;
-        else $this->data[$key] = $value;
+            if (null === $key) $this->data[] = $value;
+            else $this->data[$key] = $value;
+        } else {
+            throw new RuntimeException('Option is read only');
+        }
     }
 
     /**
@@ -82,7 +106,9 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @access public
      */
     public function __unset($key) {
-        if ($this->__isset($key)) unset($this->_data[$key]);
+        if (!$this->allowModifications) {
+            throw new InvalidArgumentException('Option is read only');
+        } elseif ($this->__isset($key)) unset($this->_data[$key]);
     }
 
     /**
@@ -93,7 +119,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
     public function __construct(array $data, bool $allowModifications = true) {
         $this->allowModifications = (bool) $allowModifications;
 
-        foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value);
+        foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value, $this->allowModifications);
         else $this->_data[$key] = $value;
     }
 
@@ -130,9 +156,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @return bool valid
      */
     public function valid() {
-        // return !is_null(key($this->_data));
-        // fixed: ArrayAccess loop
-        return $this->offsetExists(key($this->_data));
+        return ($this->key() !== null);
     }
 
     /**
@@ -149,7 +173,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * 
      * @return int item count
      */
-    public function count() {
+    public function count(): int {
         return count($this->_data);
     }
 
@@ -159,7 +183,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * @param string $offset key
      * @return bool exists
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return $this->__isset($offset);
     }
 
@@ -230,7 +254,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray(): array {
         $array = [];
         $data = $this->_data;
 
@@ -247,11 +271,13 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      *
      * 1 array in = same array out
      * 0 array in = empty array out
+     * 
+     * @todo: check for allowModifications
      *
      * @param Options ...$modles
      * @return Options
      */
-    public function defaults(Options ...$models): Options {
+    public function defaults(Options ...$models): self {
         // $replacable = ['', null, false];
         $replacable = ['', null];
 
@@ -296,5 +322,31 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
         }
 
         return $this;
+    }
+
+    /**
+     * Prevent any more modifications being made to this instance.
+     *
+     * Useful after merge() has been used to merge multiple Config objects
+     * into one object which should then not be modified again.
+     *
+     * @return Options
+     */
+    public function lock(): self {
+        $this->allowModifications = false;
+
+        /** @var Options $value */
+        foreach ($this->data as $value) if ($value instanceof self) $value->lock();
+
+        return $this;
+    }
+
+    /**
+     * Returns whether this Config object is locked or not.
+     *
+     * @return bool
+     */
+    public function isLocked(): bool {
+        return !$this->allowModifications;
     }
 }

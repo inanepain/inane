@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Response
  * 
  * PHP version 7
  */
+
 namespace Inane\Http;
 
 use Inane\Config\Options;
@@ -23,21 +25,24 @@ use function htmlspecialchars;
  */
 class Response {
     const OK = 200;
+    const CREATED = 201;
     const PARTIAL_CONTENT = 206;
+    const UNAUTHORIZED = 401;
     const NOT_FOUND = 404;
+    const IM_A_TEAPOT = 418;
 
     protected $headers = [];
     protected $body;
     protected $statusCode = 200;
 
-    public function __construct($body = '', $statusCode = 200, $headers = []) {
+    public function __construct(string $body = '', int $statusCode = 200, array $headers = []) {
         $this->body = $body;
         $this->headers = $headers;
         $this->statusCode = $statusCode;
     }
 
     public static function fromArray(array $array) {
-        $config = New Options($array);
+        $config = new Options($array);
         return new self($config->get('body', ''), $config->get('status', 200), $config->get('headers', []));
     }
 

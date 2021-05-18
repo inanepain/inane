@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Enum Abstract Class
  * 
@@ -23,12 +22,13 @@ use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
 
 use JsonSerializable;
+use ReflectionClass;
 
-use function get_class;
-use function array_keys;
-use function in_array;
 use function array_key_exists;
+use function array_keys;
 use function array_search;
+use function get_class;
+use function in_array;
 
 /**
  * Base Enum class
@@ -36,9 +36,23 @@ use function array_search;
  * Create an enum by implementing this class and adding class constants.
  *
  * @package Inane\Type
- * @version 0.4.0
+ * @version 0.5.0
  */
 abstract class Enum implements JsonSerializable {
+    /**
+     * Store existing constants in a static cache per object.
+     *
+     * @var array
+     */
+    protected static $cache = [];
+
+    /**
+     * Cache of instances of the Enum class
+     *
+     * @var array
+     */
+    protected static $instances = [];
+    
     /**
      * Enum value
      *
@@ -47,19 +61,18 @@ abstract class Enum implements JsonSerializable {
     protected $value;
 
     /**
-     * Store existing constants in a static cache per object.
+     * Enum key, the constant name
      *
-     *
-     * @var array
+     * @var string
      */
-    protected static $cache = [];
+    private $key;
 
     /**
      * Enum description
      *
      * @var mixed
      */
-    protected $description = 'Enum';
+    protected $description = '';
 
     /**
      * User friendly status description
@@ -94,13 +107,30 @@ abstract class Enum implements JsonSerializable {
     public function __construct($value) {
         if ($value instanceof static) $value = $value->getValue();
 
-        if (!$this->isValid($value)) {
-            throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
-        }
-
-        $this->value = $value;
+        $this->key = static::assertValidValueReturningKey($value);
         $this->description = static::$descriptions[$value] ?? null;
         $this->default = static::$defaults[$value] ?? null;
+        $this->value = $value;
+    }
+
+    /**
+     * This method exists only for the compatibility reason when deserializing a previously serialized version
+     * that didn't had the key property
+     */
+    public function __wakeup() {
+        if ($this->key === null) {
+            $this->key = static::search($this->value);
+        }
+    }
+
+    /**
+     * @param mixed $value
+     * @return static
+     */
+    public static function from($value): self {
+        $key = static::assertValidValueReturningKey($value);
+
+        return self::__callStatic($key, []);
     }
 
     /**
@@ -133,10 +163,10 @@ abstract class Enum implements JsonSerializable {
     /**
      * Returns the enum key (i.e. the constant name).
      *
-     * @return mixed
+     * @return string
      */
-    public function getKey() {
-        return static::search($this->value);
+    public function getKey(): string {
+        return $this->key;
     }
 
     /**
@@ -144,7 +174,7 @@ abstract class Enum implements JsonSerializable {
      * 
      * @return string
      */
-    public function __toString() {
+    public function __toString(): string {
         return (string) $this->value;
     }
 
@@ -152,11 +182,15 @@ abstract class Enum implements JsonSerializable {
      * Determines if Enum should be considered equal with the variable passed as a parameter.
      * Returns false if an argument is an object of different class or not an object.
      *
-     * This method is final, for more information read https://github.com/myclabs/php-enum/issues/4
-     *
      * @return bool
      */
-    final public function equals($variable = null): bool {
+    /**
+     * Undocumented function
+     *
+     * @param null|self $variable
+     * @return bool
+     */
+    final public function equals(?self $variable = null): bool {
         return $variable instanceof self
             && $this->getValue() === $variable->getValue()
             && static::class === get_class($variable);
@@ -193,7 +227,7 @@ abstract class Enum implements JsonSerializable {
         $class = static::class;
 
         if (!isset(static::$cache[$class])) {
-            $reflection            = new \ReflectionClass($class);
+            $reflection            = new ReflectionClass($class);
             static::$cache[$class] = $reflection->getConstants();
         }
 
@@ -203,22 +237,46 @@ abstract class Enum implements JsonSerializable {
     /**
      * Check if is valid enum value
      *
-     * @param $value
+     * @param mixed $value
      * 
      * @return bool
      */
-    public static function isValid($value): bool {
+    public static function isValid(mixed $value): bool {
         return in_array($value, static::toArray(), true);
+    }
+
+    /**
+     * Asserts valid enum value
+     *
+     * @param mixed $value
+     */
+    public static function assertValidValue($value): void {
+        self::assertValidValueReturningKey($value);
+    }
+
+    /**
+     * Asserts valid enum value
+     *
+     * @param mixed $value
+     * @return string
+     * @throws UnexpectedValueException 
+     */
+    private static function assertValidValueReturningKey($value): string {
+        if (false === ($key = static::search($value))) {
+            throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
+        }
+
+        return $key;
     }
 
     /**
      * Check if is valid enum key
      *
-     * @param $key
+     * @param string $key
      * 
      * @return bool
      */
-    public static function isValidKey($key): bool {
+    public static function isValidKey(string $key): bool {
         $array = static::toArray();
 
         return isset($array[$key]) || array_key_exists($key, $array);
@@ -227,11 +285,11 @@ abstract class Enum implements JsonSerializable {
     /**
      * Return key for value
      *
-     * @param $value
+     * @param mixed $value
      * 
      * @return mixed
      */
-    public static function search($value) {
+    public static function search(mixed $value) {
         return array_search($value, static::toArray(), true);
     }
 
@@ -245,11 +303,16 @@ abstract class Enum implements JsonSerializable {
      * 
      * @throws BadMethodCallException
      */
-    public static function __callStatic($name, $arguments) {
-        $array = static::toArray();
-        if (isset($array[$name]) || array_key_exists($name, $array)) return new static($array[$name]);
-
-        throw new BadMethodCallException("No static method or enum constant '$name' in class " . static::class);
+    public static function __callStatic($name, $arguments): static {
+        if (!isset(self::$instances[static::class][$name])) {
+            $array = static::toArray();
+            if (!isset($array[$name]) && !array_key_exists($name, $array)) {
+                $message = "No static method or enum constant '$name' in class " . static::class;
+                throw new BadMethodCallException($message);
+            }
+            return self::$instances[static::class][$name] = new static($array[$name]);
+        }
+        return clone self::$instances[static::class][$name];
     }
 
     /**

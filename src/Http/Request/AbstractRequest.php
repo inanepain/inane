@@ -2,7 +2,7 @@
 /**
  * AbstractRequest
  * 
- * PHP version 8
+ * PHP version 7.5
  */
 namespace Inane\Http\Request;
 
@@ -49,7 +49,7 @@ abstract class AbstractRequest implements IRequest {
      * 
      * @var Options
      */
-    protected $_properties = [];
+    private $_properties = [];
 
     protected $_magic_properties_allowed = ['method'];
 
@@ -63,7 +63,7 @@ abstract class AbstractRequest implements IRequest {
      * 
      * @var Response
      */
-    protected $response;
+    private $response;
 
     /**
      * magic method: __get
@@ -83,11 +83,21 @@ abstract class AbstractRequest implements IRequest {
         return $this->_properties->offsetGet($property, null);
     }
 
+    /**
+     * Response 
+     * @param bool $allowAllProperties 
+     * @return void 
+     */
     function __construct(bool $allowAllProperties = true) {
         $this->_allowAllProperties = ($allowAllProperties === true);
         $this->bootstrapSelf();
     }
 
+    /**
+     * setup request
+     *
+     * @return void
+     */
     private function bootstrapSelf() {
         $data = [];
         foreach ($_SERVER as $key => $value) $data[$this->toCamelCase($key)] = $value;
@@ -150,7 +160,7 @@ abstract class AbstractRequest implements IRequest {
      * 
      * @var Options
      */
-    protected $_query;
+    private $_query;
 
     /**
      * get: Query Params
