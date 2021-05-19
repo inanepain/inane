@@ -4,6 +4,7 @@
  * 
  * PHP version 7.5
  */
+
 namespace Inane\Http\Request;
 
 use Inane\Http\Exception\PropertyException;
@@ -24,7 +25,7 @@ use function str_starts_with;
 /**
  * AbstractRequest
  * 
- * @version 0.7.0
+ * @version 0.8.0
  * 
  * @package Http
  */
@@ -78,7 +79,7 @@ abstract class AbstractRequest implements IRequest {
      */
     public function __get(string $property) {
         if (!$this->_allowAllProperties && !in_array($property, $this->_magic_properties_allowed)) throw new PropertyException($property, 10);
-        
+
         // TODO: Temp only => to upgrade implementations
         if (str_starts_with($property, 'http')) throw new PropertyException($property, 20);
 
@@ -113,7 +114,6 @@ abstract class AbstractRequest implements IRequest {
         $result = str_replace(static::$_propertyClean, '', strtolower($string));
 
         preg_match_all('/_[a-z]/', $result, $matches);
-
         foreach ($matches[0] as $match) {
             $c = str_replace('_', '', strtoupper($match));
             $result = str_replace($match, $c, $result);
@@ -147,7 +147,10 @@ abstract class AbstractRequest implements IRequest {
     }
 
     public function getResponse(?string $body = null, $status = 200) {
-        if (!$this->response) $this->response = $body == null ? new Response() : new Response($body, $status, ['Content-Type' => $this->getAccept()]);
+        if (!$this->response) {
+            $this->response = $body == null ? new Response() : new Response($body, $status, ['Content-Type' => $this->getAccept()]);
+            $this->response->setRequest($this);
+        }
         return $this->response;
     }
 
