@@ -121,7 +121,7 @@ class Response {
      */
     public static function fromArray(array $array): Response {
         $opt = new Options($array);
-        $response = new self($opt->get('body', ''), $opt->get('status', 200), $opt->get('headers', []));
+        $response = new static($opt->get('body', ''), $opt->get('status', 200), $opt->get('headers', []));
         if ($opt->offsetExists('request')) $response->setRequest($opt->get('request'));
         return $response;
     }
