@@ -219,6 +219,17 @@ abstract class Enum implements JsonSerializable {
     }
 
     /**
+     * Check if is valid enum value
+     *
+     * @param mixed $value
+     * 
+     * @return bool
+     */
+    public static function isValid(mixed $value): bool {
+        return in_array($value, static::toArray(), true);
+    }
+
+    /**
      * Returns all possible values as an array
      *
      * @return array Constant name in key, constant value in value
@@ -232,17 +243,6 @@ abstract class Enum implements JsonSerializable {
         }
 
         return static::$cache[$class];
-    }
-
-    /**
-     * Check if is valid enum value
-     *
-     * @param mixed $value
-     * 
-     * @return bool
-     */
-    public static function isValid(mixed $value): bool {
-        return in_array($value, static::toArray(), true);
     }
 
     /**

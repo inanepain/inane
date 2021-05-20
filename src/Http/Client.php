@@ -15,6 +15,7 @@
 
 namespace Inane\Http;
 
+use Inane\Debug\Writer;
 use SplObserver;
 use SplSubject;
 
@@ -64,11 +65,8 @@ class Client implements SplSubject {
 
     /**
      * Client
-     * 
-     * @param  $kbSec = 0
      */
-    public function __construct(?int $kbSec = null) {
-        if (!is_null($kbSec)) $this->setBandwidth($kbSec);
+    public function __construct() {
     }
 
     /**
@@ -153,7 +151,8 @@ class Client implements SplSubject {
             header($response->getStatus()->getDefault());
         else if ($response->getStatus() == StatusCode::OK())
             header($response->getStatus()->getDefault());
-        else http_response_code($response->getStatus()->getValue());
+        
+        http_response_code($response->getStatus()->getValue());
 
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val");
@@ -176,26 +175,6 @@ class Client implements SplSubject {
     }
 
     /**
-     * serve file
-     *
-     * @param string $srcfile
-     * @return void
-     */
-    protected function serveFile(Response $response): void {
-        $file = $response->getFileInfo();
-        $byte_from = $response->getDownloadFrom();
-
-        $fp = fopen($file->getPathname(), "r"); // open file
-        fseek($fp, $byte_from); // seek to start byte
-        $this->_progress = $byte_from;
-
-        if ($response->isThrottled()) $this->sendBuffer($response, $fp);
-        else $this->sendResponse($response->setBody(fread($fp, $response->getHeader('Content-Length'))));
-
-        fclose($fp);
-    }
-
-    /**
      * send response
      *
      * @param Response $response
@@ -206,7 +185,34 @@ class Client implements SplSubject {
         echo $response->getBody();
     }
 
-    protected function sendBuffer($response, $fp) {
+    /**
+     * serve file
+     *
+     * @param string $srcfile
+     * @return void
+     */
+    protected function serveFile(Response $response): void {
+        $file = $response->getFileInfo();
+        $byte_from = $response->getDownloadFrom();
+
+        $fp = fopen($file->getPathname(), 'r'); // open file
+        fseek($fp, $byte_from); // seek to start byte
+        $this->_progress = $byte_from;
+
+        if ($response->isThrottled()) $this->sendBuffer($response, $fp);
+        else $this->sendResponse($response->setBody(fread($fp, $response->getHeader('Content-Length'))));
+
+        fclose($fp);
+    }
+
+    /**
+     * send chunk to client
+     * 
+     * @param Response $response 
+     * @param resource $fp 
+     * @return void 
+     */
+    protected function sendBuffer(Response $response, $fp) {
         if (ob_get_level() == 0) ob_start();
         $this->sendHeaders($response);
         $sleep = $response->getSleep();

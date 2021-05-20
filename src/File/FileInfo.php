@@ -100,12 +100,14 @@ class FileInfo extends SplFileInfo {
     /**
      * Return the mime type
      *
-     * @return string|bool
+     * @param string|null $default if not matched
+     * 
+     * @return null|string
      */
-    public function getMimetype(): string|bool {
+    public function getMimetype(?string $default = null): ?string {
         $mimes = unserialize(file_get_contents(__DIR__.'/../../mimeic.blast'));
-        return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase())] ?? false;
-        return (new finfo())->file(parent::getPathname(), FILEINFO_MIME_TYPE);
+        return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase())] ?? $default;
+        // return (new finfo())->file(parent::getPathname(), FILEINFO_MIME_TYPE);
     }
 
     /**

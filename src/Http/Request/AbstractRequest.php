@@ -91,8 +91,9 @@ abstract class AbstractRequest implements IRequest {
      * @param bool $allowAllProperties 
      * @return void 
      */
-    function __construct(bool $allowAllProperties = true) {
+    public function __construct(bool $allowAllProperties = true, ?Response $response = null) {
         $this->_allowAllProperties = ($allowAllProperties === true);
+        if (!is_null($response)) $this->response = $response;
         $this->bootstrapSelf();
     }
 
@@ -147,7 +148,7 @@ abstract class AbstractRequest implements IRequest {
     }
 
     public function getResponse(?string $body = null, $status = 200) {
-        if (!$this->response) {
+        if (!isset($this->response)) {
             $this->response = $body == null ? new Response() : new Response($body, $status, ['Content-Type' => $this->getAccept()]);
             $this->response->setRequest($this);
         }

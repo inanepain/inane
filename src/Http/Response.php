@@ -9,6 +9,7 @@
 namespace Inane\Http;
 
 use Inane\Config\Options;
+use Inane\Debug\Writer;
 use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
 use Inane\File\FileInfo;
@@ -30,22 +31,47 @@ use function json_encode;
  * @package Http
  */
 class Response {
-    protected $headers = [];
-    protected $body;
+    public static int $rm = 4;
+
+    /**
+     * response headers
+     */
+    protected array $headers = [];
+
+    /**
+     * response body
+     */
+    protected string $body;
 
     /**
      * Http Status
-     * 
-     * @var StatusCode
      */
     protected StatusCode $status;
 
     /**
      * request
-     * 
-     * @var Request
      */
     protected Request $request;
+
+    /**
+     * sleep: bandwith delay
+     */
+    protected int $_sleep = 0;
+
+    /**
+     * Size of download
+     */
+    protected int $_downloadSize = 0;
+
+    /**
+     * Start serving file from
+     */
+    protected int $_downloadStart = 0;
+
+    /**
+     * File to serve
+     */
+    private FileInfo $_file;
 
     /**
      * set: request
@@ -64,10 +90,22 @@ class Response {
      * @return Request request
      */
     public function getRequest(): Request {
-        if (!isset($this->request)) $this->request = new Request();
+        if (!isset($this->request)) $this->request = new Request(true, $this);
         return $this->request;
     }
 
+    /**
+     * Response
+     * 
+     * @param string $body 
+     * @param int|StatusCode $status 
+     * @param array $headers headers
+     * 
+     * @return void 
+     * 
+     * @throws UnexpectedValueException 
+     * @throws BadMethodCallException 
+     */
     public function __construct(string $body = '', int|StatusCode $status = 200, array $headers = []) {
         $this->body = $body;
         $this->headers = $headers;
@@ -75,13 +113,27 @@ class Response {
         $this->setStatus($status);
     }
 
-    public static function fromArray(array $array) {
-        $config = new Options($array);
-        $response = new self($config->get('body', ''), $config->get('status', 200), $config->get('headers', []));
-        if ($config->offsetExists('request')) $response->setRequest($config->get('request'));
+    /**
+     * Create response from array
+     *
+     * @param array $array
+     * @return Response
+     */
+    public static function fromArray(array $array): Response {
+        $opt = new Options($array);
+        $response = new self($opt->get('body', ''), $opt->get('status', 200), $opt->get('headers', []));
+        if ($opt->offsetExists('request')) $response->setRequest($opt->get('request'));
+        return $response;
     }
 
-    protected function arrayToXml($data, &$xml_data) {
+    /**
+     * array to xml
+     *
+     * @param array $data
+     * @param SimpleXMLElement $xml_data
+     * @return void
+     */
+    protected function arrayToXml($data, SimpleXMLElement &$xml_data) {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 if (is_numeric($key)) {
@@ -95,7 +147,15 @@ class Response {
         }
     }
 
-    public function addHeader($name, $value, bool $replace = true): self {
+    /**
+     * add header
+     * 
+     * @param string $name 
+     * @param mixed $value 
+     * @param bool $replace 
+     * @return Response 
+     */
+    public function addHeader(string $name, mixed $value, bool $replace = true): self {
         if ($replace == false && array_key_exists($name, $this->getHeaders())) return $this;
         $this->headers[$name] = $value;
         return $this;
@@ -126,6 +186,7 @@ class Response {
 
     /**
      * set: status code
+     * 
      * @param mixed $statusCode 
      * @return self 
      * @throws UnexpectedValueException 
@@ -145,24 +206,45 @@ class Response {
         return $this->getStatus()->getValue();
     }
 
-    public function getHeaders() {
+    /**
+     * get headers
+     * 
+     * @return array headers
+     */
+    public function getHeaders(): array {
         return $this->headers;
     }
 
-    public function getHeader($name, $default = null) {
+    /**
+     * get header
+     *
+     * @param string $name
+     * @param null|int|string $default
+     * @return null|int|string|array
+     */
+    public function getHeader(string $name, null|int|string|array $default = null): null|int|string|array {
         if (array_key_exists($name, $this->getHeaders())) return $this->getHeaders()[$name];
         return $default;
     }
 
-    public function setBody($body): self {
+    /**
+     * set body
+     *
+     * @param string $body
+     * @return self
+     */
+    public function setBody(string $body): self {
         $this->body = $body;
         return $this;
     }
 
-    public function getBody() {
+    /**
+     * get body
+     * 
+     * @return string body
+     */
+    public function getBody(): string {
         $body = $this->body;
-
-        // if (is_string($body)) return $body;
         if (in_array($this->getHeader('Content-Type'), ['application/json', '*/*'])) {
             return json_encode($body);
         } else if (in_array($this->getHeader('Content-Type'), ['application/xml'])) {
@@ -175,30 +257,90 @@ class Response {
         // return json_encode($body);
     }
 
-    public function isDownload():bool {
+    /**
+     * download response
+     *
+     * @return bool
+     */
+    public function isDownload(): bool {
         return isset($this->_file);
     }
 
-    public function isForceDownload():bool {
+    /**
+     * force download
+     *
+     * @return bool
+     */
+    public function isForceDownload(): bool {
         return $this->getHeader('Content-Description') == 'File Transfer' ? true : false;
     }
 
-    public function isThrottled():bool {
+    /**
+     * throttled download
+     *
+     * @return bool
+     */
+    public function isThrottled(): bool {
         return $this->_sleep > 0 ? true : false;
     }
 
-    private FileInfo $_file;
-
+    /**
+     * file info
+     *
+     * @return FileInfo
+     */
     public function getFileInfo(): FileInfo {
         return $this->_file;
     }
 
+    /**
+     * download start position
+     *
+     * @return int
+     */
     public function getDownloadFrom(): int {
-        return $this->_byte_from;
+        return $this->_downloadStart;
     }
 
+    /**
+     * sleep between buffers
+     *
+     * @return int
+     */
     public function getSleep(): int {
         return $this->_sleep;
+    }
+
+    /**
+     * Sets download limit 0 = unlimited
+     *
+     * This is a rough kb/s speed. But very rough
+     *
+     * @param  $kbSec
+     * @return Response
+     */
+    protected function setBandwidth(int $kbSec = 0): self {
+        if (static::$rm > 0) $kbSec = $kbSec / static::$rm;
+        $this->_sleep = $kbSec * 4.3;
+        if ($this->_sleep > 0)
+            $this->_sleep = (8 / $this->_sleep) * 1e6;
+
+        return $this;
+    }
+
+    /**
+     * gets download limit 0 = unlimited
+     *
+     * This is a rough kb/s speed. But very rough
+     *
+     * @return int kbSec
+     */
+    public function getBandwidth(?int $sleep = null): int {
+        if (is_null($sleep)) $sleep = $this->getSleep();
+        if ($sleep > 0)
+            $sleep = (8 / ($sleep / 1e6)) / 4.3;
+        if (static::$rm > 0) $sleep = $sleep * static::$rm;
+        return $sleep;
     }
 
     /**
@@ -227,9 +369,8 @@ class Response {
 
         $this->setStatus(StatusCode::OK());
         $fileSize = $this->_file->getSize();
-        $this->_download_size = $fileSize;
-        $this->_byte_from = 0; // no range, download from 0
-        $this->_byte_to = $fileSize - 1;
+        $this->_downloadSize = $fileSize;
+        $this->_downloadStart = 0; // no range, download from 0
 
         if ($this->getRequest()->range != null) $this->updateRange();
         $this->updateFileHeders();
@@ -240,85 +381,46 @@ class Response {
     }
 
     /**
-     * sleep: bandwith delay
+     * update headers for file downloads
      *
-     * @var int
+     * @return void
      */
-    protected $_sleep = 0;
-    /**
-     * File size to download
-     *
-     * @var int
-     */
-    protected $_download_size = 0;
-    /**
-     * Download start
-     *
-     * @var int
-     */
-    protected $_byte_from = 0;
-
-    /**
-     * Sets download limit 0 = unlimited
-     *
-     * This is a rough kb/s speed. But very rough
-     *
-     * @param  $kbSec
-     * @return Response
-     */
-    protected function setBandwidth(int $kbSec = 0): self {
-        $this->_sleep = $kbSec * 4.3;
-        if ($this->_sleep > 0)
-            $this->_sleep = (8 / $this->_sleep) * 1e6;
-
-        return $this;
-    }
-
-    /**
-     * gets download limit 0 = unlimited
-     *
-     * This is a rough kb/s speed. But very rough
-     *
-     * @return int kbSec
-     */
-    public function getBandwidth(?int $sleep = null): int {
-        if (is_null($sleep)) $sleep = $this->getSleep();
-        if ($sleep > 0)
-            $sleep = (8 / ($sleep / 1e6)) / 4.3;
-        return $sleep;
-    }
-
     protected function updateFileHeders() {
         $this->addHeader('Accept-Ranges', 'bytes');
-        $this->addHeader('Content-type', $this->_file->getMimetype());
+        $this->addHeader('Content-type', $this->_file->getMimetype() ?? 'application/octet-stream');
         $this->addHeader("Pragma", "no-cache");
         $this->addHeader('Cache-Control', 'public, must-revalidate, max-age=0');
-        $this->addHeader("Content-Length", $this->_download_size);
+        $this->addHeader("Content-Length", $this->_downloadSize);
     }
 
+    /**
+     * update range headers for downloads
+     *
+     * @return void
+     */
     protected function updateRange() {
-        $this->setStatus(StatusCode::PARTIAL_CONTENT());
-
-        [
-            'unit' => $unit,
-            'range' => $range
-        ] = explode('=', $this->getRequest()->range);
-
-        $ranges = explode(',', $range);
+        $req = explode('=', $this->getRequest()->range);
+        $ranges = explode(',', $req[1]);
         $ranges = explode('-', $ranges[0]);
 
         $fileSize = $this->_file->getSize();
 
-        $byte_from = (int) $ranges[0];
-        $byte_to = (int) ($ranges[1] == '' ? $fileSize - 1 : $ranges[1]);
+        $start = (int) $ranges[0];
+        $stop = (int) ($ranges[1] == '' ? $fileSize - 1 : $ranges[1]);
 
-        $this->_download_size = $byte_to - $byte_from + 1; // the download length
-        $this->_byte_from = $byte_from;
+        $this->_downloadSize = $stop - $start + 1; // the download length
+        $this->_downloadStart = $start;
+        $downloadRange = "bytes {$start}-{$stop}/{$fileSize}";
 
-        $download_range = 'bytes ' . $byte_from . "-" . $byte_to . "/" . $fileSize; // the download range
-        $this->addHeader('Content-Range', $download_range);
+        $this->setStatus(StatusCode::PARTIAL_CONTENT());
+        $this->addHeader('Content-Range', $downloadRange);
     }
 
+    /**
+     * update headers for forced downloads
+     *
+     * @return void
+     */
     protected function forceDownload() {
         $this->addHeader("Content-Description", 'File Transfer');
         $this->addHeader('Content-Disposition', 'attachment; filename="' . $this->_file->getFilename() . '";');
