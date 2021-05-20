@@ -39,7 +39,7 @@ use function reset;
  * to facilitate easy access to the data.
  * 
  * @package Inane\Config
- * @version 0.8.1
+ * @version 0.8.2
  */
 class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable {
 
@@ -80,8 +80,8 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
         if ($this->allowModifications) {
             if (is_array($value)) $value = new static($value);
 
-            if (null === $key) $this->data[] = $value;
-            else $this->data[$key] = $value;
+            if (null === $key) $this->_data[] = $value;
+            else $this->_data[$key] = $value;
         } else {
             throw new RuntimeException('Option is read only');
         }
@@ -336,7 +336,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
         $this->allowModifications = false;
 
         /** @var Options $value */
-        foreach ($this->data as $value) if ($value instanceof self) $value->lock();
+        foreach ($this->_data as $value) if ($value instanceof self) $value->lock();
 
         return $this;
     }
