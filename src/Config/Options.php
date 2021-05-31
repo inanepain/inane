@@ -17,6 +17,7 @@ use Countable;
 use Inane\Exception\InvalidArgumentException;
 use Inane\Exception\RuntimeException;
 use Iterator;
+use Psr\Container\ContainerInterface;
 
 use function array_pop;
 use function count;
@@ -39,9 +40,9 @@ use function reset;
  * to facilitate easy access to the data.
  * 
  * @package Inane\Config
- * @version 0.8.2
+ * @version 0.9.0
  */
-class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable {
+class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable, ContainerInterface {
 
     /**
      * Variables
@@ -74,7 +75,10 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
      * 
      * @param string The data key to assign the value to
      * @param mixed  The value to set
-     * @access public 
+     * 
+     * @return void 
+     * 
+     * @throws RuntimeException 
      */
     public function __set($key, $value) {
         if ($this->allowModifications) {
@@ -188,6 +192,21 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
     }
 
     /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @return bool
+     */
+    public function has(string $id):bool {
+        return $this->__isset($id);
+    }
+
+    /**
      * get offset
      * @param string $offset offset
      * @return mixed|Options value
@@ -209,9 +228,13 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
 
     /**
      * set offset
+     * 
      * @param string $offset offset
      * @param mixed $value value
+     * 
      * @return void 
+     * 
+     * @throws RuntimeException 
      */
     public function offsetSet($offset, $value) {
         $this->__set($offset, $value);
@@ -219,9 +242,13 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable 
 
     /**
      * set key
-     * @param string $key key
+     * 
+     * @param mixed $key key
      * @param mixed $value value
-     * @return void 
+     * 
+     * @return Options 
+     * 
+     * @throws RuntimeException 
      */
     public function set($key, $value): Options {
         $this->offsetSet($key, $value);

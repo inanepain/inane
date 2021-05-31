@@ -22,7 +22,6 @@ namespace Inane\File;
 use Inane\String\Capitalisation;
 
 use SplFileInfo;
-use finfo;
 
 use function array_pop;
 use function file_exists;
@@ -36,8 +35,6 @@ use function sprintf;
 use function strtolower;
 use function strtoupper;
 use function unserialize;
-
-use const FILEINFO_MIME_TYPE;
 
 /**
  * File metadata

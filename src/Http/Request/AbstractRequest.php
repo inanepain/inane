@@ -10,6 +10,9 @@ namespace Inane\Http\Request;
 use Inane\Http\Exception\PropertyException;
 use Inane\Http\Response;
 use Inane\Config\Options;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\StreamInterface;
 
 use function array_keys;
 use function strtolower;
@@ -29,7 +32,7 @@ use function str_starts_with;
  * 
  * @package Http
  */
-abstract class AbstractRequest implements IRequest {
+abstract class AbstractRequest implements IRequest, RequestInterface {
     public const METHOD_COPY = 'COPY';
     public const METHOD_DELETE = 'DELETE';
     public const METHOD_GET = 'GET';
@@ -67,6 +70,44 @@ abstract class AbstractRequest implements IRequest {
      * @var Response
      */
     private $response;
+
+
+
+
+    public function getRequestTarget() { }
+
+    public function withRequestTarget($requestTarget) { }
+
+    public function getMethod() { }
+
+    public function withMethod($method) { }
+
+    public function getUri() { }
+
+    public function withUri(UriInterface $uri, $preserveHost = false) { }
+
+    public function getProtocolVersion() { }
+
+    public function withProtocolVersion($version) { }
+
+    public function getHeaders() { }
+
+    public function hasHeader($name) { }
+
+    public function getHeader($name) { }
+
+    public function getHeaderLine($name) { }
+
+    public function withHeader($name, $value) { }
+
+    public function withAddedHeader($name, $value) { }
+
+    public function withoutHeader($name) { }
+
+    public function withBody(StreamInterface $body) { }
+
+
+    
 
     /**
      * magic method: __get

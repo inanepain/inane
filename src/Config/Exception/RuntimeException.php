@@ -17,7 +17,7 @@
 namespace Inane\Config\Exception;
 
 use Inane\Exception\ExceptionInterface;
-use Inane\Exception\RuntimeException as ExceptionRuntimeException;
+use Inane\Exception\RuntimeException as BaseRuntimeException;
 
 /**
  * Exception thrown if an error which can only be found on runtime occurs.
@@ -26,4 +26,4 @@ use Inane\Exception\RuntimeException as ExceptionRuntimeException;
  * @implements \Inane\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class RuntimeException extends ExceptionRuntimeException implements ExceptionInterface {}
+class RuntimeException extends BaseRuntimeException implements ExceptionInterface {}

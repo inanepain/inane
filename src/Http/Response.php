@@ -14,6 +14,8 @@ use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
 use Inane\File\FileInfo;
 use Inane\Http\Request\IRequest;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use SimpleXMLElement;
 
 use function array_key_exists;
@@ -30,7 +32,7 @@ use function json_encode;
  * 
  * @package Http
  */
-class Response {
+class Response implements ResponseInterface {
     public static int $rm = 4;
 
     /**
@@ -72,6 +74,35 @@ class Response {
      * File to serve
      */
     private FileInfo $_file;
+
+
+
+
+    public function getHeader($name) { }
+
+    public function withStatus($code, $reasonPhrase = '') { }
+
+    public function getReasonPhrase() { }
+
+    public function getProtocolVersion() { }
+
+    public function withProtocolVersion($version) { }
+
+    public function hasHeader($name) { }
+
+    public function getHeaderLine($name) { }
+
+    public function withHeader($name, $value) { }
+
+    public function withAddedHeader($name, $value) { }
+
+    public function withoutHeader($name) { }
+
+    public function withBody(StreamInterface $body) { }
+
+
+
+    
 
     /**
      * set: request
@@ -222,10 +253,10 @@ class Response {
      * @param null|int|string $default
      * @return null|int|string|array
      */
-    public function getHeader(string $name, null|int|string|array $default = null): null|int|string|array {
-        if (array_key_exists($name, $this->getHeaders())) return $this->getHeaders()[$name];
-        return $default;
-    }
+    // public function getHeader(string $name, null|int|string|array $default = null): null|int|string|array {
+    //     if (array_key_exists($name, $this->getHeaders())) return $this->getHeaders()[$name];
+    //     return $default;
+    // }
 
     /**
      * set body

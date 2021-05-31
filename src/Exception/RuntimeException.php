@@ -16,6 +16,8 @@
 
 namespace Inane\Exception;
 
+use RuntimeException as BaseRuntimeException;
+
 /**
  * Exception thrown if an error which can only be found on runtime occurs.
  *
@@ -23,4 +25,6 @@ namespace Inane\Exception;
  * @implements \Inane\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class RuntimeException extends \RuntimeException implements ExceptionInterface {}
+class RuntimeException extends BaseRuntimeException implements ExceptionInterface {
+    protected $code = 750;
+}

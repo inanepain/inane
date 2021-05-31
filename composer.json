@@ -29,6 +29,8 @@
 	},
 	"require": {
 		"php": ">=7.5",
+        "psr/container": "^1.0",
+        "psr/http-message": "^1.0",
 		"laminas/laminas-http": "^2.8"
 	},
 	"autoload": {

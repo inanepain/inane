@@ -24,6 +24,6 @@ use Attribute;
  * @package Inane\Helpers
  * @version 1.0.0
  */
-#[Attribute (Attribute::TARGET_PROPERTY)]
+#[Attribute (Attribute::TARGET_METHOD)]
 class OptionsAwareAttribute {
 }
