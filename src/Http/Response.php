@@ -108,7 +108,7 @@ class Response extends Message implements ResponseInterface {
     /**
      * Response
      * 
-     * @param string $body 
+     * @param string|resource|StreamInterface|null $body    Request body
      * @param int|StatusCode $status 
      * @param array $headers headers
      * 
@@ -117,8 +117,12 @@ class Response extends Message implements ResponseInterface {
      * @throws UnexpectedValueException 
      * @throws BadMethodCallException 
      */
-    public function __construct(string $body = '', int|StatusCode $status = 200, array $headers = []) {
-        $this->body = $body;
+    public function __construct($body = null, int|StatusCode $status = 200, array $headers = []) {
+        // $this->body = $body;
+        if (!is_null($body)) {
+            if (!($body instanceof StreamInterface)) $body = new Stream($body);
+            $this->stream = $body;
+        }
         $this->setHeaders($headers);
         // $this->headers = $headers;
 
@@ -272,19 +276,19 @@ class Response extends Message implements ResponseInterface {
      * 
      * @return string body
      */
-    // public function getBody(): string {
-    //     $body = $this->body;
-    //     if (in_array($this->getHeader('Content-Type'), ['application/json', '*/*'])) {
-    //         return json_encode($body);
-    //     } else if (in_array($this->getHeader('Content-Type'), ['application/xml'])) {
-    //         $xml = new SimpleXMLElement('<root/>');
-    //         $this->arrayToXml($body, $xml);
-    //         return $xml->asXML();
-    //     }
+    public function getContents(): string {
+        $body = $this->stream->getContents();
+        if (in_array($this->getHeader('Content-Type'), ['application/json', '*/*'])) {
+            return json_encode($body);
+        } else if (in_array($this->getHeader('Content-Type'), ['application/xml'])) {
+            $xml = new SimpleXMLElement('<root/>');
+            $this->arrayToXml($body, $xml);
+            return $xml->asXML();
+        }
 
-    //     return $body;
-    //     // return json_encode($body);
-    // }
+        return $body;
+        // return json_encode($body);
+    }
 
     /**
      * download response

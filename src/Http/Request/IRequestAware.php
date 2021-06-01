@@ -1,6 +1,8 @@
 <?php
 namespace Inane\Http\Request;
 
+use Psr\Http\Message\RequestInterface;
+
 /**
  * IRequestAware
  * 
@@ -12,8 +14,8 @@ interface IRequestAware {
     /**
      * set: request
      * 
-     * @param IRequest $request request
+     * @param RequestInterface $request request
      * @return mixed 
      */
-    public function setRequest(IRequest $request);
+    public function setRequest(RequestInterface $request);
 }
