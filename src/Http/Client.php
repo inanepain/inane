@@ -151,7 +151,7 @@ class Client implements SplSubject {
             header($response->getStatus()->getDefault());
         else if ($response->getStatus() == StatusCode::OK())
             header($response->getStatus()->getDefault());
-        
+
         http_response_code($response->getStatus()->getValue());
 
         foreach ($response->getHeaders() as $header => $value) {
@@ -193,14 +193,17 @@ class Client implements SplSubject {
      */
     protected function serveFile(Response $response): void {
         $file = $response->getFileInfo();
+        // Writer::echo()->dump($file, 'file', true);
         $byte_from = $response->getDownloadFrom();
-
+        // Writer::echo()->dump($byte_from, 'byte_from', true);
+        $byte_to = (int)$response->getHeaderLine('Content-Length');
+        // Writer::echo()->dump($byte_to, 'byte_to', true);
         $fp = fopen($file->getPathname(), 'r'); // open file
         fseek($fp, $byte_from); // seek to start byte
         $this->_progress = $byte_from;
 
         if ($response->isThrottled()) $this->sendBuffer($response, $fp);
-        else $this->sendResponse($response->setBody(fread($fp, $response->getHeader('Content-Length'))));
+        else $this->sendResponse($response->setBody(fread($fp, $byte_to)));
 
         fclose($fp);
     }
@@ -217,7 +220,7 @@ class Client implements SplSubject {
         $this->sendHeaders($response);
         $sleep = $response->getSleep();
         $buffer_size = 1024 * 8; // 8kb
-        $download_size = $response->getHeader('Content-Length');
+        $download_size = (int)$response->getHeaderLine('Content-Length');
 
         while (!feof($fp)) { // start buffered download
             set_time_limit(0); // reset time limit for big files

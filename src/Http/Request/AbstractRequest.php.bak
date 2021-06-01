@@ -1,24 +1,39 @@
 <?php
 /**
- * Request
+ * AbstractRequest
  * 
- * PHP version 8
+ * PHP version 7.5
  */
-namespace Inane\Http;
 
+namespace Inane\Http\Request;
+
+use Inane\Http\Exception\PropertyException;
+use Inane\Http\Response;
 use Inane\Config\Options;
-use Inane\Http\Request\AbstractRequest;
-use PropertyException;
+use Inane\Http\AbstractMessage;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\StreamInterface;
+
+use function array_keys;
+use function strtolower;
+use function preg_match_all;
+use function str_replace;
+use function strtoupper;
+use function filter_input;
+use function is_null;
+use function in_array;
+use function http_build_query;
+use function str_starts_with;
 
 /**
- * Request
+ * AbstractRequest
  * 
- * @covers fqcn
- * @version 0.5.0
+ * @version 0.8.0
  * 
  * @package Http
  */
-class Request extends AbstractRequest {
+abstract class AbstractRequest extends AbstractMessage implements IRequest, RequestInterface {
     public const METHOD_COPY = 'COPY';
     public const METHOD_DELETE = 'DELETE';
     public const METHOD_GET = 'GET';
@@ -59,6 +74,18 @@ class Request extends AbstractRequest {
 
 
 
+
+    public function getRequestTarget() { }
+
+    public function withRequestTarget($requestTarget) { }
+
+    public function getMethod() { }
+
+    public function withMethod($method) { }
+
+    public function getUri() { }
+
+    public function withUri(UriInterface $uri, $preserveHost = false) { }
 
 
 

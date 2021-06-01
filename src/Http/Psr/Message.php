@@ -5,28 +5,50 @@
  * 
  * PHP version 8
  */
+
 declare(strict_types=1);
 
-namespace Inane\Http;
+namespace Inane\Http\Psr;
 
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
+use Inane\Http\Exception\InvalidArgumentException;
+
+use function array_merge;
+use function implode;
+use function is_int;
+use function strtolower;
 
 /**
  * AbstractMessage
  * 
- * @covers fqcn
- * @version 0.5.0
+ * @version 0.6.0
  * 
  * @package Http
  */
-abstract class AbstractMessage implements MessageInterface {
+class Message implements MessageInterface {
+    /**#@+
+     * @const string Version constant numbers
+     */
+    const VERSION_10 = '1.0';
+    const VERSION_11 = '1.1';
+    const VERSION_2  = '2';
+    /**#@-*/
 
     /**
      * message headers
      * @var string[][]
      */
     protected array $headers = [];
+
+    /** @var array<string, string> Map of lowercase header name => original name at registration */
+    protected array $headerNames  = [];
+
+    /** @var string */
+    protected string $protocol = self::VERSION_11;
+
+    /** @var StreamInterface|null */
+    protected StreamInterface $stream;
 
     /**
      * Retrieves the HTTP protocol version as a string.
@@ -35,7 +57,8 @@ abstract class AbstractMessage implements MessageInterface {
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion() {
+    public function getProtocolVersion(): string {
+        return $this->protocol;
     }
 
     /**
@@ -51,7 +74,12 @@ abstract class AbstractMessage implements MessageInterface {
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version) {
+    public function withProtocolVersion($version): MessageInterface {
+        if ($this->protocol === $version) return $this;
+
+        $new = clone $this;
+        $new->protocol = $version;
+        return $new;
     }
 
     /**
@@ -81,7 +109,8 @@ abstract class AbstractMessage implements MessageInterface {
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders() {
+    public function getHeaders(): array {
+        return $this->headers;
     }
 
     /**
@@ -92,7 +121,8 @@ abstract class AbstractMessage implements MessageInterface {
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name) {
+    public function hasHeader($name): bool {
+        return isset($this->headerNames[strtolower($name)]);
     }
 
     /**
@@ -109,7 +139,14 @@ abstract class AbstractMessage implements MessageInterface {
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name) {
+    public function getHeader($name): array {
+        $header = strtolower($name);
+
+        if (!isset($this->headerNames[$header])) return [];
+
+        $header = $this->headerNames[$header];
+
+        return $this->headers[$header];
     }
 
     /**
@@ -131,7 +168,8 @@ abstract class AbstractMessage implements MessageInterface {
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name) {
+    public function getHeaderLine($name): string {
+        return implode(', ', $this->getHeader($name));
     }
 
     /**
@@ -147,9 +185,21 @@ abstract class AbstractMessage implements MessageInterface {
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value) {
+    public function withHeader($name, $value): MessageInterface {
+        // $this->assertHeader($name);
+        // $value = $this->normalizeHeaderValue($value);
+        $normalized = strtolower($name);
+
+        $new = clone $this;
+        if (isset($new->headerNames[$normalized])) {
+            unset($new->headers[$new->headerNames[$normalized]]);
+        }
+        $new->headerNames[$normalized] = $name;
+        $new->headers[$name] = $value;
+
+        return $new;
     }
 
     /**
@@ -166,9 +216,23 @@ abstract class AbstractMessage implements MessageInterface {
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value) {
+    public function withAddedHeader($name, $value): MessageInterface {
+        // $this->assertHeader($name);
+        // $value = $this->normalizeHeaderValue($value);
+        $normalized = strtolower($name);
+
+        $new = clone $this;
+        if (isset($new->headerNames[$normalized])) {
+            $name = $this->headerNames[$normalized];
+            $new->headers[$name] = array_merge($this->headers[$name], $value);
+        } else {
+            $new->headerNames[$normalized] = $name;
+            $new->headers[$name] = $value;
+        }
+
+        return $new;
     }
 
     /**
@@ -183,7 +247,17 @@ abstract class AbstractMessage implements MessageInterface {
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader($name) {
+    public function withoutHeader($name): MessageInterface {
+        $normalized = strtolower($name);
+
+        if (!isset($this->headerNames[$normalized])) return $this;
+
+        $name = $this->headerNames[$normalized];
+
+        $new = clone $this;
+        unset($new->headers[$name], $new->headerNames[$normalized]);
+
+        return $new;
     }
 
     /**
@@ -191,7 +265,10 @@ abstract class AbstractMessage implements MessageInterface {
      *
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody() {
+    public function getBody(): StreamInterface {
+        if (!isset($this->stream)) $this->stream = new Stream();
+
+        return $this->stream;
     }
 
     /**
@@ -205,8 +282,37 @@ abstract class AbstractMessage implements MessageInterface {
      *
      * @param StreamInterface $body Body.
      * @return static
-     * @throws \InvalidArgumentException When the body is not valid.
+     * @throws InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body) {
+    public function withBody(StreamInterface $body): MessageInterface {
+        if ($body === $this->getBody()) return $this;
+
+        $new = clone $this;
+        $new->stream = $body;
+        return $new;
+    }
+
+    /**
+     * @param array<string|int, string|string[]> $headers
+     */
+    protected function setHeaders(array $headers): void {
+        $this->headerNames = $this->headers = [];
+        foreach ($headers as $name => $value) {
+            if (is_int($name)) {
+                // Numeric array keys are converted to int by PHP but having a header name '123' is not forbidden by the spec
+                // and also allowed in withHeader(). So we need to cast it to string again for the following assertion to pass.
+                $name = (string) $name;
+            }
+            // $this->assertHeader($header);
+            // $value = $this->normalizeHeaderValue($value);
+            $normalized = strtolower($name);
+            if (isset($this->headerNames[$normalized])) {
+                $name = $this->headerNames[$normalized];
+                $this->headers[$name] = array_merge($this->headers[$name], $value);
+            } else {
+                $this->headerNames[$normalized] = $name;
+                $this->headers[$name] = $value;
+            }
+        }
     }
 }

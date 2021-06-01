@@ -1,245 +1,294 @@
 <?php
+
 /**
- * AbstractRequest
+ * Request
  * 
- * PHP version 7.5
+ * PHP version 8
+ * 
+ * @author Philip Michael Raab <peep@inane.co.za>
  */
+
+declare(strict_types=1);
 
 namespace Inane\Http\Request;
 
-use Inane\Http\Exception\PropertyException;
-use Inane\Http\Response;
-use Inane\Config\Options;
+use Inane\Exception\UnexpectedValueException;
+use Inane\Exception\BadMethodCallException;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+use Inane\Http\Exception\InvalidArgumentException;
+use Inane\Http\Message;
+use Inane\Http\Method;
+use Inane\Http\Stream;
+use Inane\Http\Uri;
 
-use function array_keys;
-use function strtolower;
-use function preg_match_all;
-use function str_replace;
-use function strtoupper;
-use function filter_input;
 use function is_null;
-use function in_array;
-use function http_build_query;
-use function str_starts_with;
+use function preg_match;
+use function strtoupper;
 
 /**
- * AbstractRequest
+ * Request
  * 
- * @version 0.8.0
+ * @version 0.5.0
  * 
  * @package Http
  */
-abstract class AbstractRequest implements IRequest, RequestInterface {
-    public const METHOD_COPY = 'COPY';
-    public const METHOD_DELETE = 'DELETE';
-    public const METHOD_GET = 'GET';
-    public const METHOD_LINK = 'LINK';
-    public const METHOD_LOCK = 'LOCK';
-    public const METHOD_OPTIONS = 'OPTIONS';
-    public const METHOD_PATCH = 'PATCH';
-    public const METHOD_POST = 'POST';
-    public const METHOD_PROPFIND = 'PROPFIND';
-    public const METHOD_PURGE = 'PURGE';
-    public const METHOD_PUT = 'PUT';
-    public const METHOD_UNLINK = 'UNLINK';
-    public const METHOD_UNLOCK = 'UNLOCK';
-    public const METHOD_VIEW = 'VIEW';
-
-    protected $_allowAllProperties = true;
+class AbstractRequest extends Message implements RequestInterface {
+    /**
+     * Method
+     */
+    private Method $method;
 
     /**
-     * properties
+     * target
+     */
+    private ?string $requestTarget;
+
+    /**
+     * uri
+     */
+    private UriInterface $uri;
+
+    /**
+     * Request
      * 
-     * @var Options
+     * @param null|string|Method                        $method  HTTP method
+     * @param null|string|UriInterface             $uri     URI
+     * @param array<string, string|string[]>       $headers Request headers
+     * @param string|resource|StreamInterface|null $body    Request body
+     * @param string|null                          $version Protocol version
      */
-    private $_properties = [];
+    public function __construct(
+        null|string|Method $method = null,
+        null|string|UriInterface $uri = null,
+        array $headers = [],
+        $body = null,
+        ?string $version = null
+    ) {
+        $this->setMethod($method);
+        $this->setUri($uri);
 
-    protected $_magic_properties_allowed = ['method'];
+        if (count($headers) > 0) $this->setHeaders($headers);
+        if (!is_null($version)) $this->protocol = $version;
 
-    /**
-     * strings to remove from property names
-     */
-    static array $_propertyClean = ['request_', 'http_'];
+        if (!is_null($uri) && count($headers) > 0 && !isset($this->headerNames['host'])) $this->updateHostFromUri();
 
-    /**
-     * Response
-     * 
-     * @var Response
-     */
-    private $response;
-
-
-
-
-    public function getRequestTarget() { }
-
-    public function withRequestTarget($requestTarget) { }
-
-    public function getMethod() { }
-
-    public function withMethod($method) { }
-
-    public function getUri() { }
-
-    public function withUri(UriInterface $uri, $preserveHost = false) { }
-
-    public function getProtocolVersion() { }
-
-    public function withProtocolVersion($version) { }
-
-    public function getHeaders() { }
-
-    public function hasHeader($name) { }
-
-    public function getHeader($name) { }
-
-    public function getHeaderLine($name) { }
-
-    public function withHeader($name, $value) { }
-
-    public function withAddedHeader($name, $value) { }
-
-    public function withoutHeader($name) { }
-
-    public function withBody(StreamInterface $body) { }
-
-
-    
-
-    /**
-     * magic method: __get
-     *
-     * @param string $property - propert name
-     *
-     * @return mixed the value of $property
-     *
-     * @throws PropertyException
-     */
-    public function __get(string $property) {
-        if (!$this->_allowAllProperties && !in_array($property, $this->_magic_properties_allowed)) throw new PropertyException($property, 10);
-
-        // TODO: Temp only => to upgrade implementations
-        if (str_starts_with($property, 'http')) throw new PropertyException($property, 20);
-
-        return $this->_properties->offsetGet($property, null);
+        if (!is_null($body)) {
+            if (!($body instanceof StreamInterface)) $body = new Stream($body);
+            $this->stream = $body;
+        }
     }
 
     /**
-     * Response 
-     * @param bool $allowAllProperties 
-     * @return void 
+     * setMethod
+     * 
+     * @param null|string|Method $method method
+     * 
+     * @return Request request
+     * 
+     * @throws UnexpectedValueException UnexpectedValueException
+     * @throws BadMethodCallException BadMethodCallException
      */
-    public function __construct(bool $allowAllProperties = true, ?Response $response = null) {
-        $this->_allowAllProperties = ($allowAllProperties === true);
-        if (!is_null($response)) $this->response = $response;
-        $this->bootstrapSelf();
+    protected function setMethod(null|string|Method $method = null): self {
+        if (!isset($this->method)) {
+            if (is_null($method)) $method = Method::from($_SERVER['REQUEST_METHOD']);
+            else if (!($method instanceof Method)) {
+                if (Method::isValidKey($method)) $method = Method::from(strtoupper($method));
+                else $method = Method::GET();
+            }
+            $this->method = $method;
+        }
+        return $this;
     }
 
     /**
-     * setup request
+     * setUri
+     * 
+     * @param null|string|UriInterface $uri uri
+     * 
+     * @return Request request
+     * 
+     * @throws UnexpectedValueException UnexpectedValueException
+     * @throws BadMethodCallException BadMethodCallException
+     */
+    protected function setUri(null|string|UriInterface $uri = null): self {
+        if (!isset($this->uri)) {
+            if (is_null($uri)) $uri = new Uri($_SERVER['REQUEST_URI']);
+            else if (!($uri instanceof Uri)) $uri = new Uri($uri);
+            $this->uri = $uri;
+        }
+        return $this;
+    }
+
+    /**
+     * Retrieves the message's request target.
+     *
+     * Retrieves the message's request-target either as it will appear (for
+     * clients), as it appeared at request (for servers), or as it was
+     * specified for the instance (see withRequestTarget()).
+     *
+     * In most cases, this will be the origin-form of the composed URI,
+     * unless a value was provided to the concrete implementation (see
+     * withRequestTarget() below).
+     *
+     * If no URI is available, and no request-target has been specifically
+     * provided, this method MUST return the string "/".
+     *
+     * @return string
+     */
+    public function getRequestTarget(): string {
+        if (isset($this->requestTarget) && $this->requestTarget !== null) return $this->requestTarget;
+
+        $target = $this->uri->getPath();
+        if ($target === '') $target = '/';
+        if ($this->uri->getQuery() != '') $target .= '?' . $this->uri->getQuery();
+
+        return $target;
+    }
+
+    /**
+     * Return an instance with the specific request-target.
+     *
+     * If the request needs a non-origin-form request-target — e.g., for
+     * specifying an absolute-form, authority-form, or asterisk-form —
+     * this method may be used to create an instance with the specified
+     * request-target, verbatim.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * changed request target.
+     *
+     * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
+     *     request-target forms allowed in request messages)
+     * @param mixed $requestTarget
+     * @return static
+     */
+    public function withRequestTarget($requestTarget): static {
+        if (preg_match('#\s#', $requestTarget)) {
+            throw new InvalidArgumentException(
+                'Invalid request target provided; cannot contain whitespace'
+            );
+        }
+
+        $new = clone $this;
+        $new->requestTarget = $requestTarget;
+        return $new;
+    }
+
+    /**
+     * Retrieves the HTTP method of the request.
+     *
+     * @return string Returns the request method.
+     */
+    public function getMethod(): string {
+        return $this->method->getValue();
+    }
+
+    /**
+     * Return an instance with the provided HTTP method.
+     *
+     * While HTTP method names are typically all uppercase characters, HTTP
+     * method names are case-sensitive and thus implementations SHOULD NOT
+     * modify the given string.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * changed request method.
+     *
+     * @param string $method Case-sensitive method.
+     * @return static
+     * @throws InvalidArgumentException for invalid HTTP methods.
+     */
+    public function withMethod($method): static {
+        // $this->setMethod($method);
+        $new = clone $this;
+        $new->setMethod($method);
+        return $new;
+    }
+
+    /**
+     * Retrieves the URI instance.
+     *
+     * This method MUST return a UriInterface instance.
+     *
+     * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     * @return UriInterface Returns a UriInterface instance
+     *     representing the URI of the request.
+     */
+    public function getUri(): UriInterface {
+        return $this->uri;
+    }
+
+    /**
+     * Returns an instance with the provided URI.
+     *
+     * This method MUST update the Host header of the returned request by
+     * default if the URI contains a host component. If the URI does not
+     * contain a host component, any pre-existing Host header MUST be carried
+     * over to the returned request.
+     *
+     * You can opt-in to preserving the original state of the Host header by
+     * setting `$preserveHost` to `true`. When `$preserveHost` is set to
+     * `true`, this method interacts with the Host header in the following ways:
+     *
+     * - If the Host header is missing or empty, and the new URI contains
+     *   a host component, this method MUST update the Host header in the returned
+     *   request.
+     * - If the Host header is missing or empty, and the new URI does not contain a
+     *   host component, this method MUST NOT update the Host header in the returned
+     *   request.
+     * - If a Host header is present and non-empty, this method MUST NOT update
+     *   the Host header in the returned request.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * new UriInterface instance.
+     *
+     * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     * @param UriInterface $uri New request URI to use.
+     * @param bool $preserveHost Preserve the original state of the Host header.
+     * @return static
+     */
+    public function withUri(UriInterface $uri, $preserveHost = false): static {
+        if ($uri === $this->uri) {
+            return $this;
+        }
+
+        $new = clone $this;
+        $new->uri = $uri;
+
+        if (!$preserveHost || !isset($this->headerNames['host'])) {
+            $new->updateHostFromUri();
+        }
+
+        return $new;
+    }
+
+    /**
+     * Update Host From Uri
      *
      * @return void
      */
-    private function bootstrapSelf() {
-        $data = [];
-        foreach ($_SERVER as $key => $value) $data[$this->toCamelCase($key)] = $value;
+    private function updateHostFromUri(): void {
+        $host = $this->uri->getHost();
 
-        if ($this->_allowAllProperties) $this->_magic_properties_allowed = array_keys($data);
-
-        $this->_properties = new Options($data);
-    }
-
-    private function toCamelCase($string) {
-        $result = str_replace(static::$_propertyClean, '', strtolower($string));
-
-        preg_match_all('/_[a-z]/', $result, $matches);
-        foreach ($matches[0] as $match) {
-            $c = str_replace('_', '', strtoupper($match));
-            $result = str_replace($match, $c, $result);
+        if ($host == '') {
+            return;
         }
 
-        return $result;
-    }
-
-    /**
-     * get: request => body
-     * 
-     * @return void|array body
-     */
-    public function getBody() {
-        if ($this->method === static::METHOD_GET) return;
-
-        if ($this->method == static::METHOD_POST) {
-            $body = [];
-            foreach ($_POST as $key => $value) $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-
-            return $body;
+        if (($port = $this->uri->getPort()) !== null) {
+            $host .= ':' . $port;
         }
-    }
 
-    public function getAccept() {
-        $accept = explode(',', $this->accept);
-        $type = 'text/html';
-        if (in_array('application/json', $accept) || in_array('*/*', $accept)) $type = 'application/json';
-        else if (in_array('application/xml', $accept)) $type = 'application/xml';
-        return $type;
-    }
-
-    public function getResponse(?string $body = null, $status = 200) {
-        if (!isset($this->response)) {
-            $this->response = $body == null ? new Response() : new Response($body, $status, ['Content-Type' => $this->getAccept()]);
-            $this->response->setRequest($this);
-        } else if (!is_null($body)) $this->response->setBody($body);
-        return $this->response;
-    }
-
-    protected $_post;
-    public function getPost() {
-        if (!$this->_post) $this->_post = new Options($_POST);
-        return $this->_post;
-    }
-
-    /**
-     * Query Params
-     * 
-     * @var Options
-     */
-    private $_query;
-
-    /**
-     * get: Query Params
-     * 
-     * @param null|string $param get specific param
-     * @param null|string $default 
-     * @return mixed param/params
-     */
-    public function getQuery(?string $param = null, ?string $default = null): mixed {
-        if (!$this->_query) $this->_query = new Options($_GET);
-
-        if (!is_null($param)) return $this->_query->get($param, $default);
-        return $this->_query;
-    }
-
-    /**
-     * get: query string with any modifications
-     *
-     * @return string query string
-     */
-    public function buildQuery(): string {
-        return http_build_query($this->getQuery()->toArray());
-    }
-
-    protected array $_files;
-    /**
-     * get: uploaded files, if any
-     *
-     * @return array files
-     */
-    public function getFiles(): array {
-        if (!$this->_files) $this->_files = $_FILES;
-        return $this->_files;
+        if (isset($this->headerNames['host'])) {
+            $header = $this->headerNames['host'];
+        } else {
+            $header = 'Host';
+            $this->headerNames['host'] = 'Host';
+        }
+        // Ensure Host is the first header.
+        // See: http://tools.ietf.org/html/rfc7230#section-5.4
+        $this->headers = [$header => [$host]] + $this->headers;
     }
 }

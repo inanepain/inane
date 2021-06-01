@@ -14,6 +14,7 @@ use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
 use Inane\File\FileInfo;
 use Inane\Http\Request\IRequest;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use SimpleXMLElement;
@@ -32,13 +33,13 @@ use function json_encode;
  * 
  * @package Http
  */
-class Response implements ResponseInterface {
+class Response extends Message implements ResponseInterface {
     public static int $rm = 4;
 
     /**
      * response headers
      */
-    protected array $headers = [];
+    // protected array $headers = [];
 
     /**
      * response body
@@ -75,42 +76,21 @@ class Response implements ResponseInterface {
      */
     private FileInfo $_file;
 
-
-
-
-    public function getHeader($name) { }
-
     public function withStatus($code, $reasonPhrase = '') { }
 
     public function getReasonPhrase() { }
 
-    public function getProtocolVersion() { }
-
-    public function withProtocolVersion($version) { }
-
-    public function hasHeader($name) { }
-
-    public function getHeaderLine($name) { }
-
-    public function withHeader($name, $value) { }
-
-    public function withAddedHeader($name, $value) { }
-
-    public function withoutHeader($name) { }
-
-    public function withBody(StreamInterface $body) { }
 
 
 
-    
 
     /**
      * set: request
      * 
-     * @param Request $request request
+     * @param RequestInterface $request request
      * @return Response response
      */
-    public function setRequest(IRequest $request): self {
+    public function setRequest(RequestInterface $request): self {
         if (!isset($this->request)) $this->request = $request;
         return $this;
     }
@@ -139,7 +119,8 @@ class Response implements ResponseInterface {
      */
     public function __construct(string $body = '', int|StatusCode $status = 200, array $headers = []) {
         $this->body = $body;
-        $this->headers = $headers;
+        $this->setHeaders($headers);
+        // $this->headers = $headers;
 
         $this->setStatus($status);
     }
@@ -187,8 +168,24 @@ class Response implements ResponseInterface {
      * @return Response 
      */
     public function addHeader(string $name, mixed $value, bool $replace = true): self {
-        if ($replace == false && array_key_exists($name, $this->getHeaders())) return $this;
-        $this->headers[$name] = $value;
+        $normalized = strtolower($name);
+        // if ($replace == false && array_key_exists($name, $this->getHeaders())) return $this;
+
+        
+
+        // $new = clone $this;
+        if (isset($this->headerNames[$normalized])) {
+            $name = $this->headerNames[$normalized];
+            $this->headers[$name] = array_merge($this->headers[$name], $value);
+        } else {
+            $this->headerNames[$normalized] = $name;
+            $this->headers[$name] = $value;
+        }
+
+        // return $new;
+
+
+        $this->headers[$name] = [$value];
         return $this;
     }
 
@@ -242,9 +239,9 @@ class Response implements ResponseInterface {
      * 
      * @return array headers
      */
-    public function getHeaders(): array {
-        return $this->headers;
-    }
+    // public function getHeaders(): array {
+    //     return $this->headers;
+    // }
 
     /**
      * get header
@@ -265,7 +262,8 @@ class Response implements ResponseInterface {
      * @return self
      */
     public function setBody(string $body): self {
-        $this->body = $body;
+        $this->stream = new Stream($body);
+        // $this->body = $body;
         return $this;
     }
 
@@ -274,19 +272,19 @@ class Response implements ResponseInterface {
      * 
      * @return string body
      */
-    public function getBody(): string {
-        $body = $this->body;
-        if (in_array($this->getHeader('Content-Type'), ['application/json', '*/*'])) {
-            return json_encode($body);
-        } else if (in_array($this->getHeader('Content-Type'), ['application/xml'])) {
-            $xml = new SimpleXMLElement('<root/>');
-            $this->arrayToXml($body, $xml);
-            return $xml->asXML();
-        }
+    // public function getBody(): string {
+    //     $body = $this->body;
+    //     if (in_array($this->getHeader('Content-Type'), ['application/json', '*/*'])) {
+    //         return json_encode($body);
+    //     } else if (in_array($this->getHeader('Content-Type'), ['application/xml'])) {
+    //         $xml = new SimpleXMLElement('<root/>');
+    //         $this->arrayToXml($body, $xml);
+    //         return $xml->asXML();
+    //     }
 
-        return $body;
-        // return json_encode($body);
-    }
+    //     return $body;
+    //     // return json_encode($body);
+    // }
 
     /**
      * download response
@@ -303,7 +301,7 @@ class Response implements ResponseInterface {
      * @return bool
      */
     public function isForceDownload(): bool {
-        return $this->getHeader('Content-Description') == 'File Transfer' ? true : false;
+        return $this->getHeaderLine('Content-Description') == 'File Transfer' ? true : false;
     }
 
     /**
