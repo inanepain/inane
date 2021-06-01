@@ -64,7 +64,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Unsets an data by key
+     * Unset data by key
      *
      * @param string The key to unset
      * @access public
@@ -201,18 +201,18 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
      * 1 array in = same array out
      * 0 array in = empty array out
      *
-     * @param Properties ...$modles
+     * @param Properties ...$models
      * @return Properties
      */
     public function defaults(Properties ...$models): Properties {
-        $replacable = ['', null, false];
+        $replaceable = ['', null, false];
 
         while ($model = array_pop($models)) {
             foreach ($model as $key => $value) {
                 if ($value instanceof self && isset($this[$key]) && $this[$key] instanceof self) {
                     $this[$key]->defaults($value);
                 } else {
-                    if (!$this->offsetExists($key) || in_array($this[$key], $replacable))
+                    if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
                         $this[$key] = $value;
                 }
             }

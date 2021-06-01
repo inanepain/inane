@@ -15,7 +15,10 @@
  */
 namespace Inane\Debug;
 
+use function date;
+use function defined;
 use function file_put_contents;
+use function get_defined_constants;
 use function in_array;
 use function is_array;
 use function json_encode;
@@ -24,6 +27,7 @@ use function ob_start;
 use function print_r;
 use function strtoupper;
 use function var_dump;
+use function var_export;
 
 use const PHP_EOL;
 
@@ -31,7 +35,7 @@ use const PHP_EOL;
  * Log to html with pre & code tags
  *
  * @package Inane\Debug
- * @version 1.2.0
+ * @version 1.2.1
  */
 class Writer {
     public const FORMAT_HTML = 'HTML';
@@ -50,28 +54,28 @@ class Writer {
      *
      * @var string
      */
-    protected $method = '';
+    protected string $method = '';
 
     /**
      * Format: (TEXT, HTML, JSON)
      *
      * @var string
      */
-    protected $format = 'HTML';
+    protected string $format = 'HTML';
 
     /**
      * Die's default
      * 
      * @var bool
      */
-    protected $die = true;
+    protected bool $die = true;
 
     /**
      * Buffer for write
      * 
      * @var string
      */
-    protected $message = '';
+    protected string $message = '';
 
     // Settings
     /**
@@ -79,16 +83,16 @@ class Writer {
      *
      * @var string
     */
-    protected $optionFile = '';
+    protected string $optionFile = '';
     /**
-     * Timestamp: timestamp added to entries when writting to file
+     * Timestamp: timestamp added to entries when writing to file
      *
      * @var bool
     */
     protected bool $optionTimestamp = true;
 
     /**
-     * Protected Contructor
+     * Protected Constructor
      * @return void
      */
     protected function __construct() {   
@@ -98,10 +102,11 @@ class Writer {
      * Checks and sets the format
      *
      * @param String|null $format
-     * @return void
+     * @return Writer
      */
-    protected function setFormat(?String $format): void {
+    protected function setFormat(?String $format): Writer {
         if ($format && in_array(strtoupper($format), ['HTML','TEXT','JSON'])) static::$logger->format = strtoupper($format);
+        return $this;
     }
 
     /**
@@ -128,7 +133,7 @@ class Writer {
      * Factory: Writer::buffer
      * 
      * Creates a writer in buffer mode
-     * In this mode text builds in buffer untill explicitly flushed
+     * In this mode text builds in buffer until explicitly flushed using a echo writer
      * 
      * @TODO: Improve buffering: store in array possible that on final out format...
      * 
@@ -149,10 +154,10 @@ class Writer {
      * Creates a writer in file mode
      * This mode writes to a file and not to stream
      * 
-     * @param null|string $file log file, path saved for durration of session
+     * @param null|string $file log file, path saved for duration of session
      * @return Writer 
      */
-    public static function file(?string $file = null): self {
+    public static function file(?string $file = null): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'FILE';
         static::$logger->format = 'TEXT';
@@ -194,14 +199,14 @@ class Writer {
      * @param mixed $mixed 
      * @return mixed 
      */
-    protected function formateData($mixed) {
+    protected function formateData($mixed):mixed {
         if (is_array($mixed)) $mixed = json_encode($mixed, JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES);
         return $mixed;
     }
 
     /**
      * Label
-     * Adds lable to output
+     * Adds label to output
      * 
      * @param string $label 
      * @return void 
@@ -213,7 +218,7 @@ class Writer {
     }
 
     /**
-     * Formater: core var_dump
+     * Formatter: core var_dump
      * 
      * @param mixed $mixed 
      * @param null|string $label 
@@ -239,7 +244,7 @@ class Writer {
     }
 
     /**
-     * Formater: core var_export
+     * Formatter: core var_export
      * 
      * @param mixed $mixed 
      * @param null|string $label 
@@ -265,7 +270,7 @@ class Writer {
     }
 
     /**
-     * Formater: core print_r
+     * Formatter: core print_r
      * 
      * @param mixed $mixed 
      * @param null|string $label 
@@ -290,7 +295,7 @@ class Writer {
     }
 
     /**
-     * Send data to relavent writer
+     * Send data to relevant writer
      *
      * @return void
      */
@@ -304,7 +309,7 @@ class Writer {
 
     /**
      * Die
-     *  indipendant of main functions die param
+     *  independent of main functions die param
      * 
      * @param null|bool $die 
      * @return $this Writer

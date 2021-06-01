@@ -4,7 +4,7 @@
  * 
  * TemplateRenderer
  * 
- * PHP Vvrsion 7
+ * PHP Version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\View
@@ -72,7 +72,7 @@ class TemplateRenderer {
      * Template:
      *   <a href="{$url}">{$title}</a>
      * 
-     * Veriables:
+     * Variables:
      *   ['title' => 'Inane', 'url' => 'https://inane.co.za']
      * 
      * Result:

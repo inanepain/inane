@@ -38,7 +38,7 @@ class MethodException extends Exception {
         $message = $this->message . ($message ? ': ' . $message : '');
         $code = $this->code + $code;
 
-        $debugBacktrace = array_pop(debug_backtrace(null, 3));
+        $debugBacktrace = array_pop(debug_backtrace(0, 3));
         $this->file = $debugBacktrace['file'];
         $this->line = $debugBacktrace['line'];
 

@@ -359,7 +359,7 @@ class Uri implements UriInterface {
      *
      * @param string $scheme The scheme to use with the new instance.
      * @return static A new instance with the specified scheme.
-     * @throws \InvalidArgumentException for invalid or unsupported schemes.
+     * @throws InvalidArgumentException for invalid or unsupported schemes.
      */
     public function withScheme($scheme): UriInterface {
         $scheme = strtolower($scheme);
@@ -412,7 +412,7 @@ class Uri implements UriInterface {
      *
      * @param string $host The hostname to use with the new instance.
      * @return static A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
+     * @throws InvalidArgumentException for invalid hostnames.
      */
     public function withHost($host): UriInterface {
         if ($this->components->host === $host) return $this;
@@ -439,7 +439,7 @@ class Uri implements UriInterface {
      * @param null|int $port The port to use with the new instance; a null value
      *     removes the port information.
      * @return static A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports.
      */
     public function withPort($port): UriInterface {
         if ($this->components->port === $port) return $this;
@@ -471,7 +471,7 @@ class Uri implements UriInterface {
      *
      * @param string $path The path to use with the new instance.
      * @return static A new instance with the specified path.
-     * @throws \InvalidArgumentException for invalid paths.
+     * @throws InvalidArgumentException for invalid paths.
      */
     public function withPath($path): UriInterface {
         if ($this->components->path === $path) return $this;
@@ -496,7 +496,7 @@ class Uri implements UriInterface {
      *
      * @param string $query The query string to use with the new instance.
      * @return static A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
+     * @throws InvalidArgumentException for invalid query strings.
      */
     public function withQuery($query): UriInterface {
         if ($this->components->query === $query) return $this;

@@ -44,7 +44,7 @@ class Capitalisation extends Enum {
 	 */
 	protected static $descriptions = [
 		self::Ignore => 'Don\'t change case of string.',
-		self::UPPERCASE => 'CHANGE STRING TO UPPRCASE',
+		self::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
 		self::lowercase => 'change string to lowercase',
 		self::StudlyCaps => 'Change String To Studlycaps',
 		self::camelCase => 'change String To Camelcase',

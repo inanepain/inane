@@ -57,7 +57,7 @@ class Response extends Message implements ResponseInterface {
     protected Request $request;
 
     /**
-     * sleep: bandwith delay
+     * sleep: bandwidth delay
      */
     protected int $_sleep = 0;
 
@@ -208,7 +208,7 @@ class Response extends Message implements ResponseInterface {
     }
 
     /**
-     * get: statud
+     * get: status
      * 
      * @return StatusCode status
      */
@@ -381,7 +381,7 @@ class Response extends Message implements ResponseInterface {
      * 
      * $speed 0 = no limit
      * 
-     * @param mixed $srcfile file
+     * @param mixed $src_file file
      * @param bool $force download, not view in browser
      * @param int $speed kbSec
      * 
@@ -390,8 +390,8 @@ class Response extends Message implements ResponseInterface {
      * @throws UnexpectedValueException 
      * @throws BadMethodCallException 
      */
-    public function setFile($srcfile, bool $force = false, int $speed = 0): self {
-        $file = new FileInfo($srcfile);
+    public function setFile($src_file, bool $force = false, int $speed = 0): self {
+        $file = new FileInfo($src_file);
         $this->_file = $file;
 
         if (!$file->isValid()) {
@@ -406,7 +406,7 @@ class Response extends Message implements ResponseInterface {
         $this->_downloadStart = 0; // no range, download from 0
 
         if ($this->getRequest()->range != null) $this->updateRange();
-        $this->updateFileHeders();
+        $this->updateFileHeaders();
         if ($force) $this->forceDownload();
         $this->setBandwidth($speed);
 
@@ -418,7 +418,7 @@ class Response extends Message implements ResponseInterface {
      *
      * @return void
      */
-    protected function updateFileHeders() {
+    protected function updateFileHeaders() {
         $this->addHeader('Accept-Ranges', 'bytes');
         $this->addHeader('Content-type', $this->_file->getMimetype() ?? 'application/octet-stream');
         $this->addHeader("Pragma", "no-cache");

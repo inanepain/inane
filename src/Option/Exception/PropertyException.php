@@ -46,7 +46,7 @@ class PropertyException extends Exception {
         $message = $this->message . ($message ? ': ' . $message : '');
         $code = $this->code + $code;
 
-        $debugBacktrace = array_pop(debug_backtrace(null, 2));
+        $debugBacktrace = array_pop(debug_backtrace(0, 2));
         $this->file = $debugBacktrace['file'];
         $this->line = $debugBacktrace['line'];
 

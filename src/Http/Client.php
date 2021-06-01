@@ -7,10 +7,9 @@
  * 
  * PHP version 8
  *
- * @author Philip Michael Raab <philipr@digitalcabinet.co.za>
+ * @author Philip Michael Raab <peep@inane.co.za>
  * @package Http
- *
- * @copyright 2021 Digitalcabinet
+ * @copyright 2021 Inane
  */
 
 namespace Inane\Http;
@@ -89,9 +88,9 @@ class Client implements SplSubject {
      * @return Client 
      */
     public function detach(SplObserver $observer_in): self {
-        foreach ($this->observers as $okey => $oval)
+        foreach ($this->observers as $key => $oval)
             if ($oval == $observer_in)
-                unset($this->observers[$okey]);
+                unset($this->observers[$key]);
 
         return $this;
     }
@@ -188,7 +187,7 @@ class Client implements SplSubject {
     /**
      * serve file
      *
-     * @param string $srcfile
+     * @param Response $response
      * @return void
      */
     protected function serveFile(Response $response): void {

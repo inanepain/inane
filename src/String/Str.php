@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -14,9 +15,12 @@
  * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
  */
 /* vscode: vscode-fold=2 */
+
 namespace Inane\String;
 
+use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
 use \Inane\String\Capitalisation;
+use MagicPropertyTrait;
 
 use function in_array;
 use function strlen;
@@ -41,8 +45,9 @@ use function trim;
  * @property public string
  * @version 0.0.9
  */
-class Str
-{
+class Str {
+    use OptionMagicPropertyTrait;
+
     /**
      * @var Capitalisation
      */
@@ -58,8 +63,7 @@ class Str
      *
      * @param string $string
      */
-    public function __construct(string $string = '')
-    {
+    public function __construct(string $string = '') {
         if ($string) {
             $this->_str = $string;
         }
@@ -71,9 +75,8 @@ class Str
      * @param string $property
      * @return mixed
      */
-    public function __get($property)
-    {
-        if (! in_array($property, ['length', 'string'])) {
+    public function __get($property) {
+        if (!in_array($property, ['length', 'string'])) {
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
         }
 
@@ -92,9 +95,8 @@ class Str
      * @param mixed $value
      * @return mixed
      */
-    public function __set($property, $value)
-    {
-        if (! in_array($property, ['string'])) {
+    public function __set($property, $value) {
+        if (!in_array($property, ['string'])) {
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
         }
 
@@ -116,8 +118,7 @@ class Str
      *
      * @return string
      */
-    public function __toString(): string
-    {
+    public function __toString(): string {
         return $this->_str;
     }
 
@@ -127,8 +128,7 @@ class Str
      * @param string $str
      * @return Str
      */
-    public function append(string $str): Str
-    {
+    public function append(string $str): Str {
         $this->_str .= $str;
 
         return $this;
@@ -140,16 +140,14 @@ class Str
      * @param string $needle
      * @return bool
      */
-    public function contains(string $needle): bool
-    {
+    public function contains(string $needle): bool {
         return self::str_contains($needle, $this->_str);
     }
 
     /**
      * @return string
      */
-    public function getString(): string
-    {
+    public function getString(): string {
         return $this->_str;
     }
 
@@ -158,8 +156,7 @@ class Str
      *
      * @return int
      */
-    public function length(): int
-    {
+    public function length(): int {
         return strlen($this->_str);
     }
 
@@ -169,8 +166,7 @@ class Str
      * @param string $str
      * @return Str
      */
-    public function prepend(string $str): Str
-    {
+    public function prepend(string $str): Str {
         $this->_str = "{$str}{$this->_str}";
 
         return $this;
@@ -183,8 +179,7 @@ class Str
      * @param string $replace
      * @return Str
      */
-    public function replaceLast(string $search, string $replace): Str
-    {
+    public function replaceLast(string $search, string $replace): Str {
         $this->_str = self::str_replace_last($search, $replace, $this->_str);
 
         return $this;
@@ -197,8 +192,7 @@ class Str
      * @param string $replace
      * @return Str
      */
-    public function replace(string $search, string $replace): Str
-    {
+    public function replace(string $search, string $replace): Str {
         $this->_str = str_replace($search, $replace, $this->_str);
 
         return $this;
@@ -209,8 +203,7 @@ class Str
      *
      * @return Str
      */
-    public function setString(string $string): Str
-    {
+    public function setString(string $string): Str {
         $this->_str = $string;
 
         return $this;
@@ -223,8 +216,7 @@ class Str
      * @param string $haystack
      * @return bool
      */
-    public static function str_contains(string $needle, string $haystack): bool
-    {
+    public static function str_contains(string $needle, string $haystack): bool {
         return strstr($haystack, $needle);
     }
 
@@ -236,8 +228,7 @@ class Str
      * @param string $str
      * @return string
      */
-    public static function str_replace_last(string $search, string $replace, string $str): string
-    {
+    public static function str_replace_last(string $search, string $replace, string $str): string {
         if (($pos = strrpos($str, $search)) !== false) {
             $search_length = strlen($search);
             $str = substr_replace($str, $replace, $pos, $search_length);
@@ -255,8 +246,7 @@ class Str
      *
      * @return string
      */
-    public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string
-    {
+    public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string {
         switch ($case) {
             case Capitalisation::UPPERCASE:
                 $string = strtoupper($string);
@@ -301,8 +291,7 @@ class Str
      * @param int $length
      * @return Str
      */
-    public static function stringWithRandomCharacters(int $length = 6): Str
-    {
+    public static function stringWithRandomCharacters(int $length = 6): Str {
         $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
         $max = count($characters) - 1;
 
@@ -322,8 +311,7 @@ class Str
      * @param bool $removeSpaces
      * @return Str
      */
-    public function toCase(Capitalisation $case, bool $removeSpaces = false): Str
-    {
+    public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
         $this->_str = self::str_to_case($this->_str, $case, $removeSpaces);
         $this->_case = $case;
 
@@ -336,8 +324,7 @@ class Str
      * @param string $chars to trim
      * @return Str
      */
-    public function trim(string $chars = ' ,:-./\\`";'): Str
-    {
+    public function trim(string $chars = ' ,:-./\\`";'): Str {
         $this->_str = trim($this->_str, $chars);
 
         return $this;

@@ -126,9 +126,9 @@ class FileInfo extends SplFileInfo {
     protected function humanSize(int $size, int $decimals = 2): string {
         $sizes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((strlen($size) - 1) / 3);
-        $formatedSize = sprintf("%.{$decimals}f", $size / pow(1024, $factor));
+        $formattedSize = sprintf("%.{$decimals}f", $size / pow(1024, $factor));
 
-        return rtrim($formatedSize, '0.') . ' ' . @$sizes[$factor];
+        return rtrim($formattedSize, '0.') . ' ' . @$sizes[$factor];
     }
 
     /**

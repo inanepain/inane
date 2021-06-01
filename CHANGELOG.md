@@ -48,12 +48,12 @@ Check out the [README](README.md) for installation stuff.
 
 ## 0.14.3 - 2020-01-30
 
- - **Upd** Move requierment to laminas
+ - **Upd** Move requirement to laminas
 
 ## 0.14.2 - 2020-01-29
 
  - **Fix** Some spelling
- - **Upd** Depricate Logger::echo
+ - **Upd** Deprecate Logger::echo
 
 ## 0.14.0 - 2019-06-01
 
@@ -68,7 +68,7 @@ Check out the [README](README.md) for installation stuff.
 
 ## 0.13.1 - 2018-12-30
 
-- **Upd** FileInfo: Human readable filesize no longer shows trailing zeros
+- **Upd** FileInfo: Human readable file size no longer shows trailing zeros
 
 ## 0.13.0 - 2018-12-05
 
@@ -143,4 +143,4 @@ Check out the [README](README.md) for installation stuff.
 ## 0.7.0 - 2016-04-11
 
 - **Add** Version.
-- **Add** Http\Fileserver: Name, Used to send an alternative filename for download file
+- **Add** Http\FileServer: Name, Used to send an alternative filename for download file

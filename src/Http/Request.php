@@ -13,7 +13,6 @@ use PropertyException;
 /**
  * Request
  * 
- * @covers fqcn
  * @version 0.5.0
  * 
  * @package Http
@@ -71,7 +70,7 @@ class Request extends AbstractRequest {
     /**
      * magic method: __get
      *
-     * @param string $property - propert name
+     * @param string $property - property name
      *
      * @return mixed the value of $property
      *

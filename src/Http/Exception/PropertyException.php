@@ -47,7 +47,7 @@ class PropertyException extends Exception {
         $this->code = $this->code + $code;
         $this->previous = $previous;
 
-        $debugBacktrace = array_pop(debug_backtrace(null, 2));
+        $debugBacktrace = array_pop(debug_backtrace(0, 2));
         $this->file = $debugBacktrace['file'];
         $this->line = $debugBacktrace['line'];
     }

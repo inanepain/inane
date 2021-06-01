@@ -104,7 +104,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
     }
 
     /**
-     * Unsets an data by key
+     * Unset data by key
      *
      * @param string The key to unset
      * @access public
@@ -301,19 +301,19 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * 
      * @todo: check for allowModifications
      *
-     * @param Options ...$modles
+     * @param Options ...$models
      * @return Options
      */
     public function defaults(Options ...$models): self {
-        // $replacable = ['', null, false];
-        $replacable = ['', null];
+        // $replaceable = ['', null, false];
+        $replaceable = ['', null];
 
         while ($model = array_pop($models)) {
             foreach ($model as $key => $value) {
                 if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) {
                     $this[$key]->defaults($value);
                 } else {
-                    if (!$this->offsetExists($key) || in_array($this[$key], $replacable))
+                    if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
                         $this[$key] = $value;
                 }
             }
