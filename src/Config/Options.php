@@ -329,7 +329,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * - Items in $merge with INTEGER keys will be appended.
      * - Items in $merge with STRING keys will overwrite current values.
      *
-     * @param Config $merge
+     * @param Options $merge
      * @return self
      */
     public function merge(Options $merge): self {

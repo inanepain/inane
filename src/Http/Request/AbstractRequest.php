@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Request
  * 
@@ -12,16 +11,16 @@ declare(strict_types=1);
 
 namespace Inane\Http\Request;
 
-use Inane\Exception\UnexpectedValueException;
 use Inane\Exception\BadMethodCallException;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
+use Inane\Exception\UnexpectedValueException;
 use Inane\Http\Exception\InvalidArgumentException;
 use Inane\Http\Message;
 use Inane\Http\Method;
 use Inane\Http\Stream;
 use Inane\Http\Uri;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 use function is_null;
 use function preg_match;
@@ -201,7 +200,6 @@ class AbstractRequest extends Message implements RequestInterface {
      * @throws InvalidArgumentException for invalid HTTP methods.
      */
     public function withMethod($method): static {
-        // $this->setMethod($method);
         $new = clone $this;
         $new->setMethod($method);
         return $new;

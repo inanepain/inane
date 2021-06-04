@@ -19,44 +19,44 @@
 namespace Inane\String;
 
 use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
-use \Inane\String\Capitalisation;
-use MagicPropertyTrait;
+use Inane\String\Capitalisation;
 
-use function in_array;
-use function strlen;
-use function str_replace;
-use function strstr;
-use function strrpos;
-use function substr_replace;
-use function strtoupper;
-use function strtolower;
-use function lcfirst;
-use function ucwords;
-use function rand;
 use function array_merge;
 use function count;
+use function in_array;
+use function lcfirst;
 use function mt_rand;
+use function rand;
+use function str_replace;
+use function strlen;
+use function strrpos;
+use function strstr;
+use function strtolower;
+use function strtoupper;
+use function substr_replace;
 use function trim;
+use function ucwords;
 
 /**
- *
+ * Str
+ * 
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.0.9
+ * @version 0.2.0
  */
 class Str {
     use OptionMagicPropertyTrait;
 
     /**
-     * @var Capitalisation
+     * Capitalisation
      */
     protected $_case = Capitalisation::Ignore;
 
     /**
-     * @var string
+     * String
      */
-    protected $_str = '';
+    protected string $_str = '';
 
     /**
      * Creates instance of Str object
@@ -64,21 +64,19 @@ class Str {
      * @param string $string
      */
     public function __construct(string $string = '') {
-        if ($string) {
-            $this->_str = $string;
-        }
+        if ($string) $this->_str = $string;
     }
 
     /**
      * magic method: _get
      *
      * @param string $property
+     * 
      * @return mixed
      */
     public function __get($property) {
-        if (!in_array($property, ['length', 'string'])) {
+        if (!in_array($property, ['length', 'string']))
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
-        }
 
         $methods = [
             'length' => 'length',
@@ -93,12 +91,12 @@ class Str {
      *
      * @param string $property
      * @param mixed $value
+     * 
      * @return mixed
      */
     public function __set($property, $value) {
-        if (!in_array($property, ['string'])) {
+        if (!in_array($property, ['string']))
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
-        }
 
         $methods = [
             'length' => 'length',
@@ -126,6 +124,7 @@ class Str {
      * Append str to Str
      *
      * @param string $str
+     * 
      * @return Str
      */
     public function append(string $str): Str {
@@ -138,6 +137,7 @@ class Str {
      * Check if Str contains needle
      *
      * @param string $needle
+     * 
      * @return bool
      */
     public function contains(string $needle): bool {
@@ -145,6 +145,8 @@ class Str {
     }
 
     /**
+     * getString
+     * 
      * @return string
      */
     public function getString(): string {
@@ -164,6 +166,7 @@ class Str {
      * Prepend str to Str
      *
      * @param string $str
+     * 
      * @return Str
      */
     public function prepend(string $str): Str {
@@ -177,6 +180,7 @@ class Str {
      *
      * @param string $search
      * @param string $replace
+     * 
      * @return Str
      */
     public function replaceLast(string $search, string $replace): Str {
@@ -190,6 +194,7 @@ class Str {
      *
      * @param string $search
      * @param string $replace
+     * 
      * @return Str
      */
     public function replace(string $search, string $replace): Str {
@@ -214,6 +219,7 @@ class Str {
      *
      * @param string $needle
      * @param string $haystack
+     * 
      * @return bool
      */
     public static function str_contains(string $needle, string $haystack): bool {
@@ -226,6 +232,7 @@ class Str {
      * @param string $search
      * @param string $replace
      * @param string $str
+     * 
      * @return string
      */
     public static function str_replace_last(string $search, string $replace, string $str): string {
@@ -247,6 +254,25 @@ class Str {
      * @return string
      */
     public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string {
+        // $RaNDom = function($text) {
+        //     for ($i = 0, $c = strlen($text); $i < $c; $i++) {
+        //         $text[$i] = (rand(0, 100) > 50
+        //             ? strtoupper($text[$i])
+        //             : strtolower($text[$i]));
+        //     }
+        //     return $text;
+        // };
+
+        
+        // $string = match($case) {
+        //     Capitalisation::UPPERCASE() => strtoupper($string),
+        //     Capitalisation::lowercase() => strtolower($string),
+        //     Capitalisation::camelCase() => lcfirst(ucwords(strtolower($string))),
+        //     Capitalisation::StudlyCaps() => ucwords(strtolower($string)),
+        //     Capitalisation::RaNDom() => $RaNDom($string),
+        //     Capitalisation::Ignore() => $string,
+        // };
+
         switch ($case) {
             case Capitalisation::UPPERCASE:
                 $string = strtoupper($string);
@@ -278,9 +304,7 @@ class Str {
                 break;
         }
 
-        if ($removeSpaces) {
-            $string = str_replace(' ', '', $string);
-        }
+        if ($removeSpaces) $string = str_replace(' ', '', $string);
 
         return $string;
     }
@@ -328,5 +352,58 @@ class Str {
         $this->_str = trim($this->_str, $chars);
 
         return $this;
+    }
+
+    /**
+     * highlight str
+     * 
+     * @param string $style (default, php, php2, html)
+     * 
+     * @return Str
+     */
+    public function highlight(string $style = 'default'): Str {
+        if ($style == 'php') {
+            ini_set('highlight.comment', '#FF8000');
+            ini_set('highlight.default', '#0000BB');
+            ini_set('highlight.html', '#000000');
+            ini_set('highlight.keyword', '#007700');
+            ini_set('highlight.string', '#DD0000');
+        } else if ($style == 'php2') {
+            ini_set('highlight.comment', '#008000');
+            ini_set('highlight.default', '#000000');
+            ini_set('highlight.html', '#808080');
+            ini_set('highlight.keyword', '#0000BB; font-weight: bold');
+            ini_set('highlight.string', '#DD0000');
+        } else if ($style == 'html') {
+            ini_set('highlight.comment', 'green');
+            ini_set('highlight.default', '#CC0000');
+            ini_set('highlight.html', '#000000');
+            ini_set('highlight.keyword', 'black; font-weight: bold');
+            ini_set('highlight.string', '#0000FF');
+        }
+
+        $text = trim($this->_str);
+        $text = highlight_string('<?php ' . $text, true);  // highlight_string() requires opening PHP tag or otherwise it will not colorize the text
+        $text = trim($text);
+        $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
+        $text = preg_replace("|\\</code\\>\$|", '', $text, 1);  // remove suffix 1
+        $text = trim($text);  // remove line breaks
+        $text = preg_replace("|\\</span\\>\$|", '', $text, 1);  // remove suffix 2
+        $text = trim($text);  // remove line breaks
+        $this->_str = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
+
+        return $this;
+    }
+
+    /**
+     * highlight str
+     * 
+     * @param string $style (default, php, php2, html)
+     * 
+     * @return Str
+     */
+    public static function highlightText(string $text, string $style = 'default'): Str {
+        $new = new static($text);
+        return $new->highlight($style);
     }
 }

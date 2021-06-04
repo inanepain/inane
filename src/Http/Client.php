@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Http
  *
@@ -12,9 +11,10 @@
  * @copyright 2021 Inane
  */
 
+declare(strict_types=1);
+
 namespace Inane\Http;
 
-use Inane\Debug\Writer;
 use SplObserver;
 use SplSubject;
 
@@ -27,7 +27,6 @@ use function fseek;
 use function header;
 use function http_response_code;
 use function is_array;
-use function is_null;
 use function round;
 use function set_time_limit;
 use function usleep;
@@ -55,6 +54,7 @@ class Client implements SplSubject {
      * @var int
      */
     protected $_progress = 0;
+
     /**
      * File size served %
      *
@@ -75,7 +75,6 @@ class Client implements SplSubject {
      * @return Client
      */
     public function attach(SplObserver $observer_in): self {
-        //could also use array_push($this->observers, $observer_in);
         $this->observers[] = $observer_in;
 
         return $this;
@@ -192,13 +191,10 @@ class Client implements SplSubject {
      */
     protected function serveFile(Response $response): void {
         $file = $response->getFileInfo();
-        // Writer::echo()->dump($file, 'file', true);
         $byte_from = $response->getDownloadFrom();
-        // Writer::echo()->dump($byte_from, 'byte_from', true);
         $byte_to = (int)$response->getHeaderLine('Content-Length');
-        // Writer::echo()->dump($byte_to, 'byte_to', true);
-        $fp = fopen($file->getPathname(), 'r'); // open file
-        fseek($fp, $byte_from); // seek to start byte
+        $fp = fopen($file->getPathname(), 'r');
+        fseek($fp, $byte_from);
         $this->_progress = $byte_from;
 
         if ($response->isThrottled()) $this->sendBuffer($response, $fp);
@@ -221,13 +217,13 @@ class Client implements SplSubject {
         $buffer_size = 1024 * 8; // 8kb
         $download_size = (int)$response->getHeaderLine('Content-Length');
 
-        while (!feof($fp)) { // start buffered download
-            set_time_limit(0); // reset time limit for big files
+        while (!feof($fp)) {
+            set_time_limit(0);
             print(fread($fp, $buffer_size));
             ob_flush();
             flush();
             $this->addProgress($buffer_size, $download_size);
-            usleep($sleep); // sleep for speed limitation
+            usleep($sleep);
         }
         ob_end_flush();
         $this->addProgress(1, $download_size);

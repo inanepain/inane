@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Http Methods
+ * 
+ * PHP version 7.5
+ * 
+ * @author Philip Michael Raab <peep@inane.co.za>
+ */
 declare(strict_types=1);
 
 namespace Inane\Http;

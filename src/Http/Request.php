@@ -4,6 +4,9 @@
  * 
  * PHP version 8
  */
+
+declare(strict_types=1);
+
 namespace Inane\Http;
 
 use Inane\Config\Options;
@@ -65,7 +68,7 @@ class Request extends AbstractRequest {
 
 
 
-    
+
 
     /**
      * magic method: __get

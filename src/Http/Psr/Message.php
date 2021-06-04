@@ -48,7 +48,7 @@ class Message implements MessageInterface {
     protected string $protocol = self::VERSION_11;
 
     /** @var StreamInterface|null */
-    protected StreamInterface $stream;
+    protected StreamInterface|Stream $stream;
 
     /**
      * Retrieves the HTTP protocol version as a string.

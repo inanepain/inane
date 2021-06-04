@@ -95,7 +95,7 @@ abstract class Enum implements JsonSerializable {
      *
      * @var array
      */
-    protected static $defaults = [];
+    protected static array $defaults = [];
 
     /**
      * Creates a new value of some type
@@ -118,13 +118,14 @@ abstract class Enum implements JsonSerializable {
      * that didn't had the key property
      */
     public function __wakeup() {
-        if ($this->key === null) {
-            $this->key = static::search($this->value);
-        }
+        if ($this->key === null) $this->key = static::search($this->value);
     }
 
     /**
+     * create from value
+     * 
      * @param mixed $value
+     * 
      * @return static
      */
     public static function from($value): self {
@@ -179,13 +180,10 @@ abstract class Enum implements JsonSerializable {
     }
 
     /**
+     * equals
+     * 
      * Determines if Enum should be considered equal with the variable passed as a parameter.
      * Returns false if an argument is an object of different class or not an object.
-     *
-     * @return bool
-     */
-    /**
-     * Undocumented function
      *
      * @param mixed $variable
      * @return bool
@@ -262,9 +260,7 @@ abstract class Enum implements JsonSerializable {
      * @throws UnexpectedValueException 
      */
     private static function assertValidValueReturningKey($value): string {
-        if (false === ($key = static::search($value))) {
-            throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
-        }
+        if (false === ($key = static::search($value))) throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
 
         return $key;
     }
