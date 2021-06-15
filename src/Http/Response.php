@@ -316,10 +316,12 @@ class Response extends Message implements ResponseInterface {
      */
     protected function setBandwidth(int $kbSec = 0): self {
         if (static::$rm > 0) $kbSec = $kbSec / static::$rm;
-        $this->_sleep = $kbSec * 4.3;
-        if ($this->_sleep > 0)
-            $this->_sleep = (8 / $this->_sleep) * 1e6;
+        $_sleep = $kbSec * 4.3;
+        if ($_sleep > 0)
+            $_sleep = (8 / $_sleep) * 1e6;
 
+        $this->_sleep = (int) $_sleep;
+        
         return $this;
     }
 

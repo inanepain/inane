@@ -283,7 +283,7 @@ class StatusCode extends Enum {
     /**
      * @var string[] the descriptions
      */
-    protected static $defaults = [
+    protected static array $defaults = [
         self::CONTINUE => 'Continue',
         self::SWITCHING_PROTOCOLS => 'Switching protocols',
         self::PROCESSING => 'Processing',
