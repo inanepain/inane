@@ -11,7 +11,7 @@
  * @package Inane\Config
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2021 Michael Raab <peep@inane.co.za>
  */

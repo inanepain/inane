@@ -11,7 +11,7 @@
  * @package Inane\Type
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  * 
