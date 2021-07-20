@@ -106,8 +106,8 @@ class Dumper {
         if (array_key_exists('open', $options) && $options['open'] === true) $open = ' open';
 
         static::$dumps[] = <<<DEBUG
-<div class="ierror">
-<details class="iheader"{$open}>
+<div class="dump">
+<details class="dump-window"{$open}>
 <summary>{$header}</summary>
 {$code}
 </details>
@@ -125,12 +125,17 @@ DEBUG;
 
         static::$dumps = [];
 
+        // $style = '.dumper{position:absolute;bottom:0px;left:0px;z-index:999999999999999;background:#fff;width:100vw;border-top:1px silver solid;font-size:14px}.dumper summary{position:-webkit-sticky;position:sticky;top:0px;padding:.25rem}.dumper summary:focus{outline:none}.dumper .dumper-window{max-height:80vh;overflow-y:auto;width:100vw;overflow-x:hidden;margin:0px;box-shadow:0px 0px 0px 0px inherit;transition:box-shadow 1s}.dumper .dumper-window[open]{box-shadow:0px 0px 12px -3px gray}.dumper .dumper-window .dumper-title{background:#f0f8ff;border-bottom:3px gray groove;font-weight:700;color:#8a2be2;z-index:1}.dumper .dumper-window .dumper-body .dump{border-bottom:1px #000 solid}.dumper .dumper-window .dumper-body .dump .dump-window summary{border-bottom:1px gray solid;background:#a9a9a9;padding-left:.5rem;color:#2f4f4f;top:27px;box-shadow:0px 3px 12px -3px gray}.dumper .dumper-window .dumper-body .dump .dump-window summary .dump-label{min-width:150px;display:inline-block;color:inherit;transition:color .5s}.dumper .dumper-window .dumper-body .dump .dump-window summary .dump-label::after{content:" :";float:right;color:#2f4f4f}.dumper .dumper-window .dumper-body .dump .dump-window code{display:block;padding:.5rem;word-wrap:break-word}.dumper .dumper-window .dumper-body .dump .dump-window[open] .dump-label{color:#fff}';
+        $style = ''.include __DIR__ . '/dumper.css'.'';
+
         return <<<CODE
-<style>.idebug{position:absolute;bottom:0px;left:0px;z-index:999999999999999;background:#fff;width:100vw;border-top:1px silver solid;font-size:14px}.idebug .idebug-box{background:#f0f8ff;border-bottom:3px gray groove;font-weight:700;color:#8a2be2}.idebug summary:focus{outline:none}.idebug .ierror{border-bottom:1px #000 solid}.idebug .ierror summary{border-bottom:1px gray solid;background:#a9a9a9;padding-left:.5rem}.idebug .ierror summary .iheader{min-width:150px;display:inline-block}.idebug .ierror summary .iheader::after{content:" :";float:right}.idebug .ierror pre{padding-left:1rem}</style>
-<div class="idebug">
-<details>
-<summary class="idebug-box">idebug</summary>
+<style>{$style}</style>
+<div class="dumper">
+<details class="dumper-window">
+<summary class="dumper-title">dumper</summary>
+<div class="dumper-body">
 {$code}
+</div>
 </details>
 </div>
 CODE;
@@ -158,7 +163,7 @@ CODE;
         $data['class'] = $b['class'];
         $data['function'] = $b['function'];
 
-        $title = isset($header) ? "<strong class=\"iheader\">${header}</strong> " : '';
+        $title = isset($header) ? "<strong class=\"dump-label\">${header}</strong> " : '';
         return "{$title}{$data['class']}::<strong>{$data['function']}</strong> => {$data['file']}::<strong>{$data['line']}</strong>";
     }
 

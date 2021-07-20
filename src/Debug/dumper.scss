@@ -1,0 +1,90 @@
+// sass -s compressed --no-source-map module/Inane/src/Debug/dumper.scss | pbcopy
+// sass -s compressed --no-source-map module/Inane/src/Debug/dumper.scss module/Inane/src/Debug/dumper.css
+
+$max-height: 80vh!default;
+
+.dumper {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    z-index: 999999999999999;
+    background: white;
+    width: 100vw;
+    border-top: 1px silver solid;
+    font-size: 14px;
+
+    summary {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0px;
+        padding: .25rem;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .dumper-window {
+        max-height: $max-height;
+        overflow-y: auto;
+        width: 100vw;
+        overflow-x: hidden;
+        margin: 0px;
+        box-shadow: 0px 0px 0px 0px inherit;
+        transition: box-shadow 1s;
+
+        &[open] {
+            box-shadow: 0px 0px 12px -3px grey;
+        }
+
+        .dumper-title {
+            background: aliceblue;
+            border-bottom: 3px grey groove;
+            font-weight: 700;
+            color: blueviolet;
+            z-index: 1;
+        }
+
+        .dumper-body {
+            .dump {
+                border-bottom: 1px black solid;
+        
+                .dump-window {
+                    summary {
+                        border-bottom: 1px grey solid;
+                        background: darkgray;
+                        padding-left: 0.5rem;
+                        color: darkslategray;
+                        top: 27px;
+                        box-shadow: 0px 3px 12px -3px grey;
+            
+                        .dump-label {
+                            min-width: 150px;
+                            display: inline-block;
+                            color: inherit;
+                            transition: color .5s;
+            
+                            &::after {
+                                content: ' :';
+                                float: right;
+                                color: darkslategray;
+                            }
+                        }
+                    }
+
+                    code {
+                        display: block;
+                        padding: .5rem;
+                        word-wrap: break-word;
+                    }
+
+                    &[open] {
+                        .dump-label {
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
