@@ -85,6 +85,45 @@ module.php:
 ]
 ```
 
+#### Dumper
+
+A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
+
+**option: Dumper::autoDump**  
+
+Set it to false to prevent Dumper automatically writing all buffered dumps when it is destroyed.
+
+**option: Dumper::enabled**  
+
+Set it to false to stop ALL output from Dumper. Instant quiet.
+
+**Quick & Easy:**  
+
+Consider wrapping Dumper in a global function for quick access:  
+
+```php
+function dd(mixed $data = null, ?string $header = null, array $options = []): \Inane\Debug\Dumper {
+    return \Inane\Debug\Dumper::dump($data, $header, $options);
+}
+```
+
+
+**Chaining**  
+
+`Dumper::dump` only takes one set of dumps at a time: item to dump, an optional label and options.
+To dump multiple variables simply bracket it right after the first set.
+
+E.G.:
+
+```php
+$var1 = someFunction();
+$var2 = another($var1);
+$var3 = again($var1);
+
+dd($var1, 'someFunction')($var2, 'another')($var3, 'again');
+
+```
+
 ### Feedback
 
 Hey, got any ideas or suggestions.

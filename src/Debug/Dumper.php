@@ -19,17 +19,21 @@ declare(strict_types=1);
 namespace Inane\Debug;
 
 use function array_key_exists;
+use function basename;
+use function count;
 use function highlight_string;
 use function implode;
+use function in_array;
 use function is_null;
 use function str_replace;
 use function var_export;
-use function count;
 
 /**
  * Dumper
  * 
- * @version 1.0.0
+ * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
+ * 
+ * @version 1.0.1
  *
  * @package Inane\Debug
  */
@@ -40,9 +44,16 @@ class Dumper {
     private static Dumper $instance;
 
     /**
-     * Disable Dumper's output
+     * Set to false to stop dumper writing to page. instant quiet.
+     * PS: this effect manual calls to write dumps as well.
      */
     public static bool $enabled = true;
+
+    /**
+     * Stops Dumper automatically writing dumps to page when it is destroyed
+     * Calling dump with no arguments will write the dumps collected thus far at that point.
+     */
+    public static bool $autoDump = true;
 
     /**
      * The collected dumps
@@ -59,7 +70,7 @@ class Dumper {
      * When destroyed the dumps get written to page
      */
     public function __destruct() {
-        static::dump();
+        if (static::$autoDump) static::dump();
     }
 
     /**
@@ -133,11 +144,17 @@ CODE;
      * @return string
      */
     protected function buildHeader(?string $header = null): string {
+        $i = -1;
+        foreach(debug_backtrace() as $trace) {
+            $i++;
+            if (!in_array( basename($trace['file']), ['Dumper.php', 'index.php'])) break;
+        }
+
         $data = [];
-        $a = debug_backtrace()[1];
+        $a = debug_backtrace()[$i];
         $data['file'] = $a['file'];
         $data['line'] = $a['line'];
-        $b = debug_backtrace()[2];
+        $b = debug_backtrace()[++$i];
         $data['class'] = $b['class'];
         $data['function'] = $b['function'];
 
@@ -152,6 +169,9 @@ CODE;
      * 
      * options:
      *  - (bool) open: true creates dumps open (main panel not effect)
+     * 
+     * Chaining: You only need bracket your arguments for repeated dumps.
+     * Dumper::dump('one')('two', 'Label')
      *
      * @param mixed $data item to dump
      * @param null|string $header
