@@ -1,6 +1,6 @@
 # Inane Classes
 
-Version: `0.21.0` 08 Apr 2021
+Version: `0.22.0` 20 Jul 2021
 
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 

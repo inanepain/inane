@@ -6,10 +6,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.22.0 - 2021-05-05 (DEV)
+## 0.22.0 - 2021-07-20
 
 - Config\Options: array type for configurations, settings and options
 - Http          : a bunch a stuff for requests, responses and formatting those responses
+- Dumper        : A quick and easy dump tool that neatly stacks dumps collapsed at the end of page
 
 ## 0.21.0.3 - 2021-04-16
 

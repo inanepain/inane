@@ -79,7 +79,7 @@ abstract class Enum implements JsonSerializable {
      *
      * @var array
      */
-    protected static $descriptions = [];
+    protected static array $descriptions = [];
 
     /**
      * Enum default

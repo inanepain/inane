@@ -42,7 +42,7 @@ class Capitalisation extends Enum {
 	/**
 	 * @var string[] the descriptions
 	 */
-	protected static $descriptions = [
+	protected static array $descriptions = [
 		self::Ignore => 'Don\'t change case of string.',
 		self::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
 		self::lowercase => 'change string to lowercase',
