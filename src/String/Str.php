@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -9,73 +10,73 @@
  * @package Inane\String
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
  */
 /* vscode: vscode-fold=2 */
+
 namespace Inane\String;
 
-use \Inane\String\Capitalisation;
+use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
+use Inane\String\Capitalisation;
 
-use function in_array;
-use function strlen;
-use function str_replace;
-use function strstr;
-use function strrpos;
-use function substr_replace;
-use function strtoupper;
-use function strtolower;
-use function lcfirst;
-use function ucwords;
-use function rand;
 use function array_merge;
 use function count;
+use function in_array;
+use function lcfirst;
 use function mt_rand;
+use function rand;
+use function str_replace;
+use function strlen;
+use function strrpos;
+use function strstr;
+use function strtolower;
+use function strtoupper;
+use function substr_replace;
 use function trim;
+use function ucwords;
 
 /**
- *
+ * Str
+ * 
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.0.9
+ * @version 0.2.0
  */
-class Str
-{
+class Str {
+    use OptionMagicPropertyTrait;
+
     /**
-     * @var Capitalisation
+     * Capitalisation
      */
     protected $_case = Capitalisation::Ignore;
 
     /**
-     * @var string
+     * String
      */
-    protected $_str = '';
+    protected string $_str = '';
 
     /**
      * Creates instance of Str object
      *
      * @param string $string
      */
-    public function __construct(string $string = '')
-    {
-        if ($string) {
-            $this->_str = $string;
-        }
+    public function __construct(string $string = '') {
+        if ($string) $this->_str = $string;
     }
 
     /**
      * magic method: _get
      *
      * @param string $property
+     * 
      * @return mixed
      */
-    public function __get($property)
-    {
-        if (! in_array($property, ['length', 'string'])) {
+    public function __get($property) {
+        if (!in_array($property, ['length', 'string']))
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
-        }
 
         $methods = [
             'length' => 'length',
@@ -90,13 +91,12 @@ class Str
      *
      * @param string $property
      * @param mixed $value
+     * 
      * @return mixed
      */
-    public function __set($property, $value)
-    {
-        if (! in_array($property, ['string'])) {
+    public function __set($property, $value) {
+        if (!in_array($property, ['string']))
             throw new \Exception("Invalid Property:\n\tStr has no property: {$property}");
-        }
 
         $methods = [
             'length' => 'length',
@@ -116,8 +116,7 @@ class Str
      *
      * @return string
      */
-    public function __toString(): string
-    {
+    public function __toString(): string {
         return $this->_str;
     }
 
@@ -125,10 +124,10 @@ class Str
      * Append str to Str
      *
      * @param string $str
+     * 
      * @return Str
      */
-    public function append(string $str): Str
-    {
+    public function append(string $str): Str {
         $this->_str .= $str;
 
         return $this;
@@ -138,18 +137,19 @@ class Str
      * Check if Str contains needle
      *
      * @param string $needle
+     * 
      * @return bool
      */
-    public function contains(string $needle): bool
-    {
+    public function contains(string $needle): bool {
         return self::str_contains($needle, $this->_str);
     }
 
     /**
+     * getString
+     * 
      * @return string
      */
-    public function getString(): string
-    {
+    public function getString(): string {
         return $this->_str;
     }
 
@@ -158,8 +158,7 @@ class Str
      *
      * @return int
      */
-    public function length(): int
-    {
+    public function length(): int {
         return strlen($this->_str);
     }
 
@@ -167,10 +166,10 @@ class Str
      * Prepend str to Str
      *
      * @param string $str
+     * 
      * @return Str
      */
-    public function prepend(string $str): Str
-    {
+    public function prepend(string $str): Str {
         $this->_str = "{$str}{$this->_str}";
 
         return $this;
@@ -181,10 +180,10 @@ class Str
      *
      * @param string $search
      * @param string $replace
+     * 
      * @return Str
      */
-    public function replaceLast(string $search, string $replace): Str
-    {
+    public function replaceLast(string $search, string $replace): Str {
         $this->_str = self::str_replace_last($search, $replace, $this->_str);
 
         return $this;
@@ -195,10 +194,10 @@ class Str
      *
      * @param string $search
      * @param string $replace
+     * 
      * @return Str
      */
-    public function replace(string $search, string $replace): Str
-    {
+    public function replace(string $search, string $replace): Str {
         $this->_str = str_replace($search, $replace, $this->_str);
 
         return $this;
@@ -209,8 +208,7 @@ class Str
      *
      * @return Str
      */
-    public function setString(string $string): Str
-    {
+    public function setString(string $string): Str {
         $this->_str = $string;
 
         return $this;
@@ -221,10 +219,10 @@ class Str
      *
      * @param string $needle
      * @param string $haystack
+     * 
      * @return bool
      */
-    public static function str_contains(string $needle, string $haystack): bool
-    {
+    public static function str_contains(string $needle, string $haystack): bool {
         return strstr($haystack, $needle);
     }
 
@@ -234,10 +232,10 @@ class Str
      * @param string $search
      * @param string $replace
      * @param string $str
+     * 
      * @return string
      */
-    public static function str_replace_last(string $search, string $replace, string $str): string
-    {
+    public static function str_replace_last(string $search, string $replace, string $str): string {
         if (($pos = strrpos($str, $search)) !== false) {
             $search_length = strlen($search);
             $str = substr_replace($str, $replace, $pos, $search_length);
@@ -255,8 +253,26 @@ class Str
      *
      * @return string
      */
-    public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string
-    {
+    public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string {
+        // $RaNDom = function($text) {
+        //     for ($i = 0, $c = strlen($text); $i < $c; $i++) {
+        //         $text[$i] = (rand(0, 100) > 50
+        //             ? strtoupper($text[$i])
+        //             : strtolower($text[$i]));
+        //     }
+        //     return $text;
+        // };
+
+        
+        // $string = match($case) {
+        //     Capitalisation::UPPERCASE() => strtoupper($string),
+        //     Capitalisation::lowercase() => strtolower($string),
+        //     Capitalisation::camelCase() => lcfirst(ucwords(strtolower($string))),
+        //     Capitalisation::StudlyCaps() => ucwords(strtolower($string)),
+        //     Capitalisation::RaNDom() => $RaNDom($string),
+        //     Capitalisation::Ignore() => $string,
+        // };
+
         switch ($case) {
             case Capitalisation::UPPERCASE:
                 $string = strtoupper($string);
@@ -288,9 +304,7 @@ class Str
                 break;
         }
 
-        if ($removeSpaces) {
-            $string = str_replace(' ', '', $string);
-        }
+        if ($removeSpaces) $string = str_replace(' ', '', $string);
 
         return $string;
     }
@@ -301,8 +315,7 @@ class Str
      * @param int $length
      * @return Str
      */
-    public static function stringWithRandomCharacters(int $length = 6): Str
-    {
+    public static function stringWithRandomCharacters(int $length = 6): Str {
         $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
         $max = count($characters) - 1;
 
@@ -322,8 +335,7 @@ class Str
      * @param bool $removeSpaces
      * @return Str
      */
-    public function toCase(Capitalisation $case, bool $removeSpaces = false): Str
-    {
+    public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
         $this->_str = self::str_to_case($this->_str, $case, $removeSpaces);
         $this->_case = $case;
 
@@ -336,10 +348,62 @@ class Str
      * @param string $chars to trim
      * @return Str
      */
-    public function trim(string $chars = ' ,:-./\\`";'): Str
-    {
+    public function trim(string $chars = ' ,:-./\\`";'): Str {
         $this->_str = trim($this->_str, $chars);
 
         return $this;
+    }
+
+    /**
+     * highlight str
+     * 
+     * @param string $style (default, php, php2, html)
+     * 
+     * @return Str
+     */
+    public function highlight(string $style = 'default'): Str {
+        if ($style == 'php') {
+            ini_set('highlight.comment', '#FF8000');
+            ini_set('highlight.default', '#0000BB');
+            ini_set('highlight.html', '#000000');
+            ini_set('highlight.keyword', '#007700');
+            ini_set('highlight.string', '#DD0000');
+        } else if ($style == 'php2') {
+            ini_set('highlight.comment', '#008000');
+            ini_set('highlight.default', '#000000');
+            ini_set('highlight.html', '#808080');
+            ini_set('highlight.keyword', '#0000BB; font-weight: bold');
+            ini_set('highlight.string', '#DD0000');
+        } else if ($style == 'html') {
+            ini_set('highlight.comment', 'green');
+            ini_set('highlight.default', '#CC0000');
+            ini_set('highlight.html', '#000000');
+            ini_set('highlight.keyword', 'black; font-weight: bold');
+            ini_set('highlight.string', '#0000FF');
+        }
+
+        $text = trim($this->_str);
+        $text = highlight_string('<?php ' . $text, true);  // highlight_string() requires opening PHP tag or otherwise it will not colorize the text
+        $text = trim($text);
+        $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
+        $text = preg_replace("|\\</code\\>\$|", '', $text, 1);  // remove suffix 1
+        $text = trim($text);  // remove line breaks
+        $text = preg_replace("|\\</span\\>\$|", '', $text, 1);  // remove suffix 2
+        $text = trim($text);  // remove line breaks
+        $this->_str = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
+
+        return $this;
+    }
+
+    /**
+     * highlight str
+     * 
+     * @param string $style (default, php, php2, html)
+     * 
+     * @return Str
+     */
+    public static function highlightText(string $text, string $style = 'default'): Str {
+        $new = new static($text);
+        return $new->highlight($style);
     }
 }

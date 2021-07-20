@@ -38,7 +38,7 @@ use function ucwords;
  */
 trait MagicPropertyTrait {
     /**
-     * Getter method indentifier
+     * Getter method identifier
      * 
      * @var string
      */
@@ -47,7 +47,7 @@ trait MagicPropertyTrait {
     //     protected static string $MAGIC_PROPERTY_GET = 'get';
 
     /**
-     * Setter method indentifier
+     * Setter method identifier
      * 
      * @var string
      */
@@ -67,7 +67,7 @@ trait MagicPropertyTrait {
     /**
      * Gets the method name based on the property name
      *
-     * @param string $property - propert name
+     * @param string $property - property name
      * @param string $prepend - string identifying method (get/set/store/fetch/put/...)
      *
      * @return string - the method name
@@ -86,7 +86,7 @@ trait MagicPropertyTrait {
     /**
      * magic method: __get
      *
-     * @param string $property - propert name
+     * @param string $property - property name
      *
      * @return mixed the value of $property
      *
@@ -105,7 +105,7 @@ trait MagicPropertyTrait {
     /**
      * magic method: __set
      *
-     * @param string $property - propert name
+     * @param string $property - property name
      * @param mixed $value - new property value
      *
      * @return mixed usually $this to support chaining

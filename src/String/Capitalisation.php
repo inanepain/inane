@@ -9,7 +9,7 @@
  * @package Inane\String
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
@@ -42,12 +42,12 @@ class Capitalisation extends Enum {
 	/**
 	 * @var string[] the descriptions
 	 */
-	protected static $descriptions = [
-		'Ignore' => 'Don\'t change case of string.',
-		'UPPERCASE' => 'CHANGE STRING TO UPPRCASE',
-		'lowercase' => 'change string to lowercase',
-		'StudlyCaps' => 'Change String To Studlycaps',
-		'camelCase' => 'change String To Camelcase',
-		'RaNDom' => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
+	protected static array $descriptions = [
+		self::Ignore => 'Don\'t change case of string.',
+		self::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
+		self::lowercase => 'change string to lowercase',
+		self::StudlyCaps => 'Change String To Studlycaps',
+		self::camelCase => 'change String To Camelcase',
+		self::RaNDom => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
 	];
 }

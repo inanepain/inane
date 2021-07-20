@@ -9,7 +9,7 @@
  * @package Inane\Version
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
@@ -37,7 +37,7 @@ final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.21.0.1';
+	const VERSION = '0.22.0';
 
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from

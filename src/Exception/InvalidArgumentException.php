@@ -9,12 +9,14 @@
  * @package Inane\Exception
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
 namespace Inane\Exception;
+
+use InvalidArgumentException as BaseInvalidArgumentException;
 
 /**
  * Exception thrown if an argument is not of the expected type.
@@ -23,4 +25,4 @@ namespace Inane\Exception;
  * @implements \Inane\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface {}
+class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface {}

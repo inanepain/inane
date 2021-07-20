@@ -10,7 +10,7 @@
  * @package Inane\Option
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <peep@inane.co.za>
  */
@@ -38,7 +38,7 @@ class MethodException extends Exception {
         $message = $this->message . ($message ? ': ' . $message : '');
         $code = $this->code + $code;
 
-        $debugBacktrace = array_pop(debug_backtrace(null, 3));
+        $debugBacktrace = array_pop(debug_backtrace(0, 3));
         $this->file = $debugBacktrace['file'];
         $this->line = $debugBacktrace['line'];
 

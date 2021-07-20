@@ -4,18 +4,18 @@
  * 
  * TemplateRenderer
  * 
- * PHP Vvrsion 7
+ * PHP Version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\View
  *
  * @license MIT
- * @license http://inane.co.za/license/MIT
+ * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
-namespace Utilities;
+namespace Inane\View;
 
 use Exception;
 
@@ -72,7 +72,7 @@ class TemplateRenderer {
      * Template:
      *   <a href="{$url}">{$title}</a>
      * 
-     * Veriables:
+     * Variables:
      *   ['title' => 'Inane', 'url' => 'https://inane.co.za']
      * 
      * Result:
