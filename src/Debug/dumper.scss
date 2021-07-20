@@ -1,7 +1,13 @@
 // sass -s compressed --no-source-map module/Inane/src/Debug/dumper.scss | pbcopy
 // sass -s compressed --no-source-map module/Inane/src/Debug/dumper.scss module/Inane/src/Debug/dumper.css
 
-$max-height: 80vh!default;
+/*
+Dumper
+
+variables:
+    --dumper-font-size: smaller
+    --dumper-max-height: 80vh
+*/
 
 .dumper {
     position: absolute;
@@ -11,7 +17,7 @@ $max-height: 80vh!default;
     background: white;
     width: 100vw;
     border-top: 1px silver solid;
-    font-size: 14px;
+    font-size: var(--dumper-font-size, smaller);
 
     summary {
         position: -webkit-sticky;
@@ -25,7 +31,7 @@ $max-height: 80vh!default;
     }
 
     .dumper-window {
-        max-height: $max-height;
+        max-height: var(--dumper-max-height, 80vh);
         overflow-y: auto;
         width: 100vw;
         overflow-x: hidden;

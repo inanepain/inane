@@ -102,8 +102,8 @@ Set it to false to stop ALL output from Dumper. Instant quiet.
 Consider wrapping Dumper in a global function for quick access:  
 
 ```php
-function dd(mixed $data = null, ?string $header = null, array $options = []): \Inane\Debug\Dumper {
-    return \Inane\Debug\Dumper::dump($data, $header, $options);
+function dd(mixed $data = null, ?string $label = null, array $options = []): \Inane\Debug\Dumper {
+    return \Inane\Debug\Dumper::dump($data, $label, $options);
 }
 ```
 

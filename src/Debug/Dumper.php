@@ -21,6 +21,7 @@ namespace Inane\Debug;
 use function array_key_exists;
 use function basename;
 use function count;
+use function file_get_contents;
 use function highlight_string;
 use function implode;
 use function in_array;
@@ -33,7 +34,7 @@ use function var_export;
  * 
  * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
  * 
- * @version 1.0.1
+ * @version 1.0.2
  *
  * @package Inane\Debug
  */
@@ -79,25 +80,25 @@ class Dumper {
      * Without Args: Write current dumps to page
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
-     * @return void
+     * @return Dumper
      */
-    public function __invoke(mixed $data = null, ?string $header = null, array $options = []): void {
-        static::dump($data, $header, $options);
+    public function __invoke(mixed $data = null, ?string $label = null, array $options = []): static {
+        return static::dump($data, $label, $options);
     }
 
     /**
      * Add a dump to the collection
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
      * @return void
      */
-    protected function addDump(mixed $data, ?string $header = null, array $options = []): void {
+    protected function addDump(mixed $data, ?string $label = null, array $options = []): void {
         $code = var_export($data, true);
         $code = highlight_string("<?php\n" . $code, true);
         $code = str_replace("&lt;?php<br />", '', $code);
@@ -108,7 +109,7 @@ class Dumper {
         static::$dumps[] = <<<DEBUG
 <div class="dump">
 <details class="dump-window"{$open}>
-<summary>{$header}</summary>
+<summary>{$label}</summary>
 {$code}
 </details>
 </div>
@@ -125,8 +126,7 @@ DEBUG;
 
         static::$dumps = [];
 
-        // $style = '.dumper{position:absolute;bottom:0px;left:0px;z-index:999999999999999;background:#fff;width:100vw;border-top:1px silver solid;font-size:14px}.dumper summary{position:-webkit-sticky;position:sticky;top:0px;padding:.25rem}.dumper summary:focus{outline:none}.dumper .dumper-window{max-height:80vh;overflow-y:auto;width:100vw;overflow-x:hidden;margin:0px;box-shadow:0px 0px 0px 0px inherit;transition:box-shadow 1s}.dumper .dumper-window[open]{box-shadow:0px 0px 12px -3px gray}.dumper .dumper-window .dumper-title{background:#f0f8ff;border-bottom:3px gray groove;font-weight:700;color:#8a2be2;z-index:1}.dumper .dumper-window .dumper-body .dump{border-bottom:1px #000 solid}.dumper .dumper-window .dumper-body .dump .dump-window summary{border-bottom:1px gray solid;background:#a9a9a9;padding-left:.5rem;color:#2f4f4f;top:27px;box-shadow:0px 3px 12px -3px gray}.dumper .dumper-window .dumper-body .dump .dump-window summary .dump-label{min-width:150px;display:inline-block;color:inherit;transition:color .5s}.dumper .dumper-window .dumper-body .dump .dump-window summary .dump-label::after{content:" :";float:right;color:#2f4f4f}.dumper .dumper-window .dumper-body .dump .dump-window code{display:block;padding:.5rem;word-wrap:break-word}.dumper .dumper-window .dumper-body .dump .dump-window[open] .dump-label{color:#fff}';
-        $style = ''.include __DIR__ . '/dumper.css'.'';
+        $style = file_get_contents(__DIR__ . '/dumper.css');
 
         return <<<CODE
 <style>{$style}</style>
@@ -142,13 +142,13 @@ CODE;
     }
 
     /**
-     * Create a header for the dump with relevant information
+     * Create a label for the dump with relevant information
      *
-     * @param string|null $header
+     * @param string|null $label
      * 
      * @return string
      */
-    protected function buildHeader(?string $header = null): string {
+    protected function buildLabel(?string $label = null): string {
         $i = -1;
         foreach(debug_backtrace() as $trace) {
             $i++;
@@ -163,7 +163,7 @@ CODE;
         $data['class'] = $b['class'];
         $data['function'] = $b['function'];
 
-        $title = isset($header) ? "<strong class=\"dump-label\">${header}</strong> " : '';
+        $title = isset($label) ? "<strong class=\"dump-label\">${label}</strong> " : '';
         return "{$title}{$data['class']}::<strong>{$data['function']}</strong> => {$data['file']}::<strong>{$data['line']}</strong>";
     }
 
@@ -179,17 +179,17 @@ CODE;
      * Dumper::dump('one')('two', 'Label')
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
      * @return Dumper
      */
-    public static function dump(mixed $data = null, ?string $header = null, array $options = []): static {
+    public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
         if (!isset(static::$instance)) static::$instance = new static();
 
         if (!is_null($data)) {
-            $header = static::$instance->buildHeader($header);
-            static::$instance->addDump($data, $header, $options);
+            $label = static::$instance->buildLabel($label);
+            static::$instance->addDump($data, $label, $options);
         } else if (static::$enabled && count(static::$dumps) > 0) {
             echo static::$instance->render();
         }
