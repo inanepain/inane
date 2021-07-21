@@ -19,17 +19,22 @@ declare(strict_types=1);
 namespace Inane\Debug;
 
 use function array_key_exists;
+use function basename;
+use function count;
+use function file_get_contents;
 use function highlight_string;
 use function implode;
+use function in_array;
 use function is_null;
 use function str_replace;
 use function var_export;
-use function count;
 
 /**
  * Dumper
  * 
- * @version 1.0.0
+ * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
+ * 
+ * @version 1.0.2
  *
  * @package Inane\Debug
  */
@@ -40,9 +45,16 @@ class Dumper {
     private static Dumper $instance;
 
     /**
-     * Disable Dumper's output
+     * Set to false to stop dumper writing to page. instant quiet.
+     * PS: this effect manual calls to write dumps as well.
      */
     public static bool $enabled = true;
+
+    /**
+     * Stops Dumper automatically writing dumps to page when it is destroyed
+     * Calling dump with no arguments will write the dumps collected thus far at that point.
+     */
+    public static bool $autoDump = true;
 
     /**
      * The collected dumps
@@ -59,7 +71,7 @@ class Dumper {
      * When destroyed the dumps get written to page
      */
     public function __destruct() {
-        static::dump();
+        if (static::$autoDump) static::dump();
     }
 
     /**
@@ -68,25 +80,25 @@ class Dumper {
      * Without Args: Write current dumps to page
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
-     * @return void
+     * @return Dumper
      */
-    public function __invoke(mixed $data = null, ?string $header = null, array $options = []): void {
-        static::dump($data, $header, $options);
+    public function __invoke(mixed $data = null, ?string $label = null, array $options = []): static {
+        return static::dump($data, $label, $options);
     }
 
     /**
      * Add a dump to the collection
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
      * @return void
      */
-    protected function addDump(mixed $data, ?string $header = null, array $options = []): void {
+    protected function addDump(mixed $data, ?string $label = null, array $options = []): void {
         $code = var_export($data, true);
         $code = highlight_string("<?php\n" . $code, true);
         $code = str_replace("&lt;?php<br />", '', $code);
@@ -95,9 +107,9 @@ class Dumper {
         if (array_key_exists('open', $options) && $options['open'] === true) $open = ' open';
 
         static::$dumps[] = <<<DEBUG
-<div class="ierror">
-<details class="iheader"{$open}>
-<summary>{$header}</summary>
+<div class="dump">
+<details class="dump-window"{$open}>
+<summary>{$label}</summary>
 {$code}
 </details>
 </div>
@@ -114,34 +126,44 @@ DEBUG;
 
         static::$dumps = [];
 
+        $style = file_get_contents(__DIR__ . '/dumper.css');
+
         return <<<CODE
-<style>.idebug{position:absolute;bottom:0px;left:0px;z-index:999999999999999;background:#fff;width:100vw;border-top:1px silver solid;font-size:14px}.idebug .idebug-box{background:#f0f8ff;border-bottom:3px gray groove;font-weight:700;color:#8a2be2}.idebug summary:focus{outline:none}.idebug .ierror{border-bottom:1px #000 solid}.idebug .ierror summary{border-bottom:1px gray solid;background:#a9a9a9;padding-left:.5rem}.idebug .ierror summary .iheader{min-width:150px;display:inline-block}.idebug .ierror summary .iheader::after{content:" :";float:right}.idebug .ierror pre{padding-left:1rem}</style>
-<div class="idebug">
-<details>
-<summary class="idebug-box">idebug</summary>
+<style>{$style}</style>
+<div class="dumper">
+<details class="dumper-window">
+<summary class="dumper-title">dumper</summary>
+<div class="dumper-body">
 {$code}
+</div>
 </details>
 </div>
 CODE;
     }
 
     /**
-     * Create a header for the dump with relevant information
+     * Create a label for the dump with relevant information
      *
-     * @param string|null $header
+     * @param string|null $label
      * 
      * @return string
      */
-    protected function buildHeader(?string $header = null): string {
+    protected function buildLabel(?string $label = null): string {
+        $i = -1;
+        foreach(debug_backtrace() as $trace) {
+            $i++;
+            if (!in_array( basename($trace['file']), ['Dumper.php', 'index.php'])) break;
+        }
+
         $data = [];
-        $a = debug_backtrace()[1];
+        $a = debug_backtrace()[$i];
         $data['file'] = $a['file'];
         $data['line'] = $a['line'];
-        $b = debug_backtrace()[2];
+        $b = debug_backtrace()[++$i];
         $data['class'] = $b['class'];
         $data['function'] = $b['function'];
 
-        $title = isset($header) ? "<strong class=\"iheader\">${header}</strong> " : '';
+        $title = isset($label) ? "<strong class=\"dump-label\">${label}</strong> " : '';
         return "{$title}{$data['class']}::<strong>{$data['function']}</strong> => {$data['file']}::<strong>{$data['line']}</strong>";
     }
 
@@ -152,19 +174,22 @@ CODE;
      * 
      * options:
      *  - (bool) open: true creates dumps open (main panel not effect)
+     * 
+     * Chaining: You only need bracket your arguments for repeated dumps.
+     * Dumper::dump('one')('two', 'Label')
      *
      * @param mixed $data item to dump
-     * @param null|string $header
+     * @param null|string $label
      * @param array $options
      * 
      * @return Dumper
      */
-    public static function dump(mixed $data = null, ?string $header = null, array $options = []): static {
+    public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
         if (!isset(static::$instance)) static::$instance = new static();
 
-        if (!is_null($data)) {
-            $header = static::$instance->buildHeader($header);
-            static::$instance->addDump($data, $header, $options);
+        if (!is_null($data)  && !is_null($label)) {
+            $label = static::$instance->buildLabel($label);
+            static::$instance->addDump($data, $label, $options);
         } else if (static::$enabled && count(static::$dumps) > 0) {
             echo static::$instance->render();
         }

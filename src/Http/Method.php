@@ -53,7 +53,7 @@ class Method extends Enum {
     /**
      * @var string[] the descriptions
      */
-    protected static $descriptions = [
+    protected static array $descriptions = [
         self::COPY => 'COPY',
         self::DELETE => 'DELETE',
         self::GET => 'GET',
@@ -73,7 +73,7 @@ class Method extends Enum {
     /**
      * @var string[] the defaults
      */
-    protected static $defaults = [
+    protected static array $defaults = [
         self::COPY => 'COPY',
         self::DELETE => 'DELETE',
         self::GET => 'GET',

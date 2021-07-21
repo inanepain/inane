@@ -194,7 +194,7 @@ class StatusCode extends Enum {
     /**
      * @var string[] the descriptions
      */
-    protected static $descriptions = [
+    protected static array $descriptions = [
         self::CONTINUE => "The server has received the request headers, and that the client should proceed to send the request body.",
         self::SWITCHING_PROTOCOLS => "The requester has asked the server to switch protocols and the server is acknowledging that it will do so.",
         self::PROCESSING => "The server has received and is processing the request, but no response is available yet.",

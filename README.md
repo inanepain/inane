@@ -1,6 +1,6 @@
 # Inane Classes
 
-Version: `0.22.0` 20 Jul 2021
+Version: `0.22.2` 20 Jul 2021
 
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
@@ -83,6 +83,45 @@ module.php:
         return $logger;
     },
 ]
+```
+
+#### Dumper
+
+A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
+
+**option: Dumper::autoDump**  
+
+Set it to false to prevent Dumper automatically writing all buffered dumps when it is destroyed.
+
+**option: Dumper::enabled**  
+
+Set it to false to stop ALL output from Dumper. Instant quiet.
+
+**Quick & Easy:**  
+
+Consider wrapping Dumper in a global function for quick access:  
+
+```php
+function dd(mixed $data = null, ?string $label = null, array $options = []): \Inane\Debug\Dumper {
+    return \Inane\Debug\Dumper::dump($data, $label, $options);
+}
+```
+
+
+**Chaining**  
+
+`Dumper::dump` only takes one set of dumps at a time: item to dump, an optional label and options.
+To dump multiple variables simply bracket it right after the first set.
+
+E.G.:
+
+```php
+$var1 = someFunction();
+$var2 = another($var1);
+$var3 = again($var1);
+
+dd($var1, 'someFunction')($var2, 'another')($var3, 'again');
+
 ```
 
 ### Feedback
