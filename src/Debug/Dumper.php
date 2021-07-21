@@ -187,7 +187,7 @@ CODE;
     public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
         if (!isset(static::$instance)) static::$instance = new static();
 
-        if (!is_null($data)) {
+        if (!is_null($data)  && !is_null($label)) {
             $label = static::$instance->buildLabel($label);
             static::$instance->addDump($data, $label, $options);
         } else if (static::$enabled && count(static::$dumps) > 0) {

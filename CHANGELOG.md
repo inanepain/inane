@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.23.0-dev - 2021-07-20 (dev)
+
+-               : 
+
 ## 0.22.0 - 2021-07-20
 
 - Config\Options: array type for configurations, settings and options
