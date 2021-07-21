@@ -5,6 +5,8 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ * 
+ * PHP version 8
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\String
@@ -15,6 +17,7 @@
  * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
  */
 /* vscode: vscode-fold=2 */
+declare(strict_types=1);
 
 namespace Inane\String;
 
@@ -36,6 +39,7 @@ use function strtoupper;
 use function substr_replace;
 use function trim;
 use function ucwords;
+use function is_null;
 
 /**
  * Str
@@ -43,7 +47,7 @@ use function ucwords;
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.2.0
+ * @version 0.2.1
  */
 class Str {
     use OptionMagicPropertyTrait;
@@ -190,15 +194,17 @@ class Str {
     }
 
     /**
-     * Replaces last match of search with replace
+     * Replaces text from beginning to end
+     *  - if $limit not null, only that amount of matches will be replaces
      *
      * @param string $search
      * @param string $replace
+     * @param null|int $limit
      * 
      * @return Str
      */
-    public function replace(string $search, string $replace): Str {
-        $this->_str = str_replace($search, $replace, $this->_str);
+    public function replace(string $search, string $replace, ?int $limit = null): Str {
+        $this->_str = Str::str_replace($search, $replace, $this->_str, $limit);
 
         return $this;
     }
@@ -224,6 +230,26 @@ class Str {
      */
     public static function str_contains(string $needle, string $haystack): bool {
         return strstr($haystack, $needle);
+    }
+
+    /**
+     * Replaces text from beginning to end
+     *  - if $limit not null, only that amount of matches will be replaces
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $str
+     * @param null|int $limit
+     * 
+     * @return string
+     */
+    public static function str_replace(string $search, string $replace, string $str, ?int $limit = null): string {
+        if (!is_null($limit)) {
+            $from = '/'.preg_quote($search, '/').'/';
+            $str = preg_replace($from, $replace, $str, $limit);
+        } else $str = str_replace($search, $replace, $str);
+
+        return $str;
     }
 
     /**
