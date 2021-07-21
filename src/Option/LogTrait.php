@@ -14,6 +14,7 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+declare(strict_types=1);
 
 namespace Inane\Option;
 
@@ -23,7 +24,7 @@ namespace Inane\Option;
  * Easy log access
  *
  * @package Inane\Option
- * @version 1.0.0
+ * @version 1.0.1
  */
 trait LogTrait {
     /*
@@ -69,9 +70,9 @@ trait LogTrait {
     */
 
     /**
-     * @var \Laminas\Log\Logger the log service
+     * The log service
      */
-    protected $logService;
+    protected  \Laminas\Log\Logger $logService;
 
     /**
      * Get Log Service
@@ -79,9 +80,9 @@ trait LogTrait {
      * @return \Laminas\Log\Logger the logger
      */
     public function getLog(): \Laminas\Log\Logger {
-        if (null === $this->logService) {
+        if (!isset($this->logService))
             $this->logService = $this->getEvent()->getApplication()->getServiceManager()->get('LogService');
-        }
+        
         return $this->logService;
     }
 }
