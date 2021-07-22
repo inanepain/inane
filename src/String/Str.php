@@ -18,7 +18,7 @@
  */
 /* vscode: vscode-fold=2 */
 
-declare(strict_types=1);
+// declare(strict_types=1);
 
 namespace Inane\String;
 
@@ -274,29 +274,50 @@ class Str {
     /**
      * Changes the case of $string to $case and optionally removes spaces
      *
-     * @param String $string
+     * @param string $string
      * @param Capitalisation $case
      * @param bool $removeSpaces
      *
      * @return string
      */
-    public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string {
-        $RaNDom = function ($text) {
-            for ($i = 0, $c = strlen($text); $i < $c; $i++) {
-                $text[$i] = (rand(0, 100) > 50
-                    ? strtoupper($text[$i])
-                    : strtolower($text[$i]));
-            }
-            return $text;
-        };
+    public static function str_to_case(string $string, Capitalisation $case, bool $removeSpaces = false): string {
+        // $RaNDom = function ($text) {
+        //     for ($i = 0, $c = strlen($text); $i < $c; $i++) {
+        //         $text[$i] = (rand(0, 100) > 50
+        //             ? strtoupper($text[$i])
+        //             : strtolower($text[$i]));
+        //     }
+        //     return $text;
+        // };
 
-        $string = match ($case) {
-            Capitalisation::UPPERCASE => strtoupper($string),
-            Capitalisation::lowercase => strtolower($string),
-            Capitalisation::camelCase => lcfirst(ucwords(strtolower($string))),
-            Capitalisation::StudlyCaps => ucwords(strtolower($string)),
-            Capitalisation::RaNDom => $RaNDom($string),
-        };
+        switch ($case) {
+            case Capitalisation::UPPERCASE:
+                $string = strtoupper($string);
+                break;
+
+            case Capitalisation::lowercase:
+                $string = strtolower($string);
+                break;
+
+            case Capitalisation::camelCase:
+                $string = lcfirst(ucwords(strtolower($string)));
+                break;
+
+            case Capitalisation::StudlyCaps:
+                $string = ucwords(strtolower($string));
+                break;
+
+            case Capitalisation::RaNDom:
+                for ($i = 0, $c = strlen($string); $i < $c; $i++) {
+                    $string[$i] = (rand(0, 100) > 50
+                        ? strtoupper($string[$i])
+                        : strtolower($string[$i]));
+                }
+                break;
+
+            default:
+                break;
+        }
 
         if ($removeSpaces) $string = str_replace(' ', '', $string);
 
@@ -331,7 +352,7 @@ class Str {
      * @return Str
      */
     public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
-        $this->_str = self::str_to_case($this->_str, $case, $removeSpaces);
+        $this->_str = static::str_to_case($this->_str, $case, $removeSpaces);
         $this->_case = $case;
 
         return $this;
@@ -357,7 +378,9 @@ class Str {
      * 
      * @return Str
      */
-    public function highlight(Style $style = Style::DEFAULT(), bool $removeOpenTag = true): Str {
+    public function highlight(Style $style = null, bool $removeOpenTag = true): Str {
+        if (is_null($style)) $style = Style::DEFAULT();
+        
         $style->apply();
 
         $text = trim($this->_str);
@@ -384,7 +407,9 @@ class Str {
      * 
      * @return Str
      */
-    public static function highlightText(string $text, Style $style = Style::DEFAULT()): Str {
+    public static function highlightText(string $text, ?Style $style = null): Str {
+        if (is_null($style)) $style = Style::DEFAULT();
+
         $new = new static($text);
         return $new->highlight($style);
     }
