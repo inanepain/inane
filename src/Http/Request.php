@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Inane\Http;
 
 use Inane\Config\Options;
+use Inane\Http\Exception\PropertyException;
 use Inane\Http\Request\AbstractRequest;
-use PropertyException;
 
 /**
  * Request
@@ -59,16 +59,17 @@ class Request extends AbstractRequest {
      */
     private $response;
 
+    /**
+     * Attached Files
+     */
+    protected array $_files;
 
-
-
-
-
-
-
-
-
-
+    /**
+     * Query Params
+     * 
+     * @var Options
+     */
+    private Options $_query;
 
     /**
      * magic method: __get
@@ -94,6 +95,7 @@ class Request extends AbstractRequest {
      * @return void 
      */
     public function __construct(bool $allowAllProperties = true, ?Response $response = null) {
+        parent::__construct();
         $this->_allowAllProperties = ($allowAllProperties === true);
         if (!is_null($response)) $this->response = $response;
         $this->bootstrapSelf();
@@ -104,13 +106,15 @@ class Request extends AbstractRequest {
      *
      * @return void
      */
-    private function bootstrapSelf() {
+    private function bootstrapSelf(): void {
         $data = [];
         foreach ($_SERVER as $key => $value) $data[$this->toCamelCase($key)] = $value;
 
         if ($this->_allowAllProperties) $this->_magic_properties_allowed = array_keys($data);
 
         $this->_properties = new Options($data);
+        $this->getPost();
+        $this->getQuery();
     }
 
     private function toCamelCase($string) {
@@ -159,16 +163,9 @@ class Request extends AbstractRequest {
 
     protected $_post;
     public function getPost() {
-        if (!$this->_post) $this->_post = new Options($_POST);
+        if ($_POST && !$this->_post) $this->_post = new Options($_POST);
         return $this->_post;
     }
-
-    /**
-     * Query Params
-     * 
-     * @var Options
-     */
-    private $_query;
 
     /**
      * get: Query Params
@@ -178,7 +175,7 @@ class Request extends AbstractRequest {
      * @return mixed param/params
      */
     public function getQuery(?string $param = null, ?string $default = null): mixed {
-        if (!$this->_query) $this->_query = new Options($_GET);
+        if (!isset($this->_query)) $this->_query = new Options($_GET);
 
         if (!is_null($param)) return $this->_query->get($param, $default);
         return $this->_query;
@@ -193,7 +190,6 @@ class Request extends AbstractRequest {
         return http_build_query($this->getQuery()->toArray());
     }
 
-    protected array $_files;
     /**
      * get: uploaded files, if any
      *

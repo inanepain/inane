@@ -6,7 +6,12 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.22.2 - 2021-07-201
+## 0.23.0 - 2021-07-22
+
+- Render        : Helper and Engine cover the basis of templates
+- Dumper        : Simple, took a few steps back and much happier with it now
+
+## 0.22.2 - 2021-07-20
 
 - Config\Options: array type for configurations, settings and options
 - Http          : a bunch a stuff for requests, responses and formatting those responses

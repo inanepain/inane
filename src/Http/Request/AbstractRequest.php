@@ -23,6 +23,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 use function is_null;
+use function is_string;
 use function preg_match;
 use function strtoupper;
 
@@ -91,12 +92,10 @@ class AbstractRequest extends Message implements RequestInterface {
      */
     protected function setMethod(null|string|Method $method = null): self {
         if (!isset($this->method)) {
-            if (is_null($method)) $method = Method::from($_SERVER['REQUEST_METHOD']);
-            else if (!($method instanceof Method)) {
-                if (Method::isValidKey($method)) $method = Method::from(strtoupper($method));
-                else $method = Method::GET();
-            }
-            $this->method = $method;
+            if (is_null($method)) $this->method = Method::from($_SERVER['REQUEST_METHOD']);
+            else if (is_string($method) && Method::isValidKey(strtoupper($method))) $this->method = Method::from(strtoupper($method));
+            else if ($method instanceof Method) $this->method = $method;
+            else $this->method = Method::GET();
         }
         return $this;
     }
@@ -181,6 +180,7 @@ class AbstractRequest extends Message implements RequestInterface {
      * @return string Returns the request method.
      */
     public function getMethod(): string {
+        if (!isset($this->method)) $this->setMethod();
         return $this->method->getValue();
     }
 

@@ -17,12 +17,15 @@ use Inane\Exception\RuntimeException;
 use Inane\Http\Exception\InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
+use function is_null;
+use function parse_str;
+use function parse_url;
 use function strtolower;
 
 /**
  * AbstractUri
  * 
- * @version 0.6.0
+ * @version 0.6.1
  * 
  * @package Http
  */
@@ -45,7 +48,7 @@ class Uri implements UriInterface {
     ];
 
     /** @var string|null String representation */
-    protected $composedComponents;
+    protected ?string $composedComponents;
 
     /**
      * Uri components
@@ -82,7 +85,7 @@ class Uri implements UriInterface {
      * @param string $uri url
      * @return bool parse result
      */
-    protected function setComponents(string $uri) {
+    protected function setComponents(string $uri): bool {
         $parts = parse_url($uri);
         if ($parts === false) return false;
 
@@ -90,8 +93,8 @@ class Uri implements UriInterface {
         parse_str($query, $params);
 
         $parts['params'] = $params;
-        $parts['scheme'] =  $parts['scheme'] ? strtolower($parts['scheme']) : '';
-        $parts['host'] =  $parts['host'] ? strtolower($parts['host']) : '';
+        $parts['scheme'] = strtolower($parts['scheme'] ?? '');
+        $parts['host'] = strtolower($parts['host'] ?? '');
 
         $this->composedComponents = $uri;
         $this->components->merge(new Options($parts));
@@ -104,7 +107,7 @@ class Uri implements UriInterface {
      * @return void 
      * @throws RuntimeException 
      */
-    protected function verify() {
+    protected function verify(): void {
         $port = $this->components->port;
         $scheme = $this->components->scheme;
         if (!is_null($port) && (self::DEFAULT_PORTS[$scheme] == $port)) $this->components->set('port', null);

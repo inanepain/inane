@@ -1,6 +1,6 @@
 # Inane Classes
 
-Version: `0.22.2` 20 Jul 2021
+Version: `0.23.0` 22 Jul 2021
 
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
@@ -11,7 +11,7 @@ Check out the [CHANGELOG](CHANGELOG.md) if you wanna see the road travelled thus
 ### Requirements
 
 - PHP \>= 7.0
-- zendframework/zend-http >= 2.8
+- laminas/laminas-http >= 2.8
 
 ### Installation
 
@@ -89,10 +89,6 @@ module.php:
 
 A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
 
-**option: Dumper::autoDump**  
-
-Set it to false to prevent Dumper automatically writing all buffered dumps when it is destroyed.
-
 **option: Dumper::enabled**  
 
 Set it to false to stop ALL output from Dumper. Instant quiet.
@@ -106,7 +102,6 @@ function dd(mixed $data = null, ?string $label = null, array $options = []): \In
     return \Inane\Debug\Dumper::dump($data, $label, $options);
 }
 ```
-
 
 **Chaining**  
 

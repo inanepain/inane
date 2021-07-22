@@ -18,14 +18,15 @@ declare(strict_types=1);
 
 namespace Inane\Debug;
 
-use function array_key_exists;
+use Inane\String\Style;
+
 use function basename;
 use function count;
 use function file_get_contents;
 use function highlight_string;
 use function implode;
 use function in_array;
-use function is_null;
+use function ob_start;
 use function str_replace;
 use function var_export;
 
@@ -34,7 +35,7 @@ use function var_export;
  * 
  * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
  * 
- * @version 1.0.2
+ * @version 1.2.0
  *
  * @package Inane\Debug
  */
@@ -51,10 +52,9 @@ class Dumper {
     public static bool $enabled = true;
 
     /**
-     * Stops Dumper automatically writing dumps to page when it is destroyed
-     * Calling dump with no arguments will write the dumps collected thus far at that point.
+     * Code style theme for dumper
      */
-    public static bool $autoDump = true;
+    public static Style $style;
 
     /**
      * The collected dumps
@@ -65,13 +65,18 @@ class Dumper {
      * Private constructor
      */
     protected function __construct() {
+        static::$style = Style::DEFAULT();
     }
 
     /**
      * When destroyed the dumps get written to page
      */
     public function __destruct() {
-        if (static::$autoDump) static::dump();
+        if (static::$enabled && count(static::$dumps) > 0) {
+            ob_start();
+            // echo static::$instance->render();
+            echo $this->render();
+        }
     }
 
     /**
@@ -99,18 +104,30 @@ class Dumper {
      * @return void
      */
     protected function addDump(mixed $data, ?string $label = null, array $options = []): void {
+        $style = $options['style'] ?? static::$style;
+        $style->apply();
+
         $code = var_export($data, true);
         $code = highlight_string("<?php\n" . $code, true);
         $code = str_replace("&lt;?php<br />", '', $code);
 
-        $open = '';
-        if (array_key_exists('open', $options) && $options['open'] === true) $open = ' open';
+        $text = trim($code);
+        $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
+        $text = preg_replace("|\\</code\\>\$|", '', $text, 1);  // remove suffix 1
+        $text = trim($text);  // remove line breaks
+        $text = preg_replace("|\\</span\\>\$|", '', $text, 1);  // remove suffix 2
+        $text = trim($text);  // remove line breaks
+        $code = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
+
+        $open = ($options['open'] ?? false) ? 'open' : '';
 
         static::$dumps[] = <<<DEBUG
 <div class="dump">
 <details class="dump-window"{$open}>
 <summary>{$label}</summary>
+<code>
 {$code}
+</code>
 </details>
 </div>
 DEBUG;
@@ -164,13 +181,13 @@ CODE;
         $data['function'] = $b['function'];
 
         $title = isset($label) ? "<strong class=\"dump-label\">${label}</strong> " : '';
-        return "{$title}{$data['class']}::<strong>{$data['function']}</strong> => {$data['file']}::<strong>{$data['line']}</strong>";
+        $file = "{$data['file']}::<strong>{$data['line']}</strong>";
+        $class = $data['class'] ? " => {$data['class']}::<strong>{$data['function']}</strong>" : '';
+        return "{$title}{$file}{$class}";
     }
 
     /**
-     * With Args: Add a dump to the collection
-     * OR
-     * Without Args: Write current dumps to page
+     * Add a dump to the collection
      * 
      * options:
      *  - (bool) open: true creates dumps open (main panel not effect)
@@ -187,13 +204,11 @@ CODE;
     public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
         if (!isset(static::$instance)) static::$instance = new static();
 
-        if (!is_null($data)  && !is_null($label)) {
-            $label = static::$instance->buildLabel($label);
-            static::$instance->addDump($data, $label, $options);
-        } else if (static::$enabled && count(static::$dumps) > 0) {
-            echo static::$instance->render();
-        }
+        $label = static::$instance->buildLabel($label);
+        static::$instance->addDump($data, $label, $options);
 
         return static::$instance;
     }
+
+
 }
