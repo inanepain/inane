@@ -17,6 +17,7 @@
  * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
  */
 /* vscode: vscode-fold=2 */
+
 declare(strict_types=1);
 
 namespace Inane\String;
@@ -47,7 +48,7 @@ use function is_null;
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.2.1
+ * @version 0.2.2
  */
 class Str {
     use OptionMagicPropertyTrait;
@@ -245,7 +246,7 @@ class Str {
      */
     public static function str_replace(string $search, string $replace, string $str, ?int $limit = null): string {
         if (!is_null($limit)) {
-            $from = '/'.preg_quote($search, '/').'/';
+            $from = '/' . preg_quote($search, '/') . '/';
             $str = preg_replace($from, $replace, $str, $limit);
         } else $str = str_replace($search, $replace, $str);
 
@@ -280,55 +281,22 @@ class Str {
      * @return string
      */
     public static function str_to_case(String $string, Capitalisation $case, bool $removeSpaces = false): string {
-        // $RaNDom = function($text) {
-        //     for ($i = 0, $c = strlen($text); $i < $c; $i++) {
-        //         $text[$i] = (rand(0, 100) > 50
-        //             ? strtoupper($text[$i])
-        //             : strtolower($text[$i]));
-        //     }
-        //     return $text;
-        // };
+        $RaNDom = function ($text) {
+            for ($i = 0, $c = strlen($text); $i < $c; $i++) {
+                $text[$i] = (rand(0, 100) > 50
+                    ? strtoupper($text[$i])
+                    : strtolower($text[$i]));
+            }
+            return $text;
+        };
 
-        
-        // $string = match($case) {
-        //     Capitalisation::UPPERCASE() => strtoupper($string),
-        //     Capitalisation::lowercase() => strtolower($string),
-        //     Capitalisation::camelCase() => lcfirst(ucwords(strtolower($string))),
-        //     Capitalisation::StudlyCaps() => ucwords(strtolower($string)),
-        //     Capitalisation::RaNDom() => $RaNDom($string),
-        //     Capitalisation::Ignore() => $string,
-        // };
-
-        switch ($case) {
-            case Capitalisation::UPPERCASE:
-                $string = strtoupper($string);
-                break;
-
-            case Capitalisation::lowercase:
-                $string = strtolower($string);
-                break;
-
-            case Capitalisation::camelCase:
-                $string = lcfirst(ucwords(strtolower($string)));
-                break;
-
-            case Capitalisation::StudlyCaps:
-                $string = ucwords(strtolower($string));
-                break;
-
-            case Capitalisation::RaNDom:
-                for ($i = 0, $c = strlen($string); $i < $c; $i++) {
-                    $string[$i] = (rand(0, 100) > 50
-                        ? strtoupper($string[$i])
-                        : strtolower($string[$i]));
-                }
-
-                break;
-
-            default:
-
-                break;
-        }
+        $string = match ($case) {
+            Capitalisation::UPPERCASE => strtoupper($string),
+            Capitalisation::lowercase => strtolower($string),
+            Capitalisation::camelCase => lcfirst(ucwords(strtolower($string))),
+            Capitalisation::StudlyCaps => ucwords(strtolower($string)),
+            Capitalisation::RaNDom => $RaNDom($string),
+        };
 
         if ($removeSpaces) $string = str_replace(' ', '', $string);
 
@@ -359,6 +327,7 @@ class Str {
      *
      * @param Capitalisation $case
      * @param bool $removeSpaces
+     * 
      * @return Str
      */
     public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
@@ -383,32 +352,18 @@ class Str {
     /**
      * highlight str
      * 
-     * @param string $style (default, php, php2, html)
+     * @param Style $style (default, php2, html)
+     * @param bool $removeOpenTag remove the <?php that is added
      * 
      * @return Str
      */
-    public function highlight(string $style = 'default'): Str {
-        if ($style == 'php') {
-            ini_set('highlight.comment', '#FF8000');
-            ini_set('highlight.default', '#0000BB');
-            ini_set('highlight.html', '#000000');
-            ini_set('highlight.keyword', '#007700');
-            ini_set('highlight.string', '#DD0000');
-        } else if ($style == 'php2') {
-            ini_set('highlight.comment', '#008000');
-            ini_set('highlight.default', '#000000');
-            ini_set('highlight.html', '#808080');
-            ini_set('highlight.keyword', '#0000BB; font-weight: bold');
-            ini_set('highlight.string', '#DD0000');
-        } else if ($style == 'html') {
-            ini_set('highlight.comment', 'green');
-            ini_set('highlight.default', '#CC0000');
-            ini_set('highlight.html', '#000000');
-            ini_set('highlight.keyword', 'black; font-weight: bold');
-            ini_set('highlight.string', '#0000FF');
-        }
+    public function highlight(Style $style = Style::DEFAULT(), bool $removeOpenTag = true): Str {
+        $style->apply();
 
         $text = trim($this->_str);
+        $text = highlight_string("<?php\n" . $text, true);
+        if ($removeOpenTag) $text = str_replace("&lt;?php<br />", '', $text);
+        
         $text = highlight_string('<?php ' . $text, true);  // highlight_string() requires opening PHP tag or otherwise it will not colorize the text
         $text = trim($text);
         $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
@@ -422,13 +377,14 @@ class Str {
     }
 
     /**
-     * highlight str
+     * highlight text
      * 
-     * @param string $style (default, php, php2, html)
+     * @param string $text
+     * @param Style $style (default, php, php2, html)
      * 
      * @return Str
      */
-    public static function highlightText(string $text, string $style = 'default'): Str {
+    public static function highlightText(string $text, Style $style = Style::DEFAULT()): Str {
         $new = new static($text);
         return $new->highlight($style);
     }
