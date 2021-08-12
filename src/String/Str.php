@@ -18,7 +18,7 @@
  */
 /* vscode: vscode-fold=2 */
 
-// declare(strict_types=1);
+declare(strict_types=1);
 
 namespace Inane\String;
 

@@ -164,30 +164,6 @@ CODE;
     }
 
     /**
-     * Add a dump to the collection
-     * 
-     * options:
-     *  - (bool) open: true creates dumps open (main panel not effect)
-     * 
-     * Chaining: You only need bracket your arguments for repeated dumps.
-     * Dumper::dump('one')('two', 'Label')
-     *
-     * @param mixed $data item to dump
-     * @param null|string $label
-     * @param array $options
-     * 
-     * @return Dumper
-     */
-    public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
-        if (!isset(static::$instance)) static::$instance = new static();
-
-        $label = static::$instance->formatLabel($label);
-        static::$instance->addDump($data, $label, $options);
-
-        return static::$instance;
-    }
-
-    /**
      * Create a label for the dump with relevant information
      *
      * @param string|null $label
@@ -277,5 +253,29 @@ CODE;
 </details>
 </div>
 DEBUG;
+    }
+
+    /**
+     * Add a dump to the collection
+     * 
+     * options:
+     *  - (bool) open: true creates dumps open (main panel not effect)
+     * 
+     * Chaining: You only need bracket your arguments for repeated dumps.
+     * Dumper::dump('one')('two', 'Label')
+     *
+     * @param mixed $data item to dump
+     * @param null|string $label
+     * @param array $options
+     * 
+     * @return Dumper
+     */
+    public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {
+        if (!isset(static::$instance)) static::$instance = new static();
+
+        $label = static::$instance->formatLabel($label);
+        static::$instance->addDump($data, $label, $options);
+
+        return static::$instance;
     }
 }

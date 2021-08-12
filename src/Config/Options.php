@@ -46,17 +46,8 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * Variables
-     * 
-     * @var array
      */
-    private $_data = [];
-
-    /**
-     * Whether modifications to configuration data are allowed
-     * 
-     * @var bool
-     */
-    private $allowModifications;
+    private array $data = [];
 
     /**
      * get value
@@ -84,8 +75,8 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
         if ($this->allowModifications) {
             if (is_array($value)) $value = new static($value);
 
-            if (null === $key) $this->_data[] = $value;
-            else $this->_data[$key] = $value;
+            if (null === $key) $this->data[] = $value;
+            else $this->data[$key] = $value;
         } else {
             throw new RuntimeException('Option is read only');
         }
@@ -100,7 +91,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @abstracting ArrayAccess
      */
     public function __isset($key) {
-        return isset($this->_data[$key]);
+        return isset($this->data[$key]);
     }
 
     /**
@@ -112,19 +103,38 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
     public function __unset($key) {
         if (!$this->allowModifications) {
             throw new InvalidArgumentException('Option is read only');
-        } elseif ($this->__isset($key)) unset($this->_data[$key]);
+        } elseif ($this->__isset($key)) unset($this->data[$key]);
     }
 
     /**
-     * HtmlModel
+     * Options
      * 
+     * @param array $data values
+     * @param bool $allowModifications
+     *  
      * @return void 
      */
-    public function __construct(array $data, bool $allowModifications = true) {
-        $this->allowModifications = (bool) $allowModifications;
+    public function __construct(
+        /**
+         * Variables
+         */
+        array $data = [],
+        /**
+         * Whether modifications to configuration data are allowed
+         */
+        private bool $allowModifications = true
+    ) {
+        foreach ($data as $key => $value) if (is_array($value)) $this->data[$key] = new static($value, $this->allowModifications);
+        else $this->data[$key] = $value;
+    }
 
-        foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value, $this->allowModifications);
-        else $this->_data[$key] = $value;
+    /**
+     * Make Options play nicely with var_dump
+     *
+     * @return array
+     */
+    public function __debugInfo() {
+        return $this->toArray();
     }
 
     /**
@@ -133,7 +143,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return mixed|Options
      */
     public function current() {
-        return current($this->_data);
+        return current($this->data);
     }
 
     /**
@@ -142,7 +152,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return void
      */
     public function next() {
-        next($this->_data);
+        next($this->data);
     }
 
     /**
@@ -151,7 +161,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return string|float|int|bool|null key
      */
     public function key() {
-        return key($this->_data);
+        return key($this->data);
     }
 
     /**
@@ -169,7 +179,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return void 
      */
     public function rewind() {
-        reset($this->_data);
+        reset($this->data);
     }
 
     /**
@@ -178,7 +188,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return int item count
      */
     public function count(): int {
-        return count($this->_data);
+        return count($this->data);
     }
 
     /**
@@ -202,7 +212,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      *
      * @return bool
      */
-    public function has(string $id):bool {
+    public function has(string $id): bool {
         return $this->__isset($id);
     }
 
@@ -223,7 +233,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @return mixed|Options value
      */
     public function get($key, $default = null) {
-        return $this->offsetExists($key) ? $this->_data[$key] : $default;
+        return $this->offsetExists($key) ? $this->data[$key] : $default;
     }
 
     /**
@@ -283,7 +293,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      */
     public function toArray(): array {
         $array = [];
-        $data = $this->_data;
+        $data = $this->data;
 
         /** @var self $value */
         foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
@@ -336,15 +346,15 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
         /** @var Options $value */
         foreach ($merge as $key => $value) {
             if ($this->offsetExists($key)) {
-                if (is_int($key)) $this->_data[] = $value;
-                elseif ($value instanceof self && $this->_data[$key] instanceof self) $this->_data[$key]->merge($value);
+                if (is_int($key)) $this->data[] = $value;
+                elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->merge($value);
                 else {
-                    if ($value instanceof self) $this->_data[$key] = new static($value->toArray(), $this->allowModifications);
-                    else $this->_data[$key] = $value;
+                    if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+                    else $this->data[$key] = $value;
                 }
             } else {
-                if ($value instanceof self) $this->_data[$key] = new static($value->toArray(), $this->allowModifications);
-                else $this->_data[$key] = $value;
+                if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+                else $this->data[$key] = $value;
             }
         }
 
@@ -363,7 +373,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
         $this->allowModifications = false;
 
         /** @var Options $value */
-        foreach ($this->_data as $value) if ($value instanceof self) $value->lock();
+        foreach ($this->data as $value) if ($value instanceof self) $value->lock();
 
         return $this;
     }
