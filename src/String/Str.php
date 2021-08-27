@@ -34,7 +34,7 @@ use function rand;
 use function str_replace;
 use function strlen;
 use function strrpos;
-use function strstr;
+use function str_contains;
 use function strtolower;
 use function strtoupper;
 use function substr_replace;
@@ -230,7 +230,7 @@ class Str {
      * @return bool
      */
     public static function str_contains(string $needle, string $haystack): bool {
-        return strstr($haystack, $needle);
+        return str_contains($haystack, $needle);
     }
 
     /**
