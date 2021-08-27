@@ -48,7 +48,7 @@ use function is_null;
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.2.2
+ * @version 0.2.3
  */
 class Str {
     use OptionMagicPropertyTrait;
