@@ -2,7 +2,9 @@
 // sass -s compressed --no-source-map module/Inane/src/Debug/dumper.scss module/Inane/src/Debug/dumper.css
 
 /*
-Dumper
+Dumper Style
+
+@version: 1.0.1
 
 variables:
     --dumper-font-size: smaller
@@ -10,7 +12,8 @@ variables:
 */
 
 .dumper {
-    position: absolute;
+    position: fixed;
+    // position: absolute;
     bottom: 0px;
     left: 0px;
     z-index: 999999999999999;

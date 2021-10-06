@@ -95,7 +95,7 @@ Set it to false to stop ALL output from Dumper. Instant quiet.
 
 **Quick & Easy:**  
 
-Consider wrapping Dumper in a global function for quick access:  
+When Dumper starts it registers a global function `dd` which is a shortcut for the `Dumper::dump`. Calling `Dumper::dumper()` once early in your apps life cycle means you can use `dd` from then on out.
 
 ```php
 function dd(mixed $data = null, ?string $label = null, array $options = []): \Inane\Debug\Dumper {

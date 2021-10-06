@@ -6,6 +6,10 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.23.X - 2021-08-XX
+
+- Dumper        : CSS fixes
+
 ## 0.23.0 - 2021-07-22
 
 - Render        : Helper and Engine cover the basis of templates

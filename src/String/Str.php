@@ -18,7 +18,7 @@
  */
 /* vscode: vscode-fold=2 */
 
-// declare(strict_types=1);
+declare(strict_types=1);
 
 namespace Inane\String;
 
@@ -34,7 +34,7 @@ use function rand;
 use function str_replace;
 use function strlen;
 use function strrpos;
-use function strstr;
+use function str_contains;
 use function strtolower;
 use function strtoupper;
 use function substr_replace;
@@ -48,7 +48,7 @@ use function is_null;
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.2.2
+ * @version 0.2.3
  */
 class Str {
     use OptionMagicPropertyTrait;
@@ -230,7 +230,7 @@ class Str {
      * @return bool
      */
     public static function str_contains(string $needle, string $haystack): bool {
-        return strstr($haystack, $needle);
+        return str_contains($haystack, $needle);
     }
 
     /**
