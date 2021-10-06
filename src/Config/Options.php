@@ -9,6 +9,8 @@
  * PHP version 8
  */
 
+declare(strict_types=1);
+
 namespace Inane\Config;
 
 use ArrayAccess;
