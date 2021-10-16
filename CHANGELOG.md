@@ -6,9 +6,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.23.X - 2021-08-XX
+## 0.24.0 - 2021-10-16
 
 - Dumper        : CSS fixes
+- Dumper        : Added Silence attribute which can be set `true`/`false` to control Dumper's output by individual class and function
+- General       : Bug fixes and enhancements.
 
 ## 0.23.0 - 2021-07-22
 
