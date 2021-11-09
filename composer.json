@@ -14,7 +14,7 @@
 		"resume",
 		"string"
 	],
-	"homepage": "https://git.inane.co.za:3000/Inane/tools",
+	"homepage": "https://git.inane.co.za:3000/inane/tools",
 	"license": "MIT",
 	"authors": [{
 		"name": "Philip Michael Raab",
@@ -24,8 +24,8 @@
 	}],
 	"support": {
 		"email": "philip@inane.co.za",
-		"wiki": "https://git.inane.co.za:3000/Inane/tools/wiki",
-		"issues": "https://git.inane.co.za:3000/Inane/tools/issues"
+		"wiki": "https://git.inane.co.za:3000/inane/tools/wiki",
+		"issues": "https://git.inane.co.za:3000/inane/tools/issues"
 	},
 	"require": {
 		"php": ">=8.0",

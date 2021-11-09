@@ -6,6 +6,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.24.X - 2021-XX-XX
+
+- Dumper        : Added id to style tag
+- Dumper        : Some css improvements
+
 ## 0.24.0 - 2021-10-16
 
 - Dumper        : CSS fixes
