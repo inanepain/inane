@@ -234,7 +234,7 @@ DUMPER_HTML;
             $data['line'] = $bt_file['line'] ?? '';
 
             // backtrace to object
-            if (($i) < count($backtrace)) {
+            if (($i) < @count($backtrace)) {
                 $bt_object = debug_backtrace()[++$i];
                 $data['class'] = $bt_object['class'] ?? false;
                 $data['function'] = $bt_object['function'] ?? '';
