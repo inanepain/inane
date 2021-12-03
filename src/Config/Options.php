@@ -2,10 +2,10 @@
 
 /**
  * Options
- * 
+ *
  * Replaces Inane\Config\Config
  * @since 0.22.0
- * 
+ *
  * PHP version 8
  */
 
@@ -16,8 +16,6 @@ namespace Inane\Config;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
-use Inane\Exception\InvalidArgumentException;
-use Inane\Exception\RuntimeException;
 use Iterator;
 use Psr\Container\ContainerInterface;
 
@@ -31,16 +29,21 @@ use function key;
 use function next;
 use function reset;
 
+use Inane\Exception\{
+    InvalidArgumentException,
+    RuntimeException
+};
+
 /**
  * Options
- * 
+ *
  * Provides a property based interface to an array.
  * The data are read-only unless $allowModifications is set to true
  * on construction.
  *
  * Implements Countable, Iterator and ArrayAccess
  * to facilitate easy access to the data.
- * 
+ *
  * @package Inane\Config
  * @version 0.9.0
  */
@@ -53,9 +56,9 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * get value
-     * 
+     *
      * public function &__get($key) {
-     * 
+     *
      * @param mixed $key key
      * @return mixed|Options value
      */
@@ -65,13 +68,13 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * Assigns a value to the specified data
-     * 
+     *
      * @param string The data key to assign the value to
      * @param mixed  The value to set
-     * 
-     * @return void 
-     * 
-     * @throws RuntimeException 
+     *
+     * @return void
+     *
+     * @throws RuntimeException
      */
     public function __set($key, $value) {
         if ($this->allowModifications) {
@@ -110,11 +113,11 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * Options
-     * 
+     *
      * @param array $data values
      * @param bool $allowModifications
-     *  
-     * @return void 
+     *
+     * @return void
      */
     public function __construct(
         /**
@@ -135,16 +138,16 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      *
      * @return array
      */
-    public function __debugInfo() {
+    public function __debugInfo(): array {
         return $this->toArray();
     }
 
     /**
      * Current
-     * 
+     *
      * @return mixed|Options
      */
-    public function current() {
+    public function current(): mixed {
         return current($this->data);
     }
 
@@ -153,40 +156,40 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      *
      * @return void
      */
-    public function next() {
+    public function next(): void {
         next($this->data);
     }
 
     /**
      * key
-     * 
+     *
      * @return string|float|int|bool|null key
      */
-    public function key() {
+    public function key(): string|int|null {
         return key($this->data);
     }
 
     /**
      * valid
-     * 
+     *
      * @return bool valid
      */
-    public function valid() {
+    public function valid(): bool {
         return ($this->key() !== null);
     }
 
     /**
      * rewind to first item
-     * 
-     * @return void 
+     *
+     * @return void
      */
-    public function rewind() {
+    public function rewind(): void {
         reset($this->data);
     }
 
     /**
      * count
-     * 
+     *
      * @return int item count
      */
     public function count(): int {
@@ -195,7 +198,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * Key exists
-     * 
+     *
      * @param string $offset key
      * @return bool exists
      */
@@ -223,7 +226,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * @param string $offset offset
      * @return mixed|Options value
      */
-    public function offsetGet($offset) {
+    public function offsetGet(mixed $offset): mixed {
         return $this->get($offset);
     }
 
@@ -231,7 +234,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      * get key
      * @param string $key key
      * @param mixed $default value
-     * 
+     *
      * @return mixed|Options value
      */
     public function get($key, $default = null) {
@@ -240,27 +243,27 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * set offset
-     * 
+     *
      * @param string $offset offset
      * @param mixed $value value
-     * 
-     * @return void 
-     * 
-     * @throws RuntimeException 
+     *
+     * @return void
+     *
+     * @throws RuntimeException
      */
-    public function offsetSet($offset, $value) {
+    public function offsetSet(mixed $offset, mixed $value): void {
         $this->__set($offset, $value);
     }
 
     /**
      * set key
-     * 
+     *
      * @param mixed $key key
      * @param mixed $value value
-     * 
-     * @return Options 
-     * 
-     * @throws RuntimeException 
+     *
+     * @return Options
+     *
+     * @throws RuntimeException
      */
     public function set($key, $value): Options {
         $this->offsetSet($key, $value);
@@ -269,19 +272,19 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
 
     /**
      * delete key
-     * 
+     *
      * @param string $offset key
-     * @return void 
+     * @return void
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset(mixed $offset): void {
         $this->__unset($offset);
     }
 
     /**
      * delete key
-     * 
+     *
      * @param string $offset key
-     * @return Options 
+     * @return Options
      */
     public function unset($key): Options {
         $this->offsetUnset($key);
@@ -310,7 +313,7 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
      *
      * 1 array in = same array out
      * 0 array in = empty array out
-     * 
+     *
      * @todo: check for allowModifications
      *
      * @param Options ...$models

@@ -235,7 +235,7 @@ DUMPER_HTML;
 
             // backtrace to object
             if (($i) < @count($backtrace)) {
-                $bt_object = debug_backtrace()[++$i];
+                $bt_object = @debug_backtrace()[++$i];
                 $data['class'] = $bt_object['class'] ?? false;
                 $data['function'] = $bt_object['function'] ?? '';
             } else $data['class'] = false;

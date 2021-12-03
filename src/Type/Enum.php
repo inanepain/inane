@@ -1,9 +1,9 @@
 <?php
 /**
  * Enum Abstract Class
- * 
+ *
  * PHP version 7
- * 
+ *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\Type
  *
@@ -20,9 +20,6 @@ declare(strict_types=1);
 
 namespace Inane\Type;
 
-use Inane\Exception\UnexpectedValueException;
-use Inane\Exception\BadMethodCallException;
-
 use JsonSerializable;
 use ReflectionClass;
 
@@ -31,6 +28,11 @@ use function array_keys;
 use function array_search;
 use function get_class;
 use function in_array;
+
+use Inane\Exception\{
+    BadMethodCallException,
+    UnexpectedValueException
+};
 
 /**
  * Base Enum class
@@ -92,7 +94,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * Default value
-     * 
+     *
      * If enum of properties this could store their default values
      *
      * @var array
@@ -125,9 +127,9 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * create from value
-     * 
+     *
      * @param mixed $value
-     * 
+     *
      * @return static
      */
     public static function from($value): self {
@@ -138,7 +140,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * Get value
-     * 
+     *
      * @return mixed
      */
     public function getValue() {
@@ -147,7 +149,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * Get description
-     * 
+     *
      * @return mixed
      */
     public function getDescription() {
@@ -156,7 +158,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * Get default
-     * 
+     *
      * @return mixed
      */
     public function getDefault() {
@@ -174,7 +176,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * Magic toString function
-     * 
+     *
      * @return string
      */
     public function __toString(): string {
@@ -183,7 +185,7 @@ abstract class Enum implements JsonSerializable {
 
     /**
      * equals
-     * 
+     *
      * Determines if Enum should be considered equal with the variable passed as a parameter.
      * Returns false if an argument is an object of different class or not an object.
      *
@@ -222,7 +224,7 @@ abstract class Enum implements JsonSerializable {
      * Check if is valid enum value
      *
      * @param mixed $value
-     * 
+     *
      * @return bool
      */
     public static function isValid(mixed $value): bool {
@@ -259,7 +261,7 @@ abstract class Enum implements JsonSerializable {
      *
      * @param mixed $value
      * @return string
-     * @throws UnexpectedValueException 
+     * @throws UnexpectedValueException
      */
     private static function assertValidValueReturningKey($value): string {
         if (false === ($key = static::search($value))) throw new UnexpectedValueException("Value '$value' is not part of the enum " . static::class);
@@ -271,7 +273,7 @@ abstract class Enum implements JsonSerializable {
      * Check if is valid enum key
      *
      * @param string $key
-     * 
+     *
      * @return bool
      */
     public static function isValidKey(string $key): bool {
@@ -284,7 +286,7 @@ abstract class Enum implements JsonSerializable {
      * Return key for value
      *
      * @param mixed $value
-     * 
+     *
      * @return mixed
      */
     public static function search(mixed $value) {
@@ -298,7 +300,7 @@ abstract class Enum implements JsonSerializable {
      * @param array  $arguments
      *
      * @return static
-     * 
+     *
      * @throws BadMethodCallException
      */
     public static function __callStatic($name, $arguments): static {
@@ -320,7 +322,7 @@ abstract class Enum implements JsonSerializable {
      * @return mixed
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      */
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return $this->getValue();
     }
 }
