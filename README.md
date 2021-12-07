@@ -8,7 +8,7 @@ Check out the [CHANGELOG](CHANGELOG.md) if you wanna see the road travelled thus
 
 ### Requirements
 
-- PHP \>= 7.0
+- PHP \>= 8.0
 - laminas/laminas-http >= 2.8
 
 ### Installation
@@ -87,11 +87,11 @@ module.php:
 
 A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
 
-**option: Dumper::enabled**  
+**option: Dumper::enabled**
 
 Set it to false to stop ALL output from Dumper. Instant quiet.
 
-**Quick & Easy:**  
+**Quick & Easy:**
 
 When Dumper starts it registers a global function `dd` which is a shortcut for the `Dumper::dump`. Calling `Dumper::dumper()` once early in your apps life cycle means you can use `dd` from then on out.
 
@@ -105,7 +105,7 @@ Or you can create your own `dd` function where it fits best for you.
  * @param mixed $data
  * @param string|null $label
  * @param array $options
- * 
+ *
  * @return \Inane\Debug\Dumper
  */
 function dd(mixed $data = null, ?string $label = null, array $options = []): \Inane\Debug\Dumper {
@@ -113,7 +113,7 @@ function dd(mixed $data = null, ?string $label = null, array $options = []): \In
 }
 ```
 
-**Chaining**  
+**Chaining**
 
 `Dumper::dump` only takes one set of dumps at a time: item to dump, an optional label and options.
 To dump multiple variables simply bracket it right after the first set.
