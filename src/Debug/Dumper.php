@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 8
  *
  * @author Philip Michael Raab <peep@inane.co.za>
@@ -33,7 +33,7 @@ namespace {
          * @param mixed $data
          * @param string|null $label
          * @param array $options
-         * 
+         *
          * @return \Inane\Debug\Dumper
          */
         function dd(mixed $data = null, ?string $label = null, array $options = []): \Inane\Debug\Dumper {
@@ -60,7 +60,6 @@ namespace Inane\Debug {
     use function highlight_string;
     use function implode;
     use function in_array;
-    use function in_null;
     use function ob_start;
     use function php_sapi_name;
     use function str_replace;
@@ -69,10 +68,10 @@ namespace Inane\Debug {
 
     /**
      * Dumper
-     * 
+     *
      * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
-     * 
-     * @version 1.4.0
+     *
+     * @version 1.4.2
      *
      * @package Inane\Debug
      */
@@ -80,7 +79,7 @@ namespace Inane\Debug {
         /**
          * Dumper version
          */
-        public const VERSION = '1.4.0';
+        public const VERSION = '1.4.1';
 
         /**
          * Single instance of Dumper
@@ -171,7 +170,7 @@ namespace Inane\Debug {
          * @param mixed $data item to dump
          * @param null|string $label
          * @param array $options
-         * 
+         *
          * @return Dumper
          */
         public function __invoke(mixed $data = null, ?string $label = null, array $options = []): static {
@@ -184,6 +183,7 @@ namespace Inane\Debug {
          * @return string
          */
         protected function render(): string {
+            // Check for command line
             if (static::isCli()) {
                 $c = (object) static::$colour;
 
@@ -197,8 +197,8 @@ namespace Inane\Debug {
 
             $style = file_get_contents(__DIR__ . '/dumper.css');
 
-            return <<<CODE
-<style>{$style}</style>
+            return <<<DUMPER_HTML
+<style id="inane-dumper-style">{$style}</style>
 <div class="dumper">
 <details class="dumper-window">
 <summary class="dumper-title">dumper</summary>
@@ -207,14 +207,14 @@ namespace Inane\Debug {
 </div>
 </details>
 </div>
-CODE;
+DUMPER_HTML;
         }
 
         /**
          * Create a label for the dump with relevant information
-         * 
+         *
          * @param string|null $label
-         * 
+         *
          * @return string|null If Attribute Silence true return null
          */
         protected function formatLabel(?string $label = null): ?string {
@@ -234,8 +234,8 @@ CODE;
             $data['line'] = $bt_file['line'] ?? '';
 
             // backtrace to object
-            if (($i) < count($backtrace)) {
-                $bt_object = debug_backtrace()[++$i];
+            if (($i) < @count($backtrace)) {
+                $bt_object = @debug_backtrace()[++$i];
                 $data['class'] = $bt_object['class'] ?? false;
                 $data['function'] = $bt_object['function'] ?? '';
             } else $data['class'] = false;
@@ -275,7 +275,7 @@ CODE;
          * @param mixed $data item to dump
          * @param null|string $label
          * @param array $options
-         * 
+         *
          * @return void
          */
         protected function addDump(mixed $data, ?string $label = null, array $options = []): void {
@@ -304,7 +304,7 @@ CODE;
 
             $open = ($options['open'] ?? false) ? 'open' : '';
 
-            static::$dumps[] = <<<DEBUG
+            static::$dumps[] = <<<DUMPER_HTML
 <div class="dump">
 <details class="dump-window"{$open}>
 <summary>{$label}</summary>
@@ -313,22 +313,22 @@ CODE;
 </code>
 </details>
 </div>
-DEBUG;
+DUMPER_HTML;
         }
 
         /**
          * Add a dump to the collection
-         * 
+         *
          * options:
          *  - (bool) open: true creates dumps open (main panel not effect)
-         * 
+         *
          * Chaining: You only need bracket your arguments for repeated dumps.
          * Dumper::dump('one')('two', 'Label')
          *
          * @param mixed $data item to dump
          * @param null|string $label
          * @param array $options
-         * 
+         *
          * @return Dumper
          */
         public static function dump(mixed $data = null, ?string $label = null, array $options = []): static {

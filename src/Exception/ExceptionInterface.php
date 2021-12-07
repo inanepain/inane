@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -56,7 +57,16 @@
  * UnexpectedValueException
  * 	Exception thrown if a value does not match with a set of values. Typically this happens when a function calls another function and expects the return value to be of a certain type or value not including arithmetic or buffer related errors.
  */
+declare(strict_types=1);
 
 namespace Inane\Exception;
 
-interface ExceptionInterface {}
+/**
+ * ExceptionInterface
+ * 
+ * @package Inane\Exception
+ * 
+ * @version 1.0.0
+ */
+interface ExceptionInterface {
+}
