@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
@@ -20,7 +20,6 @@
 namespace Inane\File;
 
 use Inane\String\Capitalisation;
-
 use SplFileInfo;
 
 use function array_pop;
@@ -40,15 +39,23 @@ use function unserialize;
  * File metadata
  *
  * @method FileInfo getFileInfo()
- * 
+ *
  * @package Inane\File
  * @version 0.6.0
  */
 class FileInfo extends SplFileInfo {
+    /**
+     * FileInfo
+     *
+     * @param string $file_name file
+     *
+     * @return void
+     */
     public function __construct(string $file_name) {
         parent::__construct($file_name);
         $this->setInfoClass(static::class);
     }
+
     /**
      * Get the file extension
      *
@@ -56,7 +63,7 @@ class FileInfo extends SplFileInfo {
      * {@inheritDoc}
      * @see \SplFileInfo::getExtension()
      */
-    public function getExtension(Capitalisation $case = null) {
+    public function getExtension(Capitalisation $case = null): string {
         $ext = parent::getExtension();
 
         switch ($case) {
@@ -98,7 +105,7 @@ class FileInfo extends SplFileInfo {
      * Return the mime type
      *
      * @param string|null $default if not matched
-     * 
+     *
      * @return null|string
      */
     public function getMimetype(?string $default = null): ?string {

@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Inane\Config;
 
 use ArrayAccess;
-use ArrayIterator;
 use Countable;
 use Iterator;
 use Psr\Container\ContainerInterface;
@@ -45,9 +44,9 @@ use Inane\Exception\{
  * to facilitate easy access to the data.
  *
  * @package Inane\Config
- * @version 0.9.0
+ * @version 0.10.0
  */
-class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable, ContainerInterface {
+class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
 
     /**
      * Variables
@@ -131,6 +130,21 @@ class Options extends ArrayIterator implements ArrayAccess, Iterator, Countable,
     ) {
         foreach ($data as $key => $value) if (is_array($value)) $this->data[$key] = new static($value, $this->allowModifications);
         else $this->data[$key] = $value;
+    }
+
+    /**
+     * Deep clone of instance ensuring that nested Inane\Config\Options are cloned.
+     *
+     * @return void
+     */
+    public function __clone() {
+        $array = [];
+
+        foreach ($this->data as $key => $value)
+            if ($value instanceof self) $array[$key] = clone $value;
+            else $array[$key] = $value;
+
+        $this->data = $array;
     }
 
     /**
