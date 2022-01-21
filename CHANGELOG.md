@@ -6,7 +6,7 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## 0.26.0 - 2021-12-09
+## 0.26.0 - 2022-01-21
 
 - Config\Options:
     - fix var_export empty of data
@@ -15,6 +15,8 @@ Check out the [README](README.md) for installation stuff.
     - label now shows type
 - File\FileInfo AND Http\Client
     - fixes for php 8.1
+- Data\ValueType
+    - New enum for MySQL => php types
 
 ## 0.25.0 - 2021-12-07
 
