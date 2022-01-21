@@ -1,4 +1,4 @@
-# Inane Classes
+# Inane: Tools
 
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
@@ -127,6 +127,41 @@ $var3 = again($var1);
 
 dd($var1, 'someFunction')($var2, 'another')($var3, 'again');
 
+```
+
+##### Silence Attribute
+
+Dumper has a Silence attribute that can be applied to classes and methods to... silence dumper within class/method.
+Silencing a class prevents any dumper output regardless of any method silences within.
+
+**parameter:**
+
+- `on`: default - `true`. sets silence on or off.
+
+**tip:**
+
+Using a global constant you can easily set the state from a central point.
+
+e.g.: simplified code
+
+```php
+// some central place: config.php
+define('DUMPER_SILENCE_CLASS', false);
+define('DUMPER_SILENCE_METHOD', true);
+
+// IndexDemo.php
+#[Silence(DUMPER_SILENCE_CLASS)]
+class IndexDemo {
+    protected function logSilence(): void {
+		dd(DUMPER_SILENCE_CLASS, 'This WILL show since DUMPER_SILENCE_CLASS == false');
+	}
+
+    #[Silence(DUMPER_SILENCE_METHOD)]
+	public function indexAction() {
+		$this->logSilence();
+        dd(DUMPER_SILENCE_METHOD, 'This will NOT show since DUMPER_SILENCE_METHOD == true');
+    }
+}
 ```
 
 ### Feedback

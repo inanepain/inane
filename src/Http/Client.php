@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Http
  *
  * Http Client
- * 
+ *
  * PHP version 8
  *
  * @author Philip Michael Raab <peep@inane.co.za>
@@ -27,20 +28,24 @@ use function fseek;
 use function header;
 use function http_response_code;
 use function is_array;
+use function ob_end_flush;
+use function ob_flush;
+use function ob_get_level;
+use function ob_start;
 use function round;
 use function set_time_limit;
 use function usleep;
 
 /**
  * Client
- * 
+ *
  * Sends Http messages
- * 
+ *
  * @see /Users/philip/Temp/mime/mt.php
  * for mimetype updating
- * 
+ *
  * @package Http
- * @version 1.6.0
+ * @version 1.6.1
  */
 class Client implements SplSubject {
     /**
@@ -70,40 +75,36 @@ class Client implements SplSubject {
 
     /**
      * Attach Observer
-     * 
+     *
      * @param SplObserver $observer_in observer
-     * @return Client
+     *
+     * @return void
      */
-    public function attach(SplObserver $observer_in): self {
+    public function attach(SplObserver $observer_in): void {
         $this->observers[] = $observer_in;
-
-        return $this;
     }
 
     /**
      * Detach Observer
-     * 
+     *
      * @param SplObserver $observer_in observer
-     * @return Client 
+     *
+     * @return void
      */
-    public function detach(SplObserver $observer_in): self {
+    public function detach(SplObserver $observer_in): void {
         foreach ($this->observers as $key => $oval)
             if ($oval == $observer_in)
                 unset($this->observers[$key]);
-
-        return $this;
     }
 
     /**
      * Notify observers
      *
-     * @return Client
+     * @return void
      */
-    public function notify(): self {
+    public function notify(): void {
         foreach ($this->observers as $obs)
             $obs->update($this);
-
-        return $this;
     }
 
     /**
@@ -121,7 +122,7 @@ class Client implements SplSubject {
 
     /**
      * add progress
-     * 
+     *
      * @param int $progress
      * @return Client
      */
@@ -205,10 +206,10 @@ class Client implements SplSubject {
 
     /**
      * send chunk to client
-     * 
-     * @param Response $response 
-     * @param resource $fp 
-     * @return void 
+     *
+     * @param Response $response
+     * @param resource $fp
+     * @return void
      */
     protected function sendBuffer(Response $response, $fp) {
         if (ob_get_level() == 0) ob_start();
