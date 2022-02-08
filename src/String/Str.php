@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 8
  *
  * @author Philip Michael Raab <philip@inane.co.za>
@@ -16,39 +16,37 @@
  *
  * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
  */
-/* vscode: vscode-fold=2 */
 
 declare(strict_types=1);
 
 namespace Inane\String;
 
 use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
-use Inane\String\Capitalisation;
 
 use function array_merge;
 use function count;
 use function in_array;
+use function is_null;
 use function lcfirst;
 use function mt_rand;
 use function rand;
+use function str_contains;
 use function str_replace;
 use function strlen;
 use function strrpos;
-use function str_contains;
 use function strtolower;
 use function strtoupper;
 use function substr_replace;
 use function trim;
 use function ucwords;
-use function is_null;
 
 /**
  * Str
- * 
+ *
  * @package Inane\String\Str
  * @property-read public length
  * @property public string
- * @version 0.2.3
+ * @version 0.2.4
  */
 class Str {
     use OptionMagicPropertyTrait;
@@ -56,7 +54,7 @@ class Str {
     /**
      * Capitalisation
      */
-    protected $_case = Capitalisation::Ignore;
+    protected Capitalisation $_case = Capitalisation::Ignore;
 
     /**
      * String
@@ -73,10 +71,24 @@ class Str {
     }
 
     /**
+     * Set State
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    public static function __set_state(array $data): static {
+        $obj = new static($data['_str']);
+        $obj->_case = Capitalisation::tryFrom($data['_case']);
+
+        return $obj;
+    }
+
+    /**
      * magic method: _get
      *
      * @param string $property
-     * 
+     *
      * @return mixed
      */
     public function __get($property) {
@@ -96,7 +108,7 @@ class Str {
      *
      * @param string $property
      * @param mixed $value
-     * 
+     *
      * @return mixed
      */
     public function __set($property, $value) {
@@ -129,7 +141,7 @@ class Str {
      * Append str to Str
      *
      * @param string $str
-     * 
+     *
      * @return Str
      */
     public function append(string $str): Str {
@@ -142,7 +154,7 @@ class Str {
      * Check if Str contains needle
      *
      * @param string $needle
-     * 
+     *
      * @return bool
      */
     public function contains(string $needle): bool {
@@ -151,7 +163,7 @@ class Str {
 
     /**
      * getString
-     * 
+     *
      * @return string
      */
     public function getString(): string {
@@ -171,7 +183,7 @@ class Str {
      * Prepend str to Str
      *
      * @param string $str
-     * 
+     *
      * @return Str
      */
     public function prepend(string $str): Str {
@@ -185,7 +197,7 @@ class Str {
      *
      * @param string $search
      * @param string $replace
-     * 
+     *
      * @return Str
      */
     public function replaceLast(string $search, string $replace): Str {
@@ -201,7 +213,7 @@ class Str {
      * @param string $search
      * @param string $replace
      * @param null|int $limit
-     * 
+     *
      * @return Str
      */
     public function replace(string $search, string $replace, ?int $limit = null): Str {
@@ -226,7 +238,7 @@ class Str {
      *
      * @param string $needle
      * @param string $haystack
-     * 
+     *
      * @return bool
      */
     public static function str_contains(string $needle, string $haystack): bool {
@@ -241,7 +253,7 @@ class Str {
      * @param string $replace
      * @param string $str
      * @param null|int $limit
-     * 
+     *
      * @return string
      */
     public static function str_replace(string $search, string $replace, string $str, ?int $limit = null): string {
@@ -259,7 +271,7 @@ class Str {
      * @param string $search
      * @param string $replace
      * @param string $str
-     * 
+     *
      * @return string
      */
     public static function str_replace_last(string $search, string $replace, string $str): string {
@@ -348,7 +360,7 @@ class Str {
      *
      * @param Capitalisation $case
      * @param bool $removeSpaces
-     * 
+     *
      * @return Str
      */
     public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
@@ -372,21 +384,21 @@ class Str {
 
     /**
      * highlight str
-     * 
+     *
      * @param Style $style (default, php2, html)
      * @param bool $removeOpenTag remove the <?php that is added
-     * 
+     *
      * @return Str
      */
     public function highlight(Style $style = null, bool $removeOpenTag = true): Str {
         if (is_null($style)) $style = Style::DEFAULT();
-        
+
         $style->apply();
 
         $text = trim($this->_str);
         $text = highlight_string("<?php\n" . $text, true);
         if ($removeOpenTag) $text = str_replace("&lt;?php<br />", '', $text);
-        
+
         $text = highlight_string('<?php ' . $text, true);  // highlight_string() requires opening PHP tag or otherwise it will not colorize the text
         $text = trim($text);
         $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
@@ -401,10 +413,10 @@ class Str {
 
     /**
      * highlight text
-     * 
+     *
      * @param string $text
      * @param Style $style (default, php, php2, html)
-     * 
+     *
      * @return Str
      */
     public static function highlightText(string $text, ?Style $style = null): Str {
@@ -412,5 +424,16 @@ class Str {
 
         $new = new static($text);
         return $new->highlight($style);
+    }
+
+    /**
+     * Clones Str
+     *
+     * Returns a clone of Str letting you go on and leave the original untouched.
+     *
+     * @return static
+     */
+    public function duplicate(): static {
+        return clone($this);
     }
 }
