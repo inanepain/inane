@@ -2,7 +2,7 @@
 /**
  * Enum Abstract Class
  *
- * PHP version 7
+ * PHP version 8.1
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\Type
