@@ -54,7 +54,7 @@ class Str {
     /**
      * Capitalisation
      */
-    protected Capitalisation $_case = Capitalisation::Ignore;
+    protected Capitalisation $_case = Capitalisation::Ignore();
 
     /**
      * String

@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * PHP version 8.1
+ * PHP version 8.0
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\String
@@ -19,33 +19,38 @@
 
 namespace Inane\String;
 
+use Inane\Type\Enum;
+
 /**
  * String Capitalisation
  *
  * @package Inane\String
- * @version 0.3.0
+ * @version 0.2.0
+ *
+ * @method static Capitalisation Ignore()
+ * @method static Capitalisation UPPERCASE()
+ * @method static Capitalisation lowercase()
+ * @method static Capitalisation StudlyCaps()
+ * @method static Capitalisation camelCase()
+ * @method static Capitalisation RaNDom()
  */
-enum Capitalisation: string {
-	case Ignore     = 'Ignore';
-	case UPPERCASE  = 'UPPERCASE';
-	case lowercase  = 'lowercase';
-	case StudlyCaps = 'StudlyCaps';
-	case camelCase  = 'camelCase';
-	case RaNDom     = 'RaNDom';
+class Capitalisation extends Enum {
+	const Ignore = 'Ignore';
+	const UPPERCASE = 'UPPERCASE';
+	const lowercase = 'lowercase';
+	const StudlyCaps = 'StudlyCaps';
+	const camelCase = 'camelCase';
+	const RaNDom = 'RaNDom';
 
 	/**
-	 * Case Description
-	 *
-	 * @return string
+	 * @var string[] the descriptions
 	 */
-	public function description(): string {
-		return match ($this) {
-			static::Ignore => 'Don\'t change case of string.',
-			static::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
-			static::lowercase => 'change string to lowercase',
-			static::StudlyCaps => 'Change String To Studlycaps',
-			static::camelCase => 'change String To Camelcase',
-			static::RaNDom => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
-		};
-	}
+	protected static array $descriptions = [
+		self::Ignore => 'Don\'t change case of string.',
+		self::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
+		self::lowercase => 'change string to lowercase',
+		self::StudlyCaps => 'Change String To Studlycaps',
+		self::camelCase => 'change String To Camelcase',
+		self::RaNDom => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
+	];
 }
