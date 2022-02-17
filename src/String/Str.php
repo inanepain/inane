@@ -54,7 +54,7 @@ class Str {
     /**
      * Capitalisation
      */
-    protected Capitalisation $_case = Capitalisation::Ignore();
+    protected Capitalisation $_case;
 
     /**
      * String
@@ -67,6 +67,7 @@ class Str {
      * @param string $string
      */
     public function __construct(string $string = '') {
+        $this->_case = Capitalisation::Ignore();
         if ($string) $this->_str = $string;
     }
 
