@@ -312,6 +312,72 @@ DUMPER_HTML;
             // return $result;
         }
 
+        private static function parseVar(mixed $var, int $level = 0, string &$_output = '', array &$_objects = []): string {
+            $_depth = 10;
+
+            switch (gettype($var)) {
+                case 'boolean':
+                    $_output .= $var ? 'true' : 'false';
+                    break;
+                case 'integer':
+                    $_output .= "$var";
+                    break;
+                case 'double':
+                    $_output .= "$var";
+                    break;
+                case 'string':
+                    $_output .= "'$var'";
+                    break;
+                case 'resource':
+                    $_output .= '{resource}';
+                    break;
+                case 'NULL':
+                    $_output .= "null";
+                    break;
+                case 'unknown type':
+                    $_output .= '{unknown}';
+                    break;
+                case 'array':
+                    if ($_depth <= $level)
+                        $_output .= 'array(...)';
+                    else if (empty($var))
+                        $_output .= 'array()';
+                    else {
+                        $keys = array_keys($var);
+                        $spaces = str_repeat(' ', $level * 4);
+                        $_output .= "array\n" . $spaces . '(';
+                        foreach ($keys as $key) {
+                            $_output .= "\n" . $spaces . "    [$key] => ";
+                            $_output .= self::parseVar($var[$key], $level++, $_output, $_objects);
+                        }
+                        $_output .= "\n" . $spaces . ')';
+                    }
+                    break;
+                case 'object':
+                    if (($id = array_search($var, $_objects, true)) !== false)
+                        $_output .= get_class($var) . '#' . ($id + 1) . '(...)';
+                    else if ($_depth <= $level)
+                        $_output .= get_class($var) . '(...)';
+                    else {
+                        $id = array_push($_objects, $var);
+                        $className = get_class($var);
+                        $members = (array)$var;
+                        $keys = array_keys($members);
+                        $spaces = str_repeat(' ', $level * 4);
+                        $_output .= "$className#$id\n" . $spaces . '(';
+                        foreach ($keys as $key) {
+                            $keyDisplay = strtr(trim($key), array("\0" => ':'));
+                            $_output .= "\n" . $spaces . "    [$keyDisplay] => ";
+                            $_output .= self::parseVar($members[$key], $level++, $_output, $_objects);
+                        }
+                        $_output .= "\n" . $spaces . ')';
+                    }
+                    break;
+            }
+
+            return $_output;
+        }
+
         /**
          * Add a dump to the collection
          *
@@ -333,7 +399,8 @@ DUMPER_HTML;
             $style = $options['style'] ?? static::$style;
             $style->apply();
 
-            $code = @var_export($data, true);
+            // $code = var_export($data, true);
+            $code = self::parseVar($data);
             $code = highlight_string("<?php\n" . $code, true);
             $code = str_replace("&lt;?php<br />", '', $code);
 
