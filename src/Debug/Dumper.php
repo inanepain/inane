@@ -78,7 +78,7 @@ namespace Inane\Debug {
      *
      * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
      *
-     * @version 1.5.0
+     * @version 1.5.1
      *
      * @package Inane\Debug
      */
@@ -86,7 +86,7 @@ namespace Inane\Debug {
         /**
          * Dumper version
          */
-        public const VERSION = '1.5.0';
+        public const VERSION = '1.5.1';
 
         /**
          * Single instance of Dumper
@@ -333,7 +333,7 @@ DUMPER_HTML;
             $style = $options['style'] ?? static::$style;
             $style->apply();
 
-            $code = var_export($data, true);
+            $code = @var_export($data, true);
             $code = highlight_string("<?php\n" . $code, true);
             $code = str_replace("&lt;?php<br />", '', $code);
 
