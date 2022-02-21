@@ -23,10 +23,12 @@ use Inane\String\Capitalisation;
 use SplFileInfo;
 
 use function array_pop;
+use function base64_encode;
 use function file_exists;
 use function file_get_contents;
 use function floor;
 use function glob;
+use function in_array;
 use function md5_file;
 use function pow;
 use function rtrim;
@@ -41,7 +43,7 @@ use function unserialize;
  * @method FileInfo getFileInfo()
  *
  * @package Inane\File
- * @version 0.6.0
+ * @version 0.7.0
  */
 class FileInfo extends SplFileInfo {
     /**
@@ -66,21 +68,11 @@ class FileInfo extends SplFileInfo {
     public function getExtension(Capitalisation $case = null): string {
         $ext = parent::getExtension();
 
-        switch ($case) {
-            case Capitalisation::UPPERCASE:
-                $ext = strtoupper($ext);
-                break;
-
-            case Capitalisation::lowercase:
-                $ext = strtolower($ext);
-                break;
-
-            default:
-
-                break;
-        }
-
-        return $ext;
+        return match($case) {
+            Capitalisation::UPPERCASE => strtoupper($ext),
+            Capitalisation::lowercase => strtolower($ext),
+            default => $ext,
+        };
     }
 
     /**
@@ -110,8 +102,7 @@ class FileInfo extends SplFileInfo {
      */
     public function getMimetype(?string $default = null): ?string {
         $mimes = unserialize(file_get_contents(__DIR__.'/../../mimeic.blast'));
-        return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase())] ?? $default;
-        // return (new finfo())->file(parent::getPathname(), FILEINFO_MIME_TYPE);
+        return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase)] ?? $default;
     }
 
     /**
@@ -157,5 +148,22 @@ class FileInfo extends SplFileInfo {
     public function getFile(string $file): ?string {
         $file = array_pop(glob(parent::getPathname() . '/' . $file));
         return $file;
+    }
+
+    /**
+     * Get image as base64
+     *
+     * @since 0.7.0
+     *
+     * @return null|string base64 string or null if not a png/jpg/not a file
+     */
+    public function getBase64Image(): ?string {
+        $ext = $this->getExtension(Capitalisation::lowercase);
+        $base64 = null;
+        if ($this->isValid() && in_array($ext, ['png', 'jpg'])) {
+            $data = file_get_contents($this->getPathname());
+            $base64 = 'data:image/' . $ext . ';base64,' . base64_encode($data);
+        }
+        return $base64;
     }
 }
