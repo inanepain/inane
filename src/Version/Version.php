@@ -1,5 +1,22 @@
 <?php
 
+/**
+ * Version
+ *
+ * This file is part of the InaneTools package.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * PHP version 8.1
+ *
+ * @author Philip Michael Raab <peep@inane.co.za>
+ * @package Inane\Tools
+ *
+ * @license MIT
+ * @license https://inane.co.za/license/MIT
+ *
+ * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
+ */
 declare(strict_types=1);
 
 namespace Inane\Version;
@@ -14,11 +31,18 @@ use function version_compare;
  *
  * A target version others get compared against
  *
- * @package Inane\Version
+ * @package Inane\Tools
  *
- * @version 1.0.0
+ * @version 1.1.0
  */
 class Version implements Stringable {
+    /**
+     * Clean the comparing version before comparing to this version
+     *
+     * @var bool
+     */
+    public static bool $cleanBeforeCompare = true;
+
     /**
      * Version stripped of everything but digits and periods
      *
@@ -26,7 +50,19 @@ class Version implements Stringable {
      */
     private readonly string $cleanVersion;
 
-    public function __construct(private readonly string $version) {
+    /**
+     * Version
+     *
+     * @param string $version
+     */
+    public function __construct(
+        /**
+         * This version
+         *
+         * @var string
+         */
+        private readonly string $version,
+    ) {
         $this->cleanVersion = static::parseVersion($version);
     }
 
@@ -59,7 +95,7 @@ class Version implements Stringable {
      *
      * @param string $version to clean
      *
-     * @return string clean
+     * @return string clean version
      */
     public static function parseVersion(string $version): string {
         preg_match_all('/[0-9]+/', $version, $match);
@@ -70,21 +106,20 @@ class Version implements Stringable {
      * Is $version higher, equal or lower than this
      *
      * @param string $version requiring validation
-     * @return \Inane\Version\VersionMatch $version match
+     *
+     * @return null|\Inane\Version\VersionMatch $version match or null if incomparable
      */
-    public function compare(string $version): VersionMatch {
-        return VersionMatch::from(version_compare($version, $this->cleanVersion));
-        // return match (version_compare($version, $this->version)) {
-        //     -1 => VersionMatch::LOWER,
-        //     0 => VersionMatch::EQUAL,
-        //     1 => VersionMatch::HIGHER,
-        // };
+    public function compare(string $version): ?VersionMatch {
+        if (static::$cleanBeforeCompare) $version = static::parseVersion($version);
+
+        return VersionMatch::tryFrom(version_compare($version, $this->cleanVersion));
     }
 
     /**
      * Require $version to be higher than this
      *
      * @param string $version to check
+     *
      * @return bool is $version higher
      */
     public function higher(string $version): bool {
@@ -100,10 +135,6 @@ class Version implements Stringable {
      */
     public function higherOrEqual(string $version): bool {
         return $this->compare($version)->value >= VersionMatch::EQUAL->value;
-        // return match ($this->compare($version)->value) {
-        //     1, 0 => true,
-        //     default => false
-        // };
     }
 
     /**

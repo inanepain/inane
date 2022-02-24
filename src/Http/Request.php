@@ -1,7 +1,7 @@
 <?php
 /**
  * Request
- * 
+ *
  * PHP version 8
  */
 
@@ -15,9 +15,9 @@ use Inane\Http\Request\AbstractRequest;
 
 /**
  * Request
- * 
- * @version 0.5.0
- * 
+ *
+ * @version 0.5.1
+ *
  * @package Http
  */
 class Request extends AbstractRequest {
@@ -36,40 +36,40 @@ class Request extends AbstractRequest {
     public const METHOD_UNLOCK = 'UNLOCK';
     public const METHOD_VIEW = 'VIEW';
 
-    protected $_allowAllProperties = true;
+    protected bool $allowAllProperties = true;
 
     /**
      * properties
-     * 
+     *
      * @var Options
      */
-    private $_properties = [];
+    private Options $properties;
 
-    protected $_magic_properties_allowed = ['method'];
+    protected array $magicPropertiesAllowed = ['method'];
 
     /**
      * strings to remove from property names
      */
-    static array $_propertyClean = ['request_', 'http_'];
+    static array $propertyClean = ['request_', 'http_'];
 
     /**
      * Response
-     * 
+     *
      * @var Response
      */
-    private $response;
+    private Response $response;
 
     /**
      * Attached Files
      */
-    protected array $_files;
+    protected array $files;
 
     /**
      * Query Params
-     * 
+     *
      * @var Options
      */
-    private Options $_query;
+    private Options $query;
 
     /**
      * magic method: __get
@@ -81,22 +81,22 @@ class Request extends AbstractRequest {
      * @throws PropertyException
      */
     public function __get(string $property) {
-        if (!$this->_allowAllProperties && !in_array($property, $this->_magic_properties_allowed)) throw new PropertyException($property, 10);
+        if (!$this->allowAllProperties && !in_array($property, $this->magicPropertiesAllowed)) throw new PropertyException($property, 10);
 
         // TODO: Temp only => to upgrade implementations
         if (str_starts_with($property, 'http')) throw new PropertyException($property, 20);
 
-        return $this->_properties->offsetGet($property, null);
+        return $this->properties->offsetGet($property, null);
     }
 
     /**
-     * Response 
-     * @param bool $allowAllProperties 
-     * @return void 
+     * Response
+     * @param bool $allowAllProperties
+     * @return void
      */
     public function __construct(bool $allowAllProperties = true, ?Response $response = null) {
         parent::__construct();
-        $this->_allowAllProperties = ($allowAllProperties === true);
+        $this->allowAllProperties = ($allowAllProperties === true);
         if (!is_null($response)) $this->response = $response;
         $this->bootstrapSelf();
     }
@@ -110,15 +110,15 @@ class Request extends AbstractRequest {
         $data = [];
         foreach ($_SERVER as $key => $value) $data[$this->toCamelCase($key)] = $value;
 
-        if ($this->_allowAllProperties) $this->_magic_properties_allowed = array_keys($data);
+        if ($this->allowAllProperties) $this->magicPropertiesAllowed = array_keys($data);
 
-        $this->_properties = new Options($data);
+        $this->properties = new Options($data);
         $this->getPost();
         $this->getQuery();
     }
 
     private function toCamelCase($string) {
-        $result = str_replace(static::$_propertyClean, '', strtolower($string));
+        $result = str_replace(static::$propertyClean, '', strtolower($string));
 
         preg_match_all('/_[a-z]/', $result, $matches);
         foreach ($matches[0] as $match) {
@@ -131,7 +131,7 @@ class Request extends AbstractRequest {
 
     /**
      * get: request => body
-     * 
+     *
      * @return void|array body
      */
     // public function getBody() {
@@ -169,16 +169,16 @@ class Request extends AbstractRequest {
 
     /**
      * get: Query Params
-     * 
+     *
      * @param null|string $param get specific param
-     * @param null|string $default 
+     * @param null|string $default
      * @return mixed param/params
      */
     public function getQuery(?string $param = null, ?string $default = null): mixed {
-        if (!isset($this->_query)) $this->_query = new Options($_GET);
+        if (!isset($this->query)) $this->query = new Options($_GET);
 
-        if (!is_null($param)) return $this->_query->get($param, $default);
-        return $this->_query;
+        if (!is_null($param)) return $this->query->get($param, $default);
+        return $this->query;
     }
 
     /**
@@ -196,7 +196,7 @@ class Request extends AbstractRequest {
      * @return array files
      */
     public function getFiles(): array {
-        if (!$this->_files) $this->_files = $_FILES;
-        return $this->_files;
+        if (!$this->files) $this->files = $_FILES;
+        return $this->files;
     }
 }

@@ -14,7 +14,7 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2021 Philip Michael Raab <philip@inane.co.za>
+ * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
  */
 
 declare(strict_types=1);
