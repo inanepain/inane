@@ -2,33 +2,49 @@
 
 /**
  * Infector
- * 
+ *
+ * This file is part of the InaneTools package.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
  * PHP version 8
- * 
+ *
  * @author Philip Michael Raab <peep@inane.co.za>
+ * @package Inane\Tools
+ *
+ * @license MIT
+ * @license https://inane.co.za/license/MIT
+ *
+ * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
  */
 
 declare(strict_types=1);
 
 namespace Inane\Inflection;
 
-use Inane\Exception\StubException;
-
 use function array_merge;
 use function count;
 use function in_array;
 use function preg_match;
 use function preg_replace;
+use function preg_replace_callback;
+use function str_replace;
+use function strtolower;
+use function strtoupper;
+use function ucfirst;
+use function ucwords;
 
 /**
  * Infector
- * 
+ *
  * @version 1.0.0
+ *
+ * @package Inane\Tools
  */
 class Infector {
     /**
-     * Rules
-     * 
+     * Singular and Plural Rules
+     *
      * @var array
      */
     protected static array $rules = [
@@ -104,11 +120,12 @@ class Infector {
 
     /**
      * Convert to plural
-     * 
+     *
      * Examples:
      *  - post => posts
-     * 
+     *
      * @param string $word singular word
+     *
      * @return string plural word
      */
     protected static function swapPluralSingular(string $word, string $action): string {
@@ -127,11 +144,12 @@ class Infector {
 
     /**
      * Convert to plural
-     * 
+     *
      * Examples:
      *  - post => posts
-     * 
+     *
      * @param string $word singular word
+     *
      * @return string plural word
      */
     public static function pluralise(string $word): string {
@@ -140,11 +158,12 @@ class Infector {
 
     /**
      * Convert to single
-     * 
+     *
      * Examples:
      *  - posts => post
-     * 
+     *
      * @param string $word plural word
+     *
      * @return string singular word
      */
     public static function singularise(string $word): string {
@@ -153,12 +172,13 @@ class Infector {
 
     /**
      * Countable
-     * 
+     *
      * Examples:
      *  - advice => false
      *  - cat => true
-     * 
+     *
      * @param string $word
+     *
      * @return bool word
      */
     public static function isCountable(string $word): bool {
@@ -167,173 +187,98 @@ class Infector {
 
     /**
      * Convert to camel case
-     * 
+     *
      * Examples:
-     *  - active_model => ActiveModel
-     *  - active_model/errors => ActiveModel\Errors
-     * 
+     *  - active_model => activeModel
+     *  - active_model/errors => activeModel\Errors
+     *
      * @param string $word word
+     * @param bool $upperFirst initial char uppercase
+     *
      * @return string camel case word
      */
-    public static function camelise(string $word): string {
-        // TODO: Function body: camelise
-        throw new StubException('Function pending: ' . __FUNCTION__, 320);
-        // throw new Exception('Function pending: ', 320);
-
-        // JAVA
-        // if (lowerCaseAndUnderscoredWord == null)
-		// 	return null;
-		// lowerCaseAndUnderscoredWord = lowerCaseAndUnderscoredWord.trim();
-		// if (lowerCaseAndUnderscoredWord.length() == 0)
-		// 	return "";
-		// if (uppercaseFirstLetter) {
-		// 	String result = lowerCaseAndUnderscoredWord;
-		// 	// Replace any extra delimiters with underscores (before the underscores are converted in the next step)...
-		// 	if (delimiterChars != null) {
-		// 		for (char delimiterChar : delimiterChars) {
-		// 			result = result.replace(delimiterChar, '_');
-		// 		}
-		// 	}
-
-		// 	// Change the case at the beginning at after each underscore ...
-		// 	return replaceAllWithUppercase(result, "(^|_)(.)", 2);
-		// }
-		// if (lowerCaseAndUnderscoredWord.length() < 2)
-		// 	return lowerCaseAndUnderscoredWord;
-		// return "" + Character.toLowerCase(lowerCaseAndUnderscoredWord.charAt(0)) + camelCase(lowerCaseAndUnderscoredWord, true, delimiterChars).substring(1);
-
-        return $word;
+    public static function camelise(string $word, bool $upperFirst = false): string {
+        $word = preg_replace_callback('/([_ \-\/])+(.?)/', fn ($m) => ($m[1] == '/' ? '\\' : '') . strtoupper($m[2]), $word);
+        return $upperFirst ? ucfirst($word) : $word;
     }
 
     /**
      * Underscore word
-     * 
+     *
      * Examples:
      *  - ActiveModel => active_model
      *  - ActiveModel\Errors => active_model/errors
-     * 
+     *
      * @param string $word word
+     *
      * @return string word
      */
     public static function underscore(string $word): string {
-        // TODO: Function body: underscore
-        throw new StubException('Function pending: ' . __FUNCTION__, 320);
-
-        // JAVA
-        // if (camelCaseWord == null)
-		// 	return null;
-		// String result = camelCaseWord.trim();
-		// if (result.length() == 0)
-		// 	return "";
-		// result = result.replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2");
-		// result = result.replaceAll("([a-z\\d])([A-Z])", "$1_$2");
-		// result = result.replace('-', '_');
-		// if (delimiterChars != null) {
-		// 	for (char delimiterChar : delimiterChars) {
-		// 		result = result.replace(delimiterChar, '_');
-		// 	}
-		// }
-		// return result.toLowerCase();
-
-        return $word;
+        $word =  strtolower(preg_replace('/([^A-Z])([A-Z])/', "$1_$2", $word));
+        return str_replace('\_', '/', $word);
     }
 
     /**
      * Capitalise
-     * 
+     *
      * Returns a copy of the input with the first character converted to uppercase and the remainder to lowercase.
-     * 
+     *
      * Examples:
      *  - active model => Active model
      *  - ACTIVE => Active
-     * 
+     *
      * @param string $word word
+     *
      * @return string word
      */
     public static function capitalise(string $word): string {
-        // TODO: Function body: capitalise
-        throw new StubException('Function pending: ' . __FUNCTION__, 320);
-
-        // JAVA
-        // public String capitalise(String words) {
-        //     if (words == null)
-        //         return null;
-        //     String result = words.trim();
-        //     if (result.length() == 0)
-        //         return "";
-        //     if (result.length() == 1)
-        //         return result.toUpperCase();
-        //     return "" + Character.toUpperCase(result.charAt(0)) + result.substring(1).toLowerCase();
-        // }
-
-        return $word;
+        $word = strtolower($word);
+        return ucfirst($word);
     }
-    
 
     /**
      * Humanise
-     * 
+     *
      * Examples:
      *  - active_model => Active model
      *  - author_id => Author
-     * 
+     *
      * @param string $word word
+     *
      * @return string word
      */
     public static function humanise(string $word): string {
-        // TODO: Function body: humanise
-        throw new StubException('Function pending: ' . __FUNCTION__, 320);
-
-        // JAVA
-        // if (lowerCaseAndUnderscoredWords == null)
-		// 	return null;
-		// String result = lowerCaseAndUnderscoredWords.trim();
-		// if (result.length() == 0)
-		// 	return "";
-		// // Remove a trailing "_id" token
-		// result = result.replaceAll("_id$", "");
-		// // Remove all of the tokens that should be removed
-		// if (removableTokens != null) {
-		// 	for (String removableToken : removableTokens) {
-		// 		result = result.replaceAll(removableToken, "");
-		// 	}
-		// }
-		// result = result.replaceAll("_+", " "); // replace all adjacent underscores with a single space
-		// return capitalise(result);
-
-        return $word;
+        $word = preg_replace('/_?id$|^id_?/', '', $word);
+        $word = preg_replace('/[ _\-]+/', ' ', $word);
+        return ucfirst($word);
     }
 
     /**
      * Titleise
-     * 
+     *
      * Examples:
      *  - man from the boondocks => Man From The Boondocks
      *  - raiders_of_the_lost_ark => Raiders Of The Lost Ark
-     * 
+     *
      * @param string $word word
+     *
      * @return string word
      */
     public static function titleise(string $word): string {
-        // TODO: Function body: titleise
-        throw new StubException('Function pending: ' . __FUNCTION__, 320);
-
-        // JAVA
-        // String result = humanise(words, removableTokens);
-		// result = replaceAllWithUppercase(result, "\\b([a-z])", 1); // change first char of each word to uppercase
-		// return result;
-
-        return $word;
+        $word = strtolower($word);
+        $word = str_replace('_', ' ', $word);
+        return ucwords($word);
     }
 
     /**
      * Ordinal
-     * 
+     *
      * Examples:
      *  - 1 => st
      *  - 2 => nd
-     * 
+     *
      * @param int $number
+     *
      * @return string word
      */
     public static function ordinal(int $number): string {
@@ -350,12 +295,13 @@ class Infector {
 
     /**
      * Ordinalise
-     * 
+     *
      * Examples:
      *  - 1 => 1st
      *  - 2 => 2nd
-     * 
+     *
      * @param int $number
+     *
      * @return string word
      */
     public static function ordinalise(int $number): string {
