@@ -12,11 +12,12 @@ namespace Inane\Http;
 use Inane\Config\Options;
 use Inane\Http\Exception\PropertyException;
 use Inane\Http\Request\AbstractRequest;
+use Inane\Inflection\Infector;
 
 /**
  * Request
  *
- * @version 0.5.1
+ * @version 0.6.0
  *
  * @package Http
  */
@@ -72,6 +73,13 @@ class Request extends AbstractRequest {
     private Options $query;
 
     /**
+     * Post data
+     *
+     * @var \Inane\Config\Options
+     */
+    protected Options $post;
+
+    /**
      * magic method: __get
      *
      * @param string $property - property name
@@ -102,6 +110,21 @@ class Request extends AbstractRequest {
     }
 
     /**
+     * Create a Request from $url
+     *
+     * @param string $url target url
+     *
+     * @since 0.6.0
+     *
+     * @return static the Request
+     */
+    public static function fromUrl(string $url): static {
+        $r = new static();
+        $r = $r->withUri(new Uri($url));
+        return $r;
+    }
+
+    /**
      * setup request
      *
      * @return void
@@ -120,32 +143,15 @@ class Request extends AbstractRequest {
     private function toCamelCase($string) {
         $result = str_replace(static::$propertyClean, '', strtolower($string));
 
-        preg_match_all('/_[a-z]/', $result, $matches);
-        foreach ($matches[0] as $match) {
-            $c = str_replace('_', '', strtoupper($match));
-            $result = str_replace($match, $c, $result);
-        }
-
-        return $result;
+        return Infector::camelise($result);
     }
 
     /**
-     * get: request => body
+     * get accept
      *
-     * @return void|array body
+     * @return string
      */
-    // public function getBody() {
-    //     if ($this->method === static::METHOD_GET) return;
-
-    //     if ($this->method == static::METHOD_POST) {
-    //         $body = [];
-    //         foreach ($_POST as $key => $value) $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-
-    //         return $body;
-    //     }
-    // }
-
-    public function getAccept() {
+    public function getAccept(): string {
         $accept = explode(',', $this->accept);
         $type = 'text/html';
         if (in_array('application/json', $accept) || in_array('*/*', $accept)) $type = 'application/json';
@@ -153,7 +159,16 @@ class Request extends AbstractRequest {
         return $type;
     }
 
-    public function getResponse(?string $body = null, $status = 200, ?array $headers = null) {
+    /**
+     * Get a response based on this request
+     *
+     * @param string|null $body
+     * @param int $status
+     * @param array|null $headers
+     *
+     * @return Response
+     */
+    public function getResponse(?string $body = null, $status = 200, ?array $headers = null): Response {
         if (!isset($this->response)) {
             $this->response = $body == null ? new Response() : new Response($body, $status, $headers ?? ['Content-Type' => $this->getAccept()]);
             $this->response->setRequest($this);
@@ -161,10 +176,19 @@ class Request extends AbstractRequest {
         return $this->response;
     }
 
-    protected $_post;
-    public function getPost() {
-        if ($_POST && !$this->_post) $this->_post = new Options($_POST);
-        return $this->_post;
+    /**
+     * Get POST data
+     *
+     * @param null|string $param get specific param
+     * @param null|string $default
+     *
+     * @return \Inane\Config\Options
+     */
+    public function getPost(?string $param = null, ?string $default = null): Options {
+        if (!isset($this->post)) $this->post = new Options($_POST ?? []);
+
+        if (!is_null($param)) return $this->post->get($param, $default);
+        return $this->post;
     }
 
     /**
@@ -172,6 +196,7 @@ class Request extends AbstractRequest {
      *
      * @param null|string $param get specific param
      * @param null|string $default
+     *
      * @return mixed param/params
      */
     public function getQuery(?string $param = null, ?string $default = null): mixed {
@@ -196,7 +221,7 @@ class Request extends AbstractRequest {
      * @return array files
      */
     public function getFiles(): array {
-        if (!$this->files) $this->files = $_FILES;
+        if (!isset($this->files)) $this->files = $_FILES;
         return $this->files;
     }
 }

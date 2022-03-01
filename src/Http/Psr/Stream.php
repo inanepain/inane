@@ -2,9 +2,9 @@
 
 /**
  * AbstractStream
- * 
+ *
  * PHP version 8
- * 
+ *
  * @author Philip Michael Raab <peep@inane.co.za>
  */
 
@@ -14,10 +14,8 @@ namespace Inane\Http\Psr;
 
 use Inane\Http\Exception\RuntimeException;
 use Psr\Http\Message\StreamInterface;
+use Stringable;
 use Throwable;
-
-use const E_USER_ERROR;
-use const PHP_VERSION_ID;
 
 use function array_key_exists;
 use function fclose;
@@ -33,43 +31,54 @@ use function sprintf;
 use function stream_get_contents;
 use function stream_get_meta_data;
 use function trigger_error;
+use const E_USER_ERROR;
+use const false;
+use const null;
+use const PHP_VERSION_ID;
+use const SEEK_SET;
+use const true;
 
 /**
  * AbstractStream
- * 
- * @version 0.5.0
- * 
+ *
+ * @version 0.5.1
+ *
  * @package Http
  */
-class Stream implements StreamInterface {
-    protected const READABLE_MODES = '/r|a\+|ab\+|w\+|wb\+|x\+|xb\+|c\+|cb\+/';
-    protected const WRITABLE_MODES = '/a|w|r\+|rb\+|rw|x|c/';
+class Stream implements StreamInterface, Stringable {
+    protected static string $readableModes = '/r|a\+|ab\+|w\+|wb\+|x\+|xb\+|c\+|cb\+/';
+    protected static string $writableModes = '/a|w|r\+|rb\+|rw|x|c/';
 
     /** @var resource */
     protected $stream;
+
     /** @var int|null */
     protected ?int $size = null;
+
     /** @var bool */
     protected bool $seekable;
+
     /** @var bool */
     protected bool $readable;
+
     /** @var bool */
     protected bool $writable;
 
     /**
      * Stream
-     * 
+     *
      * if string a memory stream is created
-     * 
+     *
      * @param mixed|null $source string or resource
-     * @return void 
-     * @throws RuntimeException 
+     * @return void
+     * @throws RuntimeException
      */
     public function __construct($source = null) {
         if (is_resource($source)) $this->stream = $source;
         else {
             $this->stream = fopen('php://memory', 'r+');
-            if (is_string($source))  $this->write($source);
+            if (is_string($source)) $this->write($source);
+            $this->getSize();
         }
     }
 
@@ -94,16 +103,12 @@ class Stream implements StreamInterface {
      * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
      * @return string
      */
-    public function __toString() {
+    public function __toString(): string {
         try {
-            if ($this->isSeekable()) {
-                $this->seek(0);
-            }
+            $this->rewind();
             return $this->getContents();
         } catch (Throwable $e) {
-            if (PHP_VERSION_ID >= 70400) {
-                throw $e;
-            }
+            if (PHP_VERSION_ID >= 70400) throw $e;
             trigger_error(sprintf('%s::__toString exception: %s', self::class, (string) $e), E_USER_ERROR);
             return '';
         }
@@ -111,7 +116,7 @@ class Stream implements StreamInterface {
 
     /**
      * Closes the stream and any underlying resources.
-     * 
+     *
      * @return void
      */
     public function close() {
@@ -143,7 +148,7 @@ class Stream implements StreamInterface {
 
     /**
      * Get the size of the stream if known.
-     * 
+     *
      * @return int|null Returns the size in bytes if known, or null if unknown.
      */
     public function getSize() {
@@ -197,7 +202,7 @@ class Stream implements StreamInterface {
 
     /**
      * Seek to a position in the stream.
-     * 
+     *
      * @link http://www.php.net/manual/en/function.fseek.php
      * @param int $offset Stream offset
      * @param int $whence Specifies how the cursor position will be calculated
@@ -223,7 +228,7 @@ class Stream implements StreamInterface {
 
     /**
      * Seek to the beginning of the stream.
-     * 
+     *
      * If the stream is not seekable, this method will raise an exception;
      * otherwise, it will perform a seek(0).
      *
@@ -232,7 +237,7 @@ class Stream implements StreamInterface {
      * @throws RuntimeException on failure.
      */
     public function rewind() {
-        $this->seek(0);
+        if ($this->isSeekable()) $this->seek(0);
     }
 
     /**
@@ -241,7 +246,7 @@ class Stream implements StreamInterface {
      * @return bool
      */
     public function isWritable() {
-        if (!isset($this->writable)) $this->writable = (bool)preg_match(self::WRITABLE_MODES, $this->getMetadata('mode'));
+        if (!isset($this->writable)) $this->writable = (bool)preg_match(static::$writableModes, $this->getMetadata('mode'));
         return $this->writable;
     }
 
@@ -273,11 +278,11 @@ class Stream implements StreamInterface {
 
     /**
      * Returns whether or not the stream is readable.
-     * 
+     *
      * @return bool
      */
     public function isReadable() {
-        if (!isset($this->readable)) $this->readable = (bool)preg_match(self::READABLE_MODES, $this->getMetadata('mode'));
+        if (!isset($this->readable)) $this->readable = (bool)preg_match(static::$readableModes, $this->getMetadata('mode'));
         return $this->readable;
     }
 
@@ -326,6 +331,7 @@ class Stream implements StreamInterface {
             throw new RuntimeException('Stream is detached');
         }
 
+        $this->rewind();
         $contents = stream_get_contents($this->stream);
 
         if ($contents === false) {

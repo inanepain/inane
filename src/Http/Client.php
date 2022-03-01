@@ -45,7 +45,7 @@ use function usleep;
  * for mimetype updating
  *
  * @package Http
- * @version 1.6.1
+ * @version 1.7.0
  */
 class Client implements SplSubject {
     /**
@@ -171,6 +171,23 @@ class Client implements SplSubject {
         if ($response->isDownload()) $this->serveFile($response);
         else $this->sendResponse($response);
         exit(0);
+    }
+
+    /**
+     * Fetch request
+     *
+     * @param Request $request
+     *
+     * @since 1.7.0
+     *
+     * @return Response
+     */
+    public function fetch(Request $request): Response {
+        $uri = $request->getUri();
+
+        $body = file_get_contents($uri->__toString());
+
+        return $request->getResponse($body);
     }
 
     /**

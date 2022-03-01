@@ -2,7 +2,7 @@
 
 /**
  * Response
- * 
+ *
  * PHP version 7
  */
 
@@ -12,30 +12,36 @@ namespace Inane\Http;
 
 use Inane\Config\Options;
 use Inane\Debug\Writer;
-use Inane\Exception\UnexpectedValueException;
-use Inane\Exception\BadMethodCallException;
 use Inane\File\FileInfo;
 use Inane\Http\Request\IRequest;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use SimpleXMLElement;
+use Stringable;
 
 use function array_key_exists;
 use function htmlspecialchars;
 use function in_array;
-use function is_numeric;
 use function is_null;
+use function is_numeric;
 use function json_encode;
+
+use Inane\Exception\{
+    BadMethodCallException,
+    UnexpectedValueException
+};
+use Psr\Http\Message\{
+    RequestInterface,
+    ResponseInterface,
+    StreamInterface
+};
 
 /**
  * Response
- * 
+ *
  * @version 0.6.0
- * 
+ *
  * @package Http
  */
-class Response extends Message implements ResponseInterface {
+class Response extends Message implements ResponseInterface, Stringable {
     public static int $rm = 4;
 
     /**
@@ -73,6 +79,15 @@ class Response extends Message implements ResponseInterface {
      */
     private FileInfo $_file;
 
+    /**
+     * Response as string
+     *
+     * @return string
+     */
+    public function __toString(): string {
+        return "{$this->getBody()}";
+    }
+
     public function withStatus($code, $reasonPhrase = '') { }
 
     public function getReasonPhrase() { }
@@ -83,7 +98,7 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * set: request
-     * 
+     *
      * @param RequestInterface $request request
      * @return Response response
      */
@@ -94,7 +109,7 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * get: request
-     * 
+     *
      * @return Request request
      */
     public function getRequest(): Request {
@@ -104,15 +119,15 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * Response
-     * 
+     *
      * @param string|resource|StreamInterface|null $body    Request body
-     * @param int|StatusCode $status 
+     * @param int|StatusCode $status
      * @param array $headers headers
-     * 
-     * @return void 
-     * 
-     * @throws UnexpectedValueException 
-     * @throws BadMethodCallException 
+     *
+     * @return void
+     *
+     * @throws UnexpectedValueException
+     * @throws BadMethodCallException
      */
     public function __construct($body = null, int|StatusCode $status = 200, array $headers = []) {
         if (!is_null($body)) {
@@ -157,15 +172,15 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * add header
-     * 
-     * @param string $name 
-     * @param mixed $value 
-     * @param bool $replace 
-     * @return Response 
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param bool $replace
+     * @return Response
      */
     public function addHeader(string $name, mixed $value, bool $replace = true): self {
         $normalized = strtolower($name);
-        
+
         if (isset($this->headerNames[$normalized])) {
             $name = $this->headerNames[$normalized];
             $this->headers[$name] = array_merge($this->headers[$name], $value);
@@ -180,11 +195,11 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * get: status
-     * 
-     * @param StatusCode|int $status 
-     * @return Response 
-     * @throws UnexpectedValueException 
-     * @throws BadMethodCallException 
+     *
+     * @param StatusCode|int $status
+     * @return Response
+     * @throws UnexpectedValueException
+     * @throws BadMethodCallException
      */
     public function setStatus(StatusCode|int $status): self {
         if ($status instanceof StatusCode) $this->status = $status;
@@ -194,7 +209,7 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * get: status
-     * 
+     *
      * @return StatusCode status
      */
     public function getStatus(): StatusCode {
@@ -203,11 +218,11 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * set: status code
-     * 
-     * @param mixed $statusCode 
-     * @return self 
-     * @throws UnexpectedValueException 
-     * @throws BadMethodCallException 
+     *
+     * @param mixed $statusCode
+     * @return self
+     * @throws UnexpectedValueException
+     * @throws BadMethodCallException
      * @deprecated 0.5.0
      */
     public function setStatusCode($statusCode): self {
@@ -236,7 +251,7 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * get body
-     * 
+     *
      * @return string body
      */
     public function getContents(): string {
@@ -321,7 +336,7 @@ class Response extends Message implements ResponseInterface {
             $_sleep = (8 / $_sleep) * 1e6;
 
         $this->_sleep = (int) $_sleep;
-        
+
         return $this;
     }
 
@@ -342,17 +357,17 @@ class Response extends Message implements ResponseInterface {
 
     /**
      * Set file to download
-     * 
+     *
      * $speed 0 = no limit
-     * 
+     *
      * @param mixed $src_file file
      * @param bool $force download, not view in browser
      * @param int $speed kbSec
-     * 
+     *
      * @return Response
-     * 
-     * @throws UnexpectedValueException 
-     * @throws BadMethodCallException 
+     *
+     * @throws UnexpectedValueException
+     * @throws BadMethodCallException
      */
     public function setFile($src_file, bool $force = false, int $speed = 0): self {
         $file = new FileInfo($src_file);
