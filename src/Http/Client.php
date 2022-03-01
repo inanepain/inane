@@ -1,17 +1,20 @@
 <?php
 
 /**
- * Http
+ * Inane\Tools
  *
- * Http Client
+ * Http
  *
  * PHP version 8
  *
- * @author Philip Michael Raab <peep@inane.co.za>
- * @package Http
- * @copyright 2021 Inane
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
-
 declare(strict_types=1);
 
 namespace Inane\Http;
@@ -146,12 +149,10 @@ class Client implements SplSubject {
      * @return void
      */
     protected function sendHeaders(Response $response): void {
-        if ($response->getStatus()->equals(StatusCode::PARTIAL_CONTENT()))
-            header($response->getStatus()->getDefault());
-        else if ($response->getStatus() == StatusCode::OK())
-            header($response->getStatus()->getDefault());
+        if ($response->getStatus() == HttpStatus::PartialContent || $response->getStatus() == HttpStatus::Ok)
+            header($response->getStatus()->text());
 
-        http_response_code($response->getStatus()->getValue());
+        http_response_code($response->getStatus()->value);
 
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val");

@@ -1,9 +1,19 @@
 <?php
 
 /**
- * Response
+ * Inane\Tools
  *
- * PHP version 7
+ * Http
+ *
+ * PHP version 8.1
+ *
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);
@@ -11,18 +21,18 @@ declare(strict_types=1);
 namespace Inane\Http;
 
 use Inane\Config\Options;
-use Inane\Debug\Writer;
 use Inane\File\FileInfo;
-use Inane\Http\Request\IRequest;
 use SimpleXMLElement;
 use Stringable;
 
-use function array_key_exists;
 use function htmlspecialchars;
 use function in_array;
 use function is_null;
 use function is_numeric;
 use function json_encode;
+use const false;
+use const null;
+use const true;
 
 use Inane\Exception\{
     BadMethodCallException,
@@ -52,7 +62,7 @@ class Response extends Message implements ResponseInterface, Stringable {
     /**
      * Http Status
      */
-    protected StatusCode $status;
+    protected HttpStatus $status;
 
     /**
      * request
@@ -121,7 +131,7 @@ class Response extends Message implements ResponseInterface, Stringable {
      * Response
      *
      * @param string|resource|StreamInterface|null $body    Request body
-     * @param int|StatusCode $status
+     * @param int|HttpStatus $status
      * @param array $headers headers
      *
      * @return void
@@ -129,7 +139,7 @@ class Response extends Message implements ResponseInterface, Stringable {
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
      */
-    public function __construct($body = null, int|StatusCode $status = 200, array $headers = []) {
+    public function __construct($body = null, int|HttpStatus $status = 200, array $headers = []) {
         if (!is_null($body)) {
             if (!($body instanceof StreamInterface)) $body = new Stream($body);
             $this->stream = $body;
@@ -196,23 +206,23 @@ class Response extends Message implements ResponseInterface, Stringable {
     /**
      * get: status
      *
-     * @param StatusCode|int $status
+     * @param HttpStatus|int $status
      * @return Response
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
      */
-    public function setStatus(StatusCode|int $status): self {
-        if ($status instanceof StatusCode) $this->status = $status;
-        else $this->status = StatusCode::from($status);
+    public function setStatus(HttpStatus|int $status): self {
+        if ($status instanceof HttpStatus) $this->status = $status;
+        else $this->status = HttpStatus::from($status);
         return $this;
     }
 
     /**
      * get: status
      *
-     * @return StatusCode status
+     * @return HttpStatus status
      */
-    public function getStatus(): StatusCode {
+    public function getStatus(): HttpStatus {
         return $this->status;
     }
 
@@ -220,12 +230,14 @@ class Response extends Message implements ResponseInterface, Stringable {
      * set: status code
      *
      * @param mixed $statusCode
+     *
      * @return self
+     *
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
      * @deprecated 0.5.0
      */
-    public function setStatusCode($statusCode): self {
+    public function setStatusCode(HttpStatus $statusCode): self {
         return $this->setStatus($statusCode);
     }
 
@@ -234,8 +246,8 @@ class Response extends Message implements ResponseInterface, Stringable {
      *
      * @return int
      */
-    public function getStatusCode(): int {
-        return $this->getStatus()->getValue();
+    public function getStatusCode(): HttpStatus {
+        return $this->getStatus();
     }
 
     /**
@@ -374,12 +386,12 @@ class Response extends Message implements ResponseInterface, Stringable {
         $this->_file = $file;
 
         if (!$file->isValid()) {
-            $this->setStatus(StatusCode::NOT_FOUND());
+            $this->setStatus(HttpStatus::NotFound);
             $this->setBody('file invalid:' . $this->_file->getPathname());
             return $this;
         }
 
-        $this->setStatus(StatusCode::OK());
+        $this->setStatus(HttpStatus::Ok);
         $fileSize = $this->_file->getSize();
         $this->_downloadSize = $fileSize;
         $this->_downloadStart = 0;
@@ -424,7 +436,7 @@ class Response extends Message implements ResponseInterface, Stringable {
         $this->_downloadStart = $start;
         $downloadRange = "bytes {$start}-{$stop}/{$fileSize}";
 
-        $this->setStatus(StatusCode::PARTIAL_CONTENT());
+        $this->setStatus(HttpStatus::PartialContent);
         $this->addHeader('Content-Range', $downloadRange);
     }
 

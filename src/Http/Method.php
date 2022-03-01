@@ -1,9 +1,9 @@
 <?php
 /**
  * Http Methods
- * 
+ *
  * PHP version 7.5
- * 
+ *
  * @author Philip Michael Raab <peep@inane.co.za>
  */
 declare(strict_types=1);
@@ -14,7 +14,7 @@ use Inane\Type\Enum;
 
 /**
  * Method
- * 
+ *
  * @method static self COPY()
  * @method static self DELETE()
  * @method static self GET()
@@ -29,10 +29,13 @@ use Inane\Type\Enum;
  * @method static self UNLINK()
  * @method static self UNLOCK()
  * @method static self VIEW()
- * 
+ *
  * @version 0.9.0
- * 
+ *
  * @package Http
+ *
+ * @deprecated 0.9.0
+ * @see \Inane\Http\HttpMethod
  */
 class Method extends Enum {
     const COPY = 'COPY';

@@ -1,11 +1,19 @@
 <?php
 
 /**
- * AbstractStream
+ * Inane\Tools
+ *
+ * Http
  *
  * PHP version 8
  *
- * @author Philip Michael Raab <peep@inane.co.za>
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);

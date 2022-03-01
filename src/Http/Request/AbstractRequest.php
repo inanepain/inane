@@ -1,44 +1,61 @@
 <?php
+
 /**
- * Request
- * 
+ * Inane\Tools
+ *
+ * Http
+ *
  * PHP version 8
- * 
- * @author Philip Michael Raab <peep@inane.co.za>
+ *
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);
 
 namespace Inane\Http\Request;
 
-use Inane\Exception\BadMethodCallException;
-use Inane\Exception\UnexpectedValueException;
-use Inane\Http\Exception\InvalidArgumentException;
-use Inane\Http\Message;
-use Inane\Http\Method;
-use Inane\Http\Stream;
-use Inane\Http\Uri;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
-
 use function is_null;
 use function is_string;
 use function preg_match;
 use function strtoupper;
+use const false;
+use const null;
+
+use Inane\Exception\{
+    BadMethodCallException,
+    UnexpectedValueException
+};
+use Inane\Http\{
+    Exception\InvalidArgumentException,
+    HttpMethod,
+    Message,
+    Stream,
+    Uri
+};
+use Psr\Http\Message\{
+    RequestInterface,
+    StreamInterface,
+    UriInterface
+};
 
 /**
  * Request
- * 
+ *
  * @version 0.5.0
- * 
+ *
  * @package Http
  */
 class AbstractRequest extends Message implements RequestInterface {
     /**
      * Method
      */
-    private Method $method;
+    private HttpMethod $method;
 
     /**
      * target
@@ -52,15 +69,15 @@ class AbstractRequest extends Message implements RequestInterface {
 
     /**
      * Request
-     * 
-     * @param null|string|Method                        $method  HTTP method
+     *
+     * @param null|string|HttpMethod                        $method  HTTP method
      * @param null|string|UriInterface             $uri     URI
      * @param array<string, string|string[]>       $headers Request headers
      * @param string|resource|StreamInterface|null $body    Request body
      * @param string|null                          $version Protocol version
      */
     public function __construct(
-        null|string|Method $method = null,
+        null|string|HttpMethod $method = null,
         null|string|UriInterface $uri = null,
         array $headers = [],
         $body = null,
@@ -82,31 +99,31 @@ class AbstractRequest extends Message implements RequestInterface {
 
     /**
      * setMethod
-     * 
-     * @param null|string|Method $method method
-     * 
+     *
+     * @param null|string|HttpMethod $method method
+     *
      * @return Request request
-     * 
+     *
      * @throws UnexpectedValueException UnexpectedValueException
      * @throws BadMethodCallException BadMethodCallException
      */
-    protected function setMethod(null|string|Method $method = null): self {
+    protected function setMethod(null|string|HttpMethod $method = null): self {
         if (!isset($this->method)) {
-            if (is_null($method)) $this->method = Method::from($_SERVER['REQUEST_METHOD']);
-            else if (is_string($method) && Method::isValidKey(strtoupper($method))) $this->method = Method::from(strtoupper($method));
-            else if ($method instanceof Method) $this->method = $method;
-            else $this->method = Method::GET();
+            if (is_null($method)) $this->method = HttpMethod::tryFrom($_SERVER['REQUEST_METHOD']);
+            else if (is_string($method)) $this->method = HttpMethod::tryFrom(strtoupper($method));
+            else if ($method instanceof HttpMethod) $this->method = $method;
+            else $this->method = HttpMethod::Get;
         }
         return $this;
     }
 
     /**
      * setUri
-     * 
+     *
      * @param null|string|UriInterface $uri uri
-     * 
+     *
      * @return Request request
-     * 
+     *
      * @throws UnexpectedValueException UnexpectedValueException
      * @throws BadMethodCallException BadMethodCallException
      */
@@ -160,14 +177,13 @@ class AbstractRequest extends Message implements RequestInterface {
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
      * @param mixed $requestTarget
+     *
      * @return static
      */
     public function withRequestTarget($requestTarget): static {
-        if (preg_match('#\s#', $requestTarget)) {
-            throw new InvalidArgumentException(
-                'Invalid request target provided; cannot contain whitespace'
-            );
-        }
+        if (preg_match('#\s#', $requestTarget)) throw new InvalidArgumentException(
+            'Invalid request target provided; cannot contain whitespace'
+        );
 
         $new = clone $this;
         $new->requestTarget = $requestTarget;
@@ -181,7 +197,7 @@ class AbstractRequest extends Message implements RequestInterface {
      */
     public function getMethod(): string {
         if (!isset($this->method)) $this->setMethod();
-        return $this->method->getValue();
+        return $this->method->value;
     }
 
     /**
@@ -196,10 +212,12 @@ class AbstractRequest extends Message implements RequestInterface {
      * changed request method.
      *
      * @param string $method Case-sensitive method.
+     *
      * @return static
+     *
      * @throws InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method): static {
+    public function withMethod(string $method): static {
         $new = clone $this;
         $new->setMethod($method);
         return $new;
@@ -211,6 +229,7 @@ class AbstractRequest extends Message implements RequestInterface {
      * This method MUST return a UriInterface instance.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     *
      * @return UriInterface Returns a UriInterface instance
      *     representing the URI of the request.
      */
@@ -246,19 +265,16 @@ class AbstractRequest extends Message implements RequestInterface {
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
      * @param UriInterface $uri New request URI to use.
      * @param bool $preserveHost Preserve the original state of the Host header.
+     *
      * @return static
      */
     public function withUri(UriInterface $uri, $preserveHost = false): static {
-        if ($uri === $this->uri) {
-            return $this;
-        }
+        if ($uri === $this->uri) return $this;
 
         $new = clone $this;
         $new->uri = $uri;
 
-        if (!$preserveHost || !isset($this->headerNames['host'])) {
-            $new->updateHostFromUri();
-        }
+        if (!$preserveHost || !isset($this->headerNames['host'])) $new->updateHostFromUri();
 
         return $new;
     }
@@ -271,17 +287,12 @@ class AbstractRequest extends Message implements RequestInterface {
     private function updateHostFromUri(): void {
         $host = $this->uri->getHost();
 
-        if ($host == '') {
-            return;
-        }
+        if ($host == '') return;
 
-        if (($port = $this->uri->getPort()) !== null) {
-            $host .= ':' . $port;
-        }
+        if (($port = $this->uri->getPort()) !== null) $host .= ':' . $port;
 
-        if (isset($this->headerNames['host'])) {
-            $header = $this->headerNames['host'];
-        } else {
+        if (isset($this->headerNames['host'])) $header = $this->headerNames['host'];
+        else {
             $header = 'Host';
             $this->headerNames['host'] = 'Host';
         }
