@@ -1,17 +1,20 @@
 <?php
 
 /**
- * Http
+ * Inane\Tools
  *
- * Http Client
+ * Http
  *
  * PHP version 8
  *
- * @author Philip Michael Raab <peep@inane.co.za>
- * @package Http
- * @copyright 2021 Inane
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
-
 declare(strict_types=1);
 
 namespace Inane\Http;
@@ -45,7 +48,7 @@ use function usleep;
  * for mimetype updating
  *
  * @package Http
- * @version 1.6.1
+ * @version 1.7.0
  */
 class Client implements SplSubject {
     /**
@@ -146,12 +149,10 @@ class Client implements SplSubject {
      * @return void
      */
     protected function sendHeaders(Response $response): void {
-        if ($response->getStatus()->equals(StatusCode::PARTIAL_CONTENT()))
-            header($response->getStatus()->getDefault());
-        else if ($response->getStatus() == StatusCode::OK())
-            header($response->getStatus()->getDefault());
+        if ($response->getStatus() == HttpStatus::PartialContent || $response->getStatus() == HttpStatus::Ok)
+            header($response->getStatus()->text());
 
-        http_response_code($response->getStatus()->getValue());
+        http_response_code($response->getStatus()->value);
 
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val");
@@ -171,6 +172,23 @@ class Client implements SplSubject {
         if ($response->isDownload()) $this->serveFile($response);
         else $this->sendResponse($response);
         exit(0);
+    }
+
+    /**
+     * Fetch request
+     *
+     * @param Request $request
+     *
+     * @since 1.7.0
+     *
+     * @return Response
+     */
+    public function fetch(Request $request): Response {
+        $uri = $request->getUri();
+
+        $body = file_get_contents($uri->__toString());
+
+        return $request->getResponse($body);
     }
 
     /**

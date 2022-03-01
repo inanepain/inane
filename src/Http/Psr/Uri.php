@@ -1,11 +1,19 @@
 <?php
 
 /**
- * AbstractUri
- * 
+ * Inane\Tools
+ *
+ * Http
+ *
  * PHP version 8
- * 
- * @author Philip Michael Raab <peep@inane.co.za>
+ *
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);
@@ -24,9 +32,9 @@ use function strtolower;
 
 /**
  * AbstractUri
- * 
+ *
  * @version 0.6.1
- * 
+ *
  * @package Http
  */
 class Uri implements UriInterface {
@@ -57,9 +65,9 @@ class Uri implements UriInterface {
 
     /**
      * Uri
-     * 
-     * @param string $uri 
-     * @return void 
+     *
+     * @param string $uri
+     * @return void
      */
     public function __construct(string $uri = '') {
         $this->components = new Options([
@@ -81,7 +89,7 @@ class Uri implements UriInterface {
 
     /**
      * set the component parts from a uri
-     * 
+     *
      * @param string $uri url
      * @return bool parse result
      */
@@ -103,9 +111,9 @@ class Uri implements UriInterface {
 
     /**
      * verify components and update uri
-     * 
-     * @return void 
-     * @throws RuntimeException 
+     *
+     * @return void
+     * @throws RuntimeException
      */
     protected function verify(): void {
         $port = $this->components->port;
@@ -190,7 +198,7 @@ class Uri implements UriInterface {
 
     /**
      * Retrieve the authority component of the URI.
-     * 
+     *
      * todo: getAuthority
      *
      * If no authority information is present, this method MUST return an empty
@@ -223,7 +231,7 @@ class Uri implements UriInterface {
 
     /**
      * Retrieve the user information component of the URI.
-     * 
+     *
      * todo: getUserInfo
      *
      * If no user information is present, this method MUST return an empty

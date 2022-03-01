@@ -8,7 +8,7 @@ use Inane\Type\Enum;
 
 /**
  * StatusCode
- * 
+ *
  * @method static self CONTINUE()
  * @method static self SWITCHING_PROTOCOLS()
  * @method static self PROCESSING()
@@ -92,10 +92,13 @@ use Inane\Type\Enum;
  * @method static self SSL_HANDSHAKE_FAILED()
  * @method static self INVALID_SSL_CERTIFICATE()
  * @method static self RAILGUN_ERROR()
- * 
+ *
  * @version 0.9.0
- * 
+ *
  * @package Http
+ *
+ * @deprecated 0.9.0
+ * @see \Inane\Http\HttpStatus
  */
 class StatusCode extends Enum {
     // 1xx Informational

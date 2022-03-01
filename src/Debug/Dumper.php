@@ -14,7 +14,7 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2021 Philip Michael Raab <philip@inane.co.za>
+ * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
  */
 
 declare(strict_types=1);
@@ -29,6 +29,10 @@ namespace {
     if (!function_exists('dd')) {
         /**
          * Dumper shortcut
+         *
+         * options:
+         *  - (bool=false) open        : true - creates dumps open (main panel not effect)
+         *  - (bool=false) useVarExport: true - uses `var_export` instead of dumper to generate dump string
          *
          * @param mixed $data
          * @param string|null $label
@@ -47,21 +51,28 @@ namespace {
 /**
  * Inane\Debug namespace
  */
+
 namespace Inane\Debug {
 
     use Inane\String\Style;
-    use ArrayObject;
+    use Inane\Type\ArrayObject;
     use ReflectionClass;
 
     use const PHP_EOL;
+    use const true;
+    use const false;
 
     use function array_combine;
+    use function array_keys;
+    use function array_push;
+    use function array_search;
     use function array_shift;
     use function basename;
     use function count;
     use function debug_backtrace;
     use function file_get_contents;
     use function file;
+    use function get_class;
     use function gettype;
     use function highlight_string;
     use function implode;
@@ -69,8 +80,11 @@ namespace Inane\Debug {
     use function ob_start;
     use function php_sapi_name;
     use function preg_match;
+    use function str_repeat;
     use function str_replace;
     use function str_starts_with;
+    use function strtr;
+    use function trim;
     use function var_export;
 
     /**
@@ -78,7 +92,7 @@ namespace Inane\Debug {
      *
      * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
      *
-     * @version 1.5.0
+     * @version 1.6.0
      *
      * @package Inane\Debug
      */
@@ -86,7 +100,7 @@ namespace Inane\Debug {
         /**
          * Dumper version
          */
-        public const VERSION = '1.5.0';
+        public const VERSION = '1.6.0';
 
         /**
          * Single instance of Dumper
@@ -121,6 +135,24 @@ namespace Inane\Debug {
          * PS: this effect manual calls to write dumps as well.
          */
         public static bool $enabled = true;
+
+        /**
+         * Use php's var_export to generate dump
+         *
+         * By default Dumper parses variables itself,
+         *  you can however have it use `var_export` instead
+         *  by setting this to `true`
+         *
+         */
+        public static bool $useVarExport = false;
+
+        /**
+         * Max dump depth
+         *
+         * N.B.: does not effect `var_dump`
+         * @see \Inane\Debug\Dumper::$useVarExport
+         */
+        public static int $depth = 4;
 
         /**
          * Code style theme for dumper
@@ -293,10 +325,8 @@ DUMPER_HTML;
             foreach ($trace as $t) {
                 $i++;
                 if (!in_array(basename($t['file']), ['Dumper.php'])) break;
-                // if (!in_array(basename($t['file']), ['Dumper.php', 'index.php'])) break;
             }
 
-            // $index = count($trace)
             $file = file($trace[$i]['file']);
             $id = $trace[$i]['line'] - 1;
             $line = $file[$id];
@@ -307,9 +337,92 @@ DUMPER_HTML;
 
             $result = array_combine(['variable', 'name'], $match);
             $result['type'] = gettype($v);
-            // $result['value'] = $v;
-            return new ArrayObject($result, ArrayObject::ARRAY_AS_PROPS);;
-            // return $result;
+
+            return new ArrayObject($result);
+        }
+
+        /**
+         * Create the dump string for an array
+         *
+         * @param array $array the array
+         * @param int $level depth of array
+         *
+         * @since 1.6.0
+         *
+         * @return string array as string
+         */
+        private static function parseArray(array $array, int $level): string {
+            $output = '';
+
+            if (static::$depth <= $level) $output .= '[...]';
+            else if (empty($array)) $output .= '[]';
+            else {
+                $keys = array_keys($array);
+                $spaces = str_repeat(' ', $level * 4);
+                $output .= '[';
+
+                foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1);
+                $output .= PHP_EOL . "{$spaces}]";
+            }
+
+            return $output;
+        }
+
+        /**
+         * Create the dump string for an object
+         *
+         * @param mixed $object the object
+         * @param int $level depth of object
+         * @param array $cache objects already parsed
+         *
+         * @since 1.6.0
+         *
+         * @return string object as string
+         */
+        private static function parseObject(mixed $object, int $level, array &$cache): string {
+            $output = '';
+            $className = get_class($object);
+
+            if (($id = array_search($object, $cache, true)) !== false) $output .= "{$className}#" . (++$id) . '(...)';
+            else if (static::$depth <= $level) $output .= "{$className}(...)";
+            else {
+                $id = array_push($cache, $object);
+                $members = (array)$object;
+                $keys = array_keys($members);
+                $spaces = str_repeat(' ', $level * 4);
+                $output .= "$className#$id {";
+
+                foreach ($keys as $key) {
+                    $keyDisplay = strtr(trim($key), ["\0" => ':']);
+                    $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . self::parseVariable($members[$key], $level + 1, $cache);
+                }
+                $output .= PHP_EOL . "{$spaces}}";
+            }
+            return $output;
+        }
+
+        /**
+         * Creates the dump string for a variable
+         *
+         * @param mixed $var the variable
+         * @param int $level current depth
+         * @param array $cache parsed objects
+         *
+         * @since 1.6.0
+         *
+         * @return string dump string
+         */
+        private static function parseVariable(mixed $var, int $level = 0, array &$cache = []): string {
+            return match (gettype($var)) {
+                'boolean' => $var ? 'true' : 'false',
+                'integer', 'double', 'string' => "$var",
+                'resource' => '{resource}',
+                'NULL' => 'null',
+                'unknown type' => '{unknown}',
+                'array' => static::parseArray($var, $level),
+                'object' => static::parseObject($var, $level, $cache),
+                default => '{unhandled}',
+            };
         }
 
         /**
@@ -322,9 +435,13 @@ DUMPER_HTML;
          * @return void
          */
         protected function addDump(mixed $data, ?string $label = null, array $options = []): void {
+            $useVarExport = $options['useVarExport'] ?? static::$useVarExport;
+
             // CHECK CONSOLE
             if (static::isCli()) {
-                $code = var_export($data, true);
+                if ($useVarExport) $code = var_export($data, true);
+                else $code = static::parseVariable($data);
+
                 static::$dumps[] = "{$label}{$code}" . PHP_EOL;
                 return;
             }
@@ -333,7 +450,9 @@ DUMPER_HTML;
             $style = $options['style'] ?? static::$style;
             $style->apply();
 
-            $code = var_export($data, true);
+            if ($useVarExport) $code = var_export($data, true);
+            else $code = static::parseVariable($data);
+
             $code = highlight_string("<?php\n" . $code, true);
             $code = str_replace("&lt;?php<br />", '', $code);
 
@@ -363,7 +482,8 @@ DUMPER_HTML;
          * Add a dump to the collection
          *
          * options:
-         *  - (bool) open: true creates dumps open (main panel not effect)
+         *  - (bool=false) open        : true - creates dumps open (main panel not effect)
+         *  - (bool=false) useVarExport: true - uses `var_export` instead of dumper to generate dump string
          *
          * Chaining: You only need bracket your arguments for repeated dumps.
          * Dumper::dump('one')('two', 'Label')

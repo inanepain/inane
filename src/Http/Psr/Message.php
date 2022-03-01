@@ -1,29 +1,43 @@
 <?php
 
 /**
- * AbstractMessage
- * 
+ * Inane\Tools
+ *
+ * Http
+ *
  * PHP version 8
+ *
+ * @package Inane\Tools
+ * @author Philip Michael Raab<peep@inane.co.za>
+ *
+ * @license MIT
+ * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
+ *
+ * @copyright 2013-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);
 
 namespace Inane\Http\Psr;
 
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\StreamInterface;
 use Inane\Http\Exception\InvalidArgumentException;
 
 use function array_merge;
 use function implode;
 use function is_int;
 use function strtolower;
+use function strval;
+
+use Psr\Http\Message\{
+    MessageInterface,
+    StreamInterface
+};
 
 /**
  * AbstractMessage
- * 
- * @version 0.6.0
- * 
+ *
+ * @version 0.6.1
+ *
  * @package Http
  */
 class Message implements MessageInterface {
@@ -139,14 +153,14 @@ class Message implements MessageInterface {
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name): array {
+    public function getHeader($name): array|string {
         $header = strtolower($name);
 
         if (!isset($this->headerNames[$header])) return [];
 
         $header = $this->headerNames[$header];
 
-        return $this->headers[$header];
+        return [$header, $this->headers[$header]];
     }
 
     /**
@@ -169,7 +183,7 @@ class Message implements MessageInterface {
      *    the message, this method MUST return an empty string.
      */
     public function getHeaderLine($name): string {
-        return implode(', ', $this->getHeader($name));
+        return implode(': ', $this->getHeader($name));
     }
 
     /**
@@ -188,8 +202,6 @@ class Message implements MessageInterface {
      * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withHeader($name, $value): MessageInterface {
-        // $this->assertHeader($name);
-        // $value = $this->normalizeHeaderValue($value);
         $normalized = strtolower($name);
 
         $new = clone $this;
@@ -219,8 +231,6 @@ class Message implements MessageInterface {
      * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withAddedHeader($name, $value): MessageInterface {
-        // $this->assertHeader($name);
-        // $value = $this->normalizeHeaderValue($value);
         $normalized = strtolower($name);
 
         $new = clone $this;
@@ -298,13 +308,7 @@ class Message implements MessageInterface {
     protected function setHeaders(array $headers): void {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $name => $value) {
-            if (is_int($name)) {
-                // Numeric array keys are converted to int by PHP but having a header name '123' is not forbidden by the spec
-                // and also allowed in withHeader(). So we need to cast it to string again for the following assertion to pass.
-                $name = (string) $name;
-            }
-            // $this->assertHeader($header);
-            // $value = $this->normalizeHeaderValue($value);
+            if (is_int($name)) $name = strval($name);
             $normalized = strtolower($name);
             if (isset($this->headerNames[$normalized])) {
                 $name = $this->headerNames[$normalized];
