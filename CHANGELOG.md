@@ -6,6 +6,12 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## 0.27.0 - 2022-03-01
+
+- http:
+    - move to php 8.1 with enums
+    - lots of clean ups
+
 ## 0.26.0 - 2022-01-21
 
 - Config\Options:
