@@ -64,9 +64,9 @@ class Str {
      *
      * A shared buffer for storing values
      *
-     * @var array
+     * @var \Inane\Type\ArrayObject
      */
-    protected static $buffer = [];
+    protected static $buffer = new ArrayObject();
 
     /**
      * The id used to access the buffer.
@@ -165,7 +165,7 @@ class Str {
      * @return array storage memory
      */
     protected function storage(): array {
-        if (!isset($this->id)) static::$buffer[($this->id = uniqid())] = [];
+        if (!isset($this->id)) static::$buffer[($this->id = uniqid())] = new ArrayObject();
 
         return static::$buffer[$this->id];
     }
@@ -177,7 +177,7 @@ class Str {
      *
      * @return static
      */
-    protected function bufferAt(?int $id = null): string {
+    public function bufferAt(?int $id = null): string {
         if (is_null($id)) $id = count($this->storage()) - 1;
         return $id >= 0 ? $this->storage()[$id] : '';
     }
