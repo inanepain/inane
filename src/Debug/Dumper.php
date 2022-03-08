@@ -92,7 +92,7 @@ namespace Inane\Debug {
      *
      * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
      *
-     * @version 1.6.0
+     * @version 1.6.1
      *
      * @package Inane\Debug
      */
@@ -100,7 +100,7 @@ namespace Inane\Debug {
         /**
          * Dumper version
          */
-        public const VERSION = '1.6.0';
+        public const VERSION = '1.6.1';
 
         /**
          * Single instance of Dumper
@@ -393,7 +393,7 @@ DUMPER_HTML;
                 $output .= "$className#$id {";
 
                 foreach ($keys as $key) {
-                    $keyDisplay = strtr(trim($key), ["\0" => ':']);
+                    $keyDisplay = strtr(trim("$key"), ["\0" => ':']);
                     $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . self::parseVariable($members[$key], $level + 1, $cache);
                 }
                 $output .= PHP_EOL . "{$spaces}}";

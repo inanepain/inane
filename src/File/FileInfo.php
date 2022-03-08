@@ -43,7 +43,7 @@ use function unserialize;
  * @method FileInfo getFileInfo()
  *
  * @package Inane\File
- * @version 0.7.0
+ * @version 0.7.1
  */
 class FileInfo extends SplFileInfo {
     /**
@@ -146,8 +146,8 @@ class FileInfo extends SplFileInfo {
      * @return string|null
      */
     public function getFile(string $file): ?string {
-        $file = array_pop(glob(parent::getPathname() . '/' . $file));
-        return $file;
+        $paths = glob(parent::getPathname() . '/' . $file);
+        return array_pop($paths);
     }
 
     /**
