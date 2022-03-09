@@ -360,7 +360,6 @@ DUMPER_HTML;
                 $keys = array_keys($array);
                 $spaces = str_repeat(' ', $level * 4);
                 $output .= '[';
-
                 foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1);
                 $output .= PHP_EOL . "{$spaces}]";
             }
