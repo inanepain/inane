@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 namespace Inane\Config;
 
+use Laminas\Config\Config;
+
 use function is_array;
 
 /**
@@ -33,15 +35,15 @@ trait ConfigAwareTrait {
 	/**
 	 * Configuration
 	 *
-	 * @var array|Options
+	 * @var array|\Inane\Config\Options|\Laminas\Config\Config
 	 */
-	protected array|Options $config;
+	protected array|Options|Config $config;
 
 	/**
 	 * {@inheritDoc}
 	 * @see \Inane\Config\ConfigAwareInterface::setConfig()
 	 */
-	public function setConfig(array|Options $config): void {
+	public function setConfig(array|Options|Config $config): void {
 		if (is_array($config)) $this->config = new Options($config);
 		else $this->config = $config;
 	}

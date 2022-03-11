@@ -1,0 +1,10 @@
+Inane Tools:
+	Useful tools and classes to do odd jobs.
+	Dumper:
+		Useful for debugging, it writes to a collapsed table at the end of the page.
+		- move both rendering methods into separate classes
+		- allow for custom renderers:
+			- interface or attribute? only use one method
+		renderer:
+			outputs html / text / json
+			- needs to be able to control buffering?

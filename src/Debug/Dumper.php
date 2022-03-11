@@ -94,6 +94,8 @@ namespace Inane\Debug {
      *
      * @version 1.6.1
      *
+     * @todo: move the two rendering methods into their own classes. allow for custom renderers.
+     *
      * @package Inane\Debug
      */
     class Dumper {
