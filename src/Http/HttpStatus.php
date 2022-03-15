@@ -54,7 +54,7 @@ enum HttpStatus: int {
     case UseProxy = 305;
     case SwitchProxy = 306;
     case TemporaryRedirect = 307;
-    case PermanentRedirect = 308;
+    // case PermanentRedirect = 308;
     case ResumeIncomplete = 308;
 
         // 4xx Client Error
