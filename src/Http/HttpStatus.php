@@ -21,116 +21,314 @@ declare(strict_types=1);
 namespace Inane\Http;
 
 /**
- * HttpStatus
+ * Http Status
  *
- * @version 0.9.0
+ *  - 1xx: Informational
+ *  - 2xx: Success
+ *  - 3xx: Redirection
+ *  - 4xx: Client Error
+ *  - 5xx: Server Error
+ *
+ * @version 1.0.0
  *
  * @package Http
  */
-enum HttpStatus: int {
+enum HttpStatus {
         // 1xx Informational
-    case Continue = 100;
-    case SwitchingProtocols = 101;
-    case Processing = 102;
+    case Continue;
+    case SwitchingProtocols;
+    case Processing;
 
         // 2xx Success
-    case Ok = 200;
-    case Created = 201;
-    case Accepted = 202;
-    case NonAuthoritativeInformation = 203;
-    case NoContent = 204;
-    case ResetContent = 205;
-    case PartialContent = 206;
-    case MultiStatus = 207;
-    case AlreadyReported = 208;
-    case ImUsed = 226;
+    case Ok;
+    case Created;
+    case Accepted;
+    case NonAuthoritativeInformation;
+    case NoContent;
+    case ResetContent;
+    case PartialContent;
+    case MultiStatus;
+    case AlreadyReported;
+    case ImUsed;
 
         // 3xx Redirection
-    case MultipleChoices = 300;
-    case MovedPermanently = 301;
-    case Found = 302;
-    case SeeOther = 303;
-    case NotModified = 304;
-    case UseProxy = 305;
-    case SwitchProxy = 306;
-    case TemporaryRedirect = 307;
-    // case PermanentRedirect = 308;
-    case ResumeIncomplete = 308;
+    case MultipleChoices;
+    case MovedPermanently;
+    case Found;
+    case SeeOther;
+    case NotModified;
+    case UseProxy;
+    case SwitchProxy;
+    case TemporaryRedirect;
+    case PermanentRedirect;
+    case ResumeIncomplete;
 
         // 4xx Client Error
-    case BadRequest = 400;
-    case Unauthorized = 401;
-    case PaymentRequired = 402;
-    case Forbidden = 403;
-    case NotFound = 404;
-    case MethodNotAllowed = 405;
-    case NotAcceptable = 406;
-    case ProxyAuthenticationRequired = 407;
-    case RequestTimeout = 408;
-    case Conflict = 409;
-    case Gone = 410;
-    case LengthRequired = 411;
-    case PreconditionFailed = 412;
-    case RequestEntityTooLarge = 413;
-    case RequestUriTooLong = 414;
-    case UnsupportedMediaType = 415;
-    case RequestedRangeNotSatisfiable = 416;
-    case ExpectationFailed = 417;
-    case ImATeapot = 418;
-    case MisdirectedRequest = 421;
-    case UnprocessableEntity = 422;
-    case Locked = 423;
-    case FailedDependency = 424;
-    case UpgradeRequired = 426;
-    case PreconditionRequired = 428;
-    case TooManyRequests = 429;
-    case RequestHeaderFieldsTooLarge = 431;
-    case LoginTimeout = 440;
-    case NoResponse = 444;
-    case RetryWith = 449;
-    case BlockedByWindowsParentalControls = 450;
-    case UnavailableForLegalReasons = 451;
-    case Redirect = 451;
-    case RequestHeaderTooLarge = 494;
-    case CertError = 495;
-    case NoCert = 496;
-    case HttpToHttps = 497;
-    case TokenExpiredInvalid = 498;
-    case ClientClosedRequest = 499;
-    case TokenRequired = 499;
+    case BadRequest;
+    case Unauthorized;
+    case PaymentRequired;
+    case Forbidden;
+    case NotFound;
+    case MethodNotAllowed;
+    case NotAcceptable;
+    case ProxyAuthenticationRequired;
+    case RequestTimeout;
+    case Conflict;
+    case Gone;
+    case LengthRequired;
+    case PreconditionFailed;
+    case RequestEntityTooLarge;
+    case RequestUriTooLong;
+    case UnsupportedMediaType;
+    case RequestedRangeNotSatisfiable;
+    case ExpectationFailed;
+    case ImATeapot;
+    case MisdirectedRequest;
+    case UnprocessableEntity;
+    case Locked;
+    case FailedDependency;
+    case UpgradeRequired;
+    case PreconditionRequired;
+    case TooManyRequests;
+    case RequestHeaderFieldsTooLarge;
+    case LoginTimeout;
+    case NoResponse;
+    case RetryWith;
+    case BlockedByWindowsParentalControls;
+    case UnavailableForLegalReasons;
+    case Redirect;
+    case RequestHeaderTooLarge;
+    case CertError;
+    case NoCert;
+    case HttpToHttps;
+    case TokenExpiredInvalid;
+    case ClientClosedRequest;
+    case TokenRequired;
 
         // 5xx Server Error
-    case InternalServerError = 500;
-    case NotImplemented = 501;
-    case BadGateway = 502;
-    case ServiceUnavailable = 503;
-    case GatewayTimeout = 504;
-    case HttpVersionNotSupported = 505;
-    case VariantAlsoNegotiates = 506;
-    case InsufficientStorage = 507;
-    case LoopDetected = 508;
-    case BandwidthLimitExceeded = 509;
-    case NotExtended = 510;
-    case NetworkAuthenticationRequired = 511;
-    case UnknownError = 520;
-    case WebServerIsDown = 521;
-    case ConnectionTimedOut = 522;
-    case OriginIsUnreachable = 523;
-    case ATimeoutOccurred = 524;
-    case SslHandshakeFailed = 525;
-    case InvalidSslCertificate = 526;
-    case RailgunError = 527;
+    case InternalServerError;
+    case NotImplemented;
+    case BadGateway;
+    case ServiceUnavailable;
+    case GatewayTimeout;
+    case HttpVersionNotSupported;
+    case VariantAlsoNegotiates;
+    case InsufficientStorage;
+    case LoopDetected;
+    case BandwidthLimitExceeded;
+    case NotExtended;
+    case NetworkAuthenticationRequired;
+    case UnknownError;
+    case WebServerIsDown;
+    case ConnectionTimedOut;
+    case OriginIsUnreachable;
+    case ATimeoutOccurred;
+    case SslHandshakeFailed;
+    case InvalidSslCertificate;
+    case RailgunError;
 
     /**
-     * Description
+     * Get HTTP Status by Code
+     *
+     * @return static
+     */
+    public static function from(int $code): static {
+        return match ($code) {
+            100 => static::Continue,
+            101 => static::SwitchingProtocols,
+            102 => static::Processing,
+            200 => static::Ok,
+            201 => static::Created,
+            202 => static::Accepted,
+            203 => static::NonAuthoritativeInformation,
+            204 => static::NoContent,
+            205 => static::ResetContent,
+            206 => static::PartialContent,
+            207 => static::MultiStatus,
+            208 => static::AlreadyReported,
+            226 => static::ImUsed,
+            300 => static::MultipleChoices,
+            301 => static::MovedPermanently,
+            302 => static::Found,
+            303 => static::SeeOther,
+            304 => static::NotModified,
+            305 => static::UseProxy,
+            306 => static::SwitchProxy,
+            307 => static::TemporaryRedirect,
+            308 => static::PermanentRedirect,
+            308 => static::ResumeIncomplete,
+            400 => static::BadRequest,
+            401 => static::Unauthorized,
+            402 => static::PaymentRequired,
+            403 => static::Forbidden,
+            404 => static::NotFound,
+            405 => static::MethodNotAllowed,
+            406 => static::NotAcceptable,
+            407 => static::ProxyAuthenticationRequired,
+            408 => static::RequestTimeout,
+            409 => static::Conflict,
+            410 => static::Gone,
+            411 => static::LengthRequired,
+            412 => static::PreconditionFailed,
+            413 => static::RequestEntityTooLarge,
+            414 => static::RequestUriTooLong,
+            415 => static::UnsupportedMediaType,
+            416 => static::RequestedRangeNotSatisfiable,
+            417 => static::ExpectationFailed,
+            418 => static::ImATeapot,
+            421 => static::MisdirectedRequest,
+            422 => static::UnprocessableEntity,
+            423 => static::Locked,
+            424 => static::FailedDependency,
+            426 => static::UpgradeRequired,
+            428 => static::PreconditionRequired,
+            429 => static::TooManyRequests,
+            431 => static::RequestHeaderFieldsTooLarge,
+            440 => static::LoginTimeout,
+            444 => static::NoResponse,
+            449 => static::RetryWith,
+            450 => static::BlockedByWindowsParentalControls,
+            451 => static::UnavailableForLegalReasons,
+            451 => static::Redirect,
+            494 => static::RequestHeaderTooLarge,
+            495 => static::CertError,
+            496 => static::NoCert,
+            497 => static::HttpToHttps,
+            498 => static::TokenExpiredInvalid,
+            499 => static::ClientClosedRequest,
+            499 => static::TokenRequired,
+            500 => static::InternalServerError,
+            501 => static::NotImplemented,
+            502 => static::BadGateway,
+            503 => static::ServiceUnavailable,
+            504 => static::GatewayTimeout,
+            505 => static::HttpVersionNotSupported,
+            506 => static::VariantAlsoNegotiates,
+            507 => static::InsufficientStorage,
+            508 => static::LoopDetected,
+            509 => static::BandwidthLimitExceeded,
+            510 => static::NotExtended,
+            511 => static::NetworkAuthenticationRequired,
+            520 => static::UnknownError,
+            521 => static::WebServerIsDown,
+            522 => static::ConnectionTimedOut,
+            523 => static::OriginIsUnreachable,
+            524 => static::ATimeoutOccurred,
+            525 => static::SslHandshakeFailed,
+            526 => static::InvalidSslCertificate,
+            527 => static::RailgunError,
+            default => static::Ok,
+        };
+    }
+
+    /**
+     * Get HTTP Status Code
+     *
+     * @return int
+     */
+    public function code(): int {
+        return match ($this) {
+                // 1xx Informational
+            static::Continue => 100,
+            static::SwitchingProtocols => 101,
+            static::Processing => 102,
+                // 2xx Success
+            static::Ok => 200,
+            static::Created => 201,
+            static::Accepted => 202,
+            static::NonAuthoritativeInformation => 203,
+            static::NoContent => 204,
+            static::ResetContent => 205,
+            static::PartialContent => 206,
+            static::MultiStatus => 207,
+            static::AlreadyReported => 208,
+            static::ImUsed => 226,
+                // 3xx Redirection
+            static::MultipleChoices => 300,
+            static::MovedPermanently => 301,
+            static::Found => 302,
+            static::SeeOther => 303,
+            static::NotModified => 304,
+            static::UseProxy => 305,
+            static::SwitchProxy => 306,
+            static::TemporaryRedirect => 307,
+            static::PermanentRedirect, static::ResumeIncomplete => 308,
+                // 4xx Client Error
+            static::BadRequest => 400,
+            static::Unauthorized => 401,
+            static::PaymentRequired => 402,
+            static::Forbidden => 403,
+            static::NotFound => 404,
+            static::MethodNotAllowed => 405,
+            static::NotAcceptable => 406,
+            static::ProxyAuthenticationRequired => 407,
+            static::RequestTimeout => 408,
+            static::Conflict => 409,
+            static::Gone => 410,
+            static::LengthRequired => 411,
+            static::PreconditionFailed => 412,
+            static::RequestEntityTooLarge => 413,
+            static::RequestUriTooLong => 414,
+            static::UnsupportedMediaType => 415,
+            static::RequestedRangeNotSatisfiable => 416,
+            static::ExpectationFailed => 417,
+            static::ImATeapot => 418,
+            static::MisdirectedRequest => 421,
+            static::UnprocessableEntity => 422,
+            static::Locked => 423,
+            static::FailedDependency => 424,
+            static::UpgradeRequired => 426,
+            static::PreconditionRequired => 428,
+            static::TooManyRequests => 429,
+            static::RequestHeaderFieldsTooLarge => 431,
+            static::LoginTimeout => 440,
+            static::NoResponse => 444,
+            static::RetryWith => 449,
+            static::BlockedByWindowsParentalControls => 450,
+            static::UnavailableForLegalReasons, static::Redirect => 451,
+            static::RequestHeaderTooLarge => 494,
+            static::CertError => 495,
+            static::NoCert => 496,
+            static::HttpToHttps => 497,
+            static::TokenExpiredInvalid => 498,
+            static::ClientClosedRequest, static::TokenRequired => 499,
+                // 5xx Server Error
+            static::InternalServerError => 500,
+            static::NotImplemented => 501,
+            static::BadGateway => 502,
+            static::ServiceUnavailable => 503,
+            static::GatewayTimeout => 504,
+            static::HttpVersionNotSupported => 505,
+            static::VariantAlsoNegotiates => 506,
+            static::InsufficientStorage => 507,
+            static::LoopDetected => 508,
+            static::BandwidthLimitExceeded => 509,
+            static::NotExtended => 510,
+            static::NetworkAuthenticationRequired => 511,
+            static::UnknownError => 520,
+            static::WebServerIsDown => 521,
+            static::ConnectionTimedOut => 522,
+            static::OriginIsUnreachable => 523,
+            static::ATimeoutOccurred => 524,
+            static::SslHandshakeFailed => 525,
+            static::InvalidSslCertificate => 526,
+            static::RailgunError => 527,
+            default => 0,
+        };
+    }
+
+    /**
+     * Get HTTP Status Description
      *
      * @return string
      */
     public function description(): string {
         return match ($this) {
+                // 1xx Informational
             static::Continue => 'The server has received the request headers, and that the client should proceed to send the request body.',
             static::SwitchingProtocols => 'The requester has asked the server to switch protocols and the server is acknowledging that it will do so.',
             static::Processing => 'The server has received and is processing the request, but no response is available yet.',
+                // 2xx Success
             static::Ok => 'The standard response for successful HTTP requests.',
             static::Created => 'The request has been fulfilled and a new resource has been created.',
             static::Accepted => 'The request has been accepted but has not been processed yet. This code does not guarantee that the request will process successfully.',
@@ -141,6 +339,7 @@ enum HttpStatus: int {
             static::MultiStatus => 'The message body that follows is an XML message and can contain a number of separate response codes, depending on how many sub-requests were made.',
             static::AlreadyReported => 'The members of a DAV binding have already been enumerated in a previous reply to this request, and are not being included again.',
             static::ImUsed => 'The server has fulfilled a GET request for the resource, and the response is a representation of the result of one or more instance-manipulations applied to the current instance.',
+                // 3xx Redirection
             static::MultipleChoices => 'There are multiple options that the client may follow.',
             static::MovedPermanently => 'The resource has been moved and all further requests should reference its new URI.',
             static::Found => 'The HTTP 1.0 specification described this status as "Moved Temporarily", but popular browsers respond to this status similar to behavior intended for 303. The resource can be retrieved by referencing the returned URI.',
@@ -151,6 +350,7 @@ enum HttpStatus: int {
             static::TemporaryRedirect => 'HTTP 1.1. The request should be repeated with the URI provided in the response, but future requests should still call the original URI.',
             static::PermanentRedirect => 'Experimental. The request and all future requests should be repeated with the URI provided in the response. The HTTP method is not allowed to be changed in the subsequent request.',
             static::ResumeIncomplete => 'This code is used in the Resumable HTTP Requests Proposal to resume aborted PUT or POST requests',
+                // 4xx Client Error
             static::BadRequest => 'The request could not be fulfilled due to the incorrect syntax of the request.',
             static::Unauthorized => 'The requester is not authorized to access the resource. This is similar to 403 but is used in cases where authentication is expected but has failed or has not been provided.',
             static::PaymentRequired => 'Reserved for future use. Some web services use this as an indication that the client has sent an excessive number of requests.',
@@ -191,6 +391,7 @@ enum HttpStatus: int {
             static::TokenExpiredInvalid => 'Returned by ArcGIS for Server. A code of 498 indicates an expired or otherwise invalid token.',
             static::ClientClosedRequest => 'Used in Nginx logs to indicate when the connection has been closed by client while the server is still processing its request, making server unable to send a status code back.',
             static::TokenRequired => 'Returned by ArcGIS for Server. A code of 499 indicates that a token is required (if no token was submitted).',
+                // 5xx Server Error
             static::InternalServerError => 'A generic status for an error in the server itself.',
             static::NotImplemented => 'The server cannot respond to the request. This usually implies that the server could possibly support the request in the future — otherwise a 4xx status may be more appropriate.',
             static::BadGateway => 'The server is acting as a proxy and did not receive an acceptable response from the upstream server.',
@@ -216,15 +417,17 @@ enum HttpStatus: int {
     }
 
     /**
-     * Text
+     * Get HTTP Status Message
      *
      * @return string
      */
-    public function text(): string {
+    public function message(): string {
         return match ($this) {
+                // 1xx Informational
             static::Continue => 'Continue',
             static::SwitchingProtocols => 'Switching protocols',
             static::Processing => 'Processing',
+                // 2xx Success
             static::Ok => 'HTTP/1.1 200 OK', // FINAL
             static::Created => 'Created',
             static::Accepted => 'Accepted',
@@ -235,6 +438,7 @@ enum HttpStatus: int {
             static::MultiStatus => 'MULTI Status',
             static::AlreadyReported => 'Already reported',
             static::ImUsed => 'Im used',
+                // 3xx Redirection
             static::MultipleChoices => 'Multiple choices',
             static::MovedPermanently => 'Moved permanently',
             static::Found => 'Found',
@@ -245,6 +449,7 @@ enum HttpStatus: int {
             static::TemporaryRedirect => 'Temporary redirect',
             static::PermanentRedirect => 'Permanent redirect',
             static::ResumeIncomplete => 'Resume incomplete',
+                // 4xx Client Error
             static::BadRequest => 'Bad request',
             static::Unauthorized => 'Unauthorized',
             static::PaymentRequired => 'Payment required',
@@ -285,6 +490,7 @@ enum HttpStatus: int {
             static::TokenExpiredInvalid => 'Token expired invalid',
             static::ClientClosedRequest => 'Client closed request',
             static::TokenRequired => 'Token required',
+                // 5xx Server Error
             static::InternalServerError => 'Internal server error',
             static::NotImplemented => 'Not implemented',
             static::BadGateway => 'Bad gateway',
