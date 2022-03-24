@@ -6,6 +6,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
+## current @2022-03-11+
+
+- Added Net for network stuff.
+- Net::portOpen: quick call to check if a port is open.
+
 ## 0.27.0 - 2022-03-01
 
 - http:

@@ -5,7 +5,7 @@
  *
  * Http
  *
- * PHP version 8
+ * PHP version 8.1
  *
  * @package Inane\Tools
  * @author Philip Michael Raab<peep@inane.co.za>
@@ -48,7 +48,7 @@ use function usleep;
  * for mimetype updating
  *
  * @package Http
- * @version 1.7.0
+ * @version 1.7.1
  */
 class Client implements SplSubject {
     /**
@@ -61,17 +61,17 @@ class Client implements SplSubject {
      *
      * @var int
      */
-    protected $_progress = 0;
+    protected int $_progress = 0;
 
     /**
      * File size served %
      *
      * @var int
      */
-    protected $_percent = 0;
+    protected int $_percent = 0;
 
     /**
-     * Client
+     * Client constructor
      */
     public function __construct() {
     }
@@ -79,7 +79,9 @@ class Client implements SplSubject {
     /**
      * Attach Observer
      *
-     * @param SplObserver $observer_in observer
+     * To receive transfer progress update notifications
+     *
+     * @param SplObserver $observer_in observe transfer progress
      *
      * @return void
      */
@@ -89,6 +91,8 @@ class Client implements SplSubject {
 
     /**
      * Detach Observer
+     *
+     * To stop sending them transfer update notifications
      *
      * @param SplObserver $observer_in observer
      *
@@ -103,6 +107,8 @@ class Client implements SplSubject {
     /**
      * Notify observers
      *
+     * Notification of transfer progress
+     *
      * @return void
      */
     public function notify(): void {
@@ -111,7 +117,12 @@ class Client implements SplSubject {
     }
 
     /**
-     * Progress of download
+     * Progress of transfer
+     *
+     * Details:
+     *  - filename
+     *  - progress (transferred size)
+     *  - total (size)
      *
      * @return array
      */
@@ -124,12 +135,14 @@ class Client implements SplSubject {
     }
 
     /**
-     * add progress
+     * update progress information
      *
-     * @param int $progress
-     * @return Client
+     * @param int $progress amount complete
+     * @param int $fileSize total / target size
+     *
+     * @return self
      */
-    protected function addProgress($progress, $fileSize): self {
+    protected function updateProgress(int $progress, int $fileSize): self {
         $this->_progress += $progress;
         if ($this->_progress > $fileSize)
             $this->_progress = $fileSize;
@@ -146,13 +159,14 @@ class Client implements SplSubject {
      * send headers
      *
      * @param Response $response
+     *
      * @return void
      */
     protected function sendHeaders(Response $response): void {
         if ($response->getStatus() == HttpStatus::PartialContent || $response->getStatus() == HttpStatus::Ok)
-            header($response->getStatus()->text());
+            header($response->getStatus()->message());
 
-        http_response_code($response->getStatus()->value);
+        http_response_code($response->getStatus()->code());
 
         foreach ($response->getHeaders() as $header => $value) {
             if (is_array($value)) foreach ($value as $val) header("$header: $val");
@@ -205,7 +219,10 @@ class Client implements SplSubject {
     /**
      * serve file
      *
+     * stream file content
+     *
      * @param Response $response
+     *
      * @return void
      */
     protected function serveFile(Response $response): void {
@@ -223,13 +240,17 @@ class Client implements SplSubject {
     }
 
     /**
-     * send chunk to client
+     * send buffered file
+     *
+     * Buffered streaming to restrict
+     *  the transfer speed to specified limit
      *
      * @param Response $response
      * @param resource $fp
+     *
      * @return void
      */
-    protected function sendBuffer(Response $response, $fp) {
+    protected function sendBuffer(Response $response, $fp): void {
         if (ob_get_level() == 0) ob_start();
         $this->sendHeaders($response);
         $sleep = $response->getSleep();
@@ -241,10 +262,10 @@ class Client implements SplSubject {
             print(fread($fp, $buffer_size));
             ob_flush();
             flush();
-            $this->addProgress($buffer_size, $download_size);
+            $this->updateProgress($buffer_size, $download_size);
             usleep($sleep);
         }
         ob_end_flush();
-        $this->addProgress(1, $download_size);
+        $this->updateProgress(1, $download_size);
     }
 }

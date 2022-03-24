@@ -36,7 +36,7 @@ use Psr\Http\Message\{
 /**
  * AbstractMessage
  *
- * @version 0.6.1
+ * @version 0.6.2
  *
  * @package Http
  */
@@ -183,7 +183,10 @@ class Message implements MessageInterface {
      *    the message, this method MUST return an empty string.
      */
     public function getHeaderLine($name): string {
-        return implode(': ', $this->getHeader($name));
+        $h = $this->getHeader($name);
+        $a = array_pop($h);
+        if (is_string($a)) $a = [$a];
+        return implode(', ', $a);
     }
 
     /**

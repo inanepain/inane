@@ -92,15 +92,17 @@ namespace Inane\Debug {
      *
      * A simple dump tool that neatly stacks its collapsed dumps on the bottom of the page.
      *
-     * @version 1.6.0
+     * @version 1.7.0
+     *
+     * @todo: move the two rendering methods into their own classes. allow for custom renderers.
      *
      * @package Inane\Debug
      */
-    class Dumper {
+    final class Dumper {
         /**
          * Dumper version
          */
-        public const VERSION = '1.6.0';
+        public const VERSION = '1.7.0';
 
         /**
          * Single instance of Dumper
@@ -160,6 +162,11 @@ namespace Inane\Debug {
         public static Style $style;
 
         /**
+         * Colours used for display
+         */
+        public static Theme $theme = Theme::CURRENT;
+
+        /**
          * The collected dumps
          */
         protected static array $dumps = [];
@@ -174,9 +181,9 @@ namespace Inane\Debug {
         }
 
         /**
-         * Private constructor
+         * Private Dumper constructor
          */
-        protected function __construct() {
+        private function __construct() {
             static::$style = Style::DEFAULT();
         }
 
@@ -221,7 +228,7 @@ namespace Inane\Debug {
          *
          * @return string
          */
-        protected function render(): string {
+        protected function render(array $options = []): string {
             // Check for command line
             if (static::isCli()) {
                 $c = (object) static::$colour;
@@ -256,7 +263,7 @@ DUMPER_HTML;
          *
          * @return string|null If Attribute Silence true return null
          */
-        protected function formatLabel(?string $label = null, string $type = null): ?string {
+        protected static function formatLabel(?string $label = null, string $type = null): ?string {
             $backtrace = debug_backtrace();
             // backtracking dump point of origin
             $i = -1;
@@ -360,7 +367,6 @@ DUMPER_HTML;
                 $keys = array_keys($array);
                 $spaces = str_repeat(' ', $level * 4);
                 $output .= '[';
-
                 foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1);
                 $output .= PHP_EOL . "{$spaces}]";
             }
@@ -393,7 +399,7 @@ DUMPER_HTML;
                 $output .= "$className#$id {";
 
                 foreach ($keys as $key) {
-                    $keyDisplay = strtr(trim($key), ["\0" => ':']);
+                    $keyDisplay = strtr(trim("$key"), ["\0" => ':']);
                     $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . self::parseVariable($members[$key], $level + 1, $cache);
                 }
                 $output .= PHP_EOL . "{$spaces}}";
@@ -447,8 +453,8 @@ DUMPER_HTML;
             }
 
             // HTML
-            $style = $options['style'] ?? static::$style;
-            $style->apply();
+            $theme = $options['theme'] ?? static::$theme;
+            $theme->apply();
 
             if ($useVarExport) $code = var_export($data, true);
             else $code = static::parseVariable($data);
@@ -498,7 +504,7 @@ DUMPER_HTML;
             $info = static::analyseVariable($data);
             if (is_null($label) && $info->variable != '') $label = $info->variable;
 
-            $label = static::dumper()->formatLabel($label, $info->type);
+            $label = static::formatLabel($label, $info->type);
             if (!is_null($label)) static::dumper()->addDump($data, $label, $options);
 
             return static::dumper();

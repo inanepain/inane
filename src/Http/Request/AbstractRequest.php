@@ -217,7 +217,7 @@ class AbstractRequest extends Message implements RequestInterface {
      *
      * @throws InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod(string $method): static {
+    public function withMethod($method) {
         $new = clone $this;
         $new->setMethod($method);
         return $new;

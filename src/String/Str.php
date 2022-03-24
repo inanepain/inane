@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * PHP version 8
+ * PHP version 8.1
  *
  * @author Philip Michael Raab <philip@inane.co.za>
  * @package Inane\String
@@ -14,7 +14,7 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2018 Philip Michael Raab <philip@inane.co.za>
+ * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
  */
 
 declare(strict_types=1);
@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Inane\String;
 
 use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
+use Inane\Type\ArrayObject;
 
 use function array_merge;
 use function count;
@@ -44,9 +45,11 @@ use function ucwords;
  * Str
  *
  * @package Inane\String\Str
+ *
  * @property-read public length
  * @property public string
- * @version 0.2.4
+ *
+ * @version 0.3.0
  */
 class Str {
     use OptionMagicPropertyTrait;
@@ -57,17 +60,36 @@ class Str {
     protected Capitalisation $_case = Capitalisation::Ignore;
 
     /**
-     * String
+     * Storage buffer
+     *
+     * A shared buffer for storing values
+     *
+     * @var \Inane\Type\ArrayObject
      */
-    protected string $_str = '';
+    protected static $buffer;
+
+    /**
+     * The id used to access the buffer.
+     */
+    private string $id;
 
     /**
      * Creates instance of Str object
      *
      * @param string $string
      */
-    public function __construct(string $string = '') {
-        if ($string) $this->_str = $string;
+    public function __construct(
+        /**
+         * String
+         */
+        protected string $_str = '') {
+    }
+
+    /**
+     * Clean up memory buffer
+     */
+    public function __destruct() {
+        if (isset($this->id) && false) unset(static::$buffer[$this->id]);
     }
 
     /**
@@ -135,6 +157,95 @@ class Str {
      */
     public function __toString(): string {
         return $this->_str;
+    }
+
+    /**
+     * Fetches storage from shared buffer.
+     *
+     * @return ArrayObject storage memory
+     */
+    protected function storage(): ArrayObject {
+        if (!isset($this->id)) {
+            if (!isset(static::$buffer)) static::$buffer = new ArrayObject();
+            static::$buffer[($this->id = uniqid())] = new ArrayObject();
+        }
+
+        return static::$buffer[$this->id];
+    }
+
+    /**
+     * Gets the string at buffer $id or latest
+     *
+     * @param int|null $id buffer to use for string or latest if null
+     *
+     * @return static
+     */
+    public function bufferAt(?int $id = null): string {
+        if (is_null($id)) $id = count($this->storage()) - 1;
+        return $id >= 0 ? $this->storage()[$id] : '';
+    }
+
+    /**
+     * Saves current value to buffer then replaces value with $string
+     *
+     * @return static with new value
+     */
+    public function bufferAndReplace(string $string): static {
+        $this->buffer();
+        $this->_str = $string;
+
+        return $this;
+    }
+
+    /**
+     * Copies current value to buffer
+     *
+     * @return int buffer id for stored value
+     */
+    public function buffer(): int {
+        $id = count($this->storage());
+        $this->storage()[$id] = $this->_str;
+
+        return $id;
+    }
+
+    /**
+     * Restores value to string in buffer $id or latest
+     *
+     * @param int|null $id buffer to use for string or latest if null
+     *
+     * @return static
+     */
+    public function restore(?int $id = null): static {
+        $this->_str = $this->bufferAt($id);
+
+        return $this;
+    }
+
+    /**
+     * Appends string in buffer $id or most recent buffer if not
+     *
+     * @param int|null $id buffer to use for string or latest if null
+     *
+     * @return static
+     */
+    public function appendBuffer(?int $id = null): static {
+        $this->_str .= $this->bufferAt($id);
+
+        return $this;
+    }
+
+    /**
+     * Prepends string in buffer $id or most recent buffer if not
+     *
+     * @param int|null $id buffer to use for string or latest if null
+     *
+     * @return static
+     */
+    public function prependBuffer(?int $id = null): static {
+        $this->_str = $this->bufferAt($id) . $this->_str;
+
+        return $this;
     }
 
     /**
@@ -434,6 +545,6 @@ class Str {
      * @return static
      */
     public function duplicate(): static {
-        return clone($this);
+        return clone ($this);
     }
 }
