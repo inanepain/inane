@@ -6,10 +6,19 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## current @2022-03-11+
+## current @2022-04-07+
+
+-
+
+## 0.29.0 @2022-04-06
 
 - Added Net for network stuff.
 - Net::portOpen: quick call to check if a port is open.
+- Moved Dumper and Http classes into their own packages.
+
+## 0.28.0/1 @2022-03-11+
+
+- dumper theme Improvements.
 
 ## 0.27.0 - 2022-03-01
 

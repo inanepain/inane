@@ -36,7 +36,7 @@ final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.28.1';
+	const VERSION = '0.29.0';
 
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from
