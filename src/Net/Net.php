@@ -48,7 +48,7 @@ class Net {
      *
      * @return bool is open
      */
-    public static function portOpen(string $ip, int $port, ? array &$error = null): bool {
+    public static function portOpen(string $ip, int $port, ?array &$error = null): bool {
         $fp = @fsockopen($ip, $port, $errno, $errstr, 0.1);
         if (!$fp) {
             if (!is_null($error)) {
@@ -65,5 +65,4 @@ class Net {
         fclose($fp);
         return true;
     }
-
 }

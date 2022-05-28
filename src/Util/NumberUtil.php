@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 8
  *
  * @author Philip Michael Raab <philip@inane.co.za>
@@ -35,13 +35,13 @@ use function str_split;
 class NumberUtil {
     /**
      * Reduce number
-     * 
+     *
      * By adding the individual digits until required length reached or an exception occurs.
      *
      * @param int $number starting number
      * @param int $length limit
      * @param array $exceptions array of valid numbers that exceed limit
-     * 
+     *
      * @return int the number
      */
     public static function reduceNumber(int $number, int $length = 1, array $exceptions = []): int {

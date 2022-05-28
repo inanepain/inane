@@ -17,6 +17,8 @@
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
+declare(strict_types=1);
+
 namespace Inane\File;
 
 use Inane\String\Capitalisation;
@@ -68,7 +70,7 @@ class FileInfo extends SplFileInfo {
     public function getExtension(Capitalisation $case = null): string {
         $ext = parent::getExtension();
 
-        return match($case) {
+        return match ($case) {
             Capitalisation::UPPERCASE => strtoupper($ext),
             Capitalisation::lowercase => strtolower($ext),
             default => $ext,
@@ -101,7 +103,7 @@ class FileInfo extends SplFileInfo {
      * @return null|string
      */
     public function getMimetype(?string $default = null): ?string {
-        $mimes = unserialize(file_get_contents(__DIR__.'/../../mimeic.blast'));
+        $mimes = unserialize(file_get_contents(__DIR__ . '/../../mimeic.blast'));
         return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase)] ?? $default;
     }
 

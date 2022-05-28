@@ -17,6 +17,8 @@
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
 
+declare(strict_types=1);
+
 namespace Inane\String;
 
 /**

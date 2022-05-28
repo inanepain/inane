@@ -82,7 +82,8 @@ class Str {
         /**
          * String
          */
-        protected string $_str = '') {
+        protected string $_str = ''
+    ) {
     }
 
     /**

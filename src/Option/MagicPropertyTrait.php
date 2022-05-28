@@ -1,10 +1,11 @@
 <?php
+
 /**
  * This file is part of InaneTools.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 7
  *
  * @author Philip Michael Raab <peep@inane.co.za>
@@ -16,10 +17,9 @@
  * @copyright 2015-2019 Philip Michael Raab <peep@inane.co.za>
  */
 
-namespace Inane\Option;
+declare(strict_types=1);
 
-use Inane\Option\Exception\MethodException;
-use Inane\Option\Exception\PropertyException;
+namespace Inane\Option;
 
 use function get_class_methods;
 use function in_array;
@@ -27,6 +27,11 @@ use function lcfirst;
 use function property_exists;
 use function str_replace;
 use function ucwords;
+
+use Inane\Stdlib\Exception\{
+    InvalidPropertyException,
+    ParseMethodException
+};
 
 /**
  * MagicPropertyTrait
@@ -39,7 +44,7 @@ use function ucwords;
 trait MagicPropertyTrait {
     /**
      * Getter method identifier
-     * 
+     *
      * @var string
      */
     protected static $MAGIC_PROPERTY_GET = 'get';
@@ -48,7 +53,7 @@ trait MagicPropertyTrait {
 
     /**
      * Setter method identifier
-     * 
+     *
      * @var string
      */
     protected static $MAGIC_PROPERTY_SET = 'set';
@@ -78,7 +83,7 @@ trait MagicPropertyTrait {
         $methodName = $prepend . str_replace(' ', '', ucwords(str_replace('_', ' ', $property)));
         if (!$prepend) $methodName = lcfirst($methodName);
 
-        if (!in_array($methodName, get_class_methods(__CLASS__))) throw new MethodException($methodName);
+        if (!in_array($methodName, get_class_methods(__CLASS__))) throw new ParseMethodException($methodName);
 
         return $methodName;
     }
@@ -95,8 +100,8 @@ trait MagicPropertyTrait {
      */
     public function __get(string $property) {
         if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-            if (!in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 13, new PropertyException());
-        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new PropertyException($property, 11);
+            if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("Property not in array: {$property}", 13);
+        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new InvalidPropertyException($property, 11);
 
         $method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_GET);
         return $this->$method();
@@ -115,8 +120,8 @@ trait MagicPropertyTrait {
      */
     public function __set(string $property, $value) {
         if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-            if (!in_array($property, $this->magic_property_properties)) throw new PropertyException("Property not in array: {$property}", 14, new PropertyException());
-        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new PropertyException($property, 12);
+            if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("Property not in array: {$property}", 14, new PropertyException());
+        } else if (static::$verify && !property_exists(__CLASS__, $property)) throw new InvalidPropertyException($property, 12);
 
         $method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_SET);
         return $this->$method($value);

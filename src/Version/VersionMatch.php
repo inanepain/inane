@@ -17,6 +17,7 @@
  *
  * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
  */
+
 declare(strict_types=1);
 
 namespace Inane\Version;

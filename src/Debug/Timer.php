@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -13,12 +14,15 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+
+declare(strict_types=1);
+
 namespace Inane\Debug;
 
-use function microtime;
-use function round;
 use function count;
+use function microtime;
 use function number_format;
+use function round;
 
 /**
  * Timer
@@ -129,8 +133,8 @@ class Timer {
 		return self::getInstance();
 	}
 
-		// The constructor is private
-		// to prevent initiation with outer code.
+	// The constructor is private
+	// to prevent initiation with outer code.
 	/**
 	 */
 	private function __construct() {

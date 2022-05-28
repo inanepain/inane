@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -13,6 +14,7 @@
  *
  * @copyright 2015-2021 Philip Michael Raab <philip@inane.co.za>
  */
+
 declare(strict_types=1);
 
 namespace Inane\Debug;
