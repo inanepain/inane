@@ -30,12 +30,14 @@
 		{
 			"inane-lib": {
 				"inanepain/auth": "*",
+				"inanepain/db": "*",
 				"inanepain/cli": "*",
 				"inanepain/crypt": "*",
 				"inanepain/dumper": "*",
 				"inanepain/event": "*",
 				"inanepain/http": "*",
 				"inanepain/redis": "*",
+				"inanepain/routing": "*",
 				"inanepain/stdlib": "*",
 				"inanepain/view": "*"
 			}
