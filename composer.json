@@ -10,8 +10,8 @@
 		"config",
 		"string"
 	],
-	"homepage": "https://git.inane.co.za:3000/inane/tools",
-	"license": "MIT",
+	"homepage": "http://vaieen.local:8000/inane/tools",
+	"license": "UNLICENSE",
 	"readme": "README.md",
 	"authors": [
 		{
@@ -43,28 +43,21 @@
 			}
 		}
 	],
-	"require": {
-		"php": ">=8.1",
-		"psr/container": "*",
-		"laminas/laminas-http": "*"
-	},
 	"autoload": {
 		"psr-4": {
 			"Inane\\": "src/"
 		}
 	},
-	"minimum-stability": "dev",
-	"repositories": [
-		{
-			"type": "composer",
-			"url": "https://packer.inane.co.za",
-			"name": "Inane Packer"
-		}
-	],
 	"config": {
 		"preferred-install": "dist",
 		"optimize-autoloader": true,
 		"discard-changes": true,
 		"sort-packages": true
+	},
+	"minimum-stability": "dev",
+	"require": {
+		"php": ">=8.1",
+		"psr/container": "*",
+		"laminas/laminas-http": "*"
 	}
 }

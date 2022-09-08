@@ -14,7 +14,8 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
+ * @version $Id$
+ * $Date$
  */
 
 declare(strict_types=1);
@@ -37,14 +38,14 @@ trait ConfigAwareTrait {
 	 *
 	 * @var array|\Inane\Config\Options|\Laminas\Config\Config
 	 */
-	protected array|Options|Config $config;
+	protected array|\Inane\Stdlib\Options|Config $config;
 
 	/**
 	 * {@inheritDoc}
 	 * @see \Inane\Config\ConfigAwareInterface::setConfig()
 	 */
-	public function setConfig(array|Options|Config $config): void {
-		if (is_array($config)) $this->config = new Options($config);
+	public function setConfig(array|\Inane\Stdlib\Options|Config $config): void {
+		if (is_array($config)) $this->config = new \Inane\Stdlib\Options($config);
 		else $this->config = $config;
 	}
 }

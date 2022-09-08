@@ -1,5 +1,7 @@
 # Inane: Tools
 
+> $Id$ ($Date$)
+
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
 Check out the [CHANGELOG](CHANGELOG.md) if you wanna see the road travelled thus far.

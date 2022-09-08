@@ -14,7 +14,8 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
+ * @version $Id$
+ * $Date$
  */
 
 /**
@@ -85,9 +86,9 @@ interface ConfigAwareInterface {
 	/**
 	 * configuration
 	 *
-	 * @param array|\Inane\Config\Options|\Laminas\Config\Config $config configuration
+	 * @param array|\Inane\Stdlib\Options|\Laminas\Config\Config $config configuration
 	 *
 	 * @return void
 	 */
-	public function setConfig(array|Options|Config $config): void;
+	public function setConfig(array|\Inane\Stdlib\Options|Config $config): void;
 }
