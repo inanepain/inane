@@ -8,9 +8,11 @@ For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](ht
 
 Check out the [README](README.md) for installation stuff.
 
-## current @2022-09-08+
+## 0.30.0 @2022-10-10
 
 - continued progress to move items to their own packages
+- moved config
+- clean ups
 
 ## 0.29.0 @2022-04-06
 
