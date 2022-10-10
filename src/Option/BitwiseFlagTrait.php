@@ -5,7 +5,7 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
@@ -16,6 +16,8 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+
+declare(strict_types=1);
 
 namespace Inane\Option;
 
@@ -28,17 +30,17 @@ namespace Inane\Option;
 trait BitwiseFlagTrait {
     /**
      * Set flags
-     * 
+     *
      * @var mixed
      */
     protected $flags;
 
     /**
      * Is flag set
-     * 
+     *
      * @param int $flag the flag to test
      * @param null|int $options optional value to test instead of $flags property
-     * 
+     *
      * @return bool true if the flag is set
      */
     protected function isFlagSet(int $flag, ?int $options = null): bool {
@@ -47,8 +49,8 @@ trait BitwiseFlagTrait {
 
     /**
      * Set the flag
-     * 
-     * @param int $flag 
+     *
+     * @param int $flag
      * @param bool $value true or false to set it on or off
      * @return self
      */

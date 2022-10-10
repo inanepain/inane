@@ -15,8 +15,10 @@
  * @license MIT
  * @license https://inane.co.za/license/MIT
  *
- * @copyright 2015-2022 Philip Michael Raab <philip@inane.co.za>
+ * @version $Id$
+ * $Date$
  */
+
 declare(strict_types=1);
 
 namespace Inane\Version;

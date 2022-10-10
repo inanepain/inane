@@ -14,6 +14,7 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+
 declare(strict_types=1);
 
 namespace Inane\Option;
@@ -46,7 +47,7 @@ trait LogTrait {
         PRIMARY KEY (`id`)
     );
     */
-    
+
     /*
     'factories' => [
         'LogService' => function ($sm) {
@@ -82,7 +83,7 @@ trait LogTrait {
     public function getLog(): \Laminas\Log\Logger {
         if (!isset($this->logService))
             $this->logService = $this->getEvent()->getApplication()->getServiceManager()->get('LogService');
-        
+
         return $this->logService;
     }
 }

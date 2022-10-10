@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -13,6 +14,9 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+
+declare(strict_types=1);
+
 namespace Inane\Tools;
 
 use Laminas\Http;
@@ -36,7 +40,7 @@ final class Version {
 	/**
 	 * Inane Classes version identification - see compareVersion()
 	 */
-	const VERSION = '0.29.0';
+	const VERSION = '0.30.0';
 
 	/**
 	 * Inane (inane.co.za) Service Identifier for version information is retrieved from
@@ -92,7 +96,7 @@ final class Version {
 
 		self::$latestVersion = 'not available';
 
-		if (null === $httpClient && ! ini_get('allow_url_fopen')) {
+		if (null === $httpClient && !ini_get('allow_url_fopen')) {
 			trigger_error(sprintf('allow_url_fopen is not set, and no Laminas\Http\Client ' . 'was passed. You must either set allow_url_fopen in ' . 'your PHP configuration or pass a configured ' . 'Laminas\Http\Client as the second argument to %s.', __METHOD__), E_USER_WARNING);
 
 			return self::$latestVersion;
@@ -139,7 +143,7 @@ final class Version {
 			return false;
 		}
 
-		if (! $response->isSuccess()) {
+		if (!$response->isSuccess()) {
 			return false;
 		}
 
@@ -167,7 +171,7 @@ final class Version {
 			$apiResponse = self::getApiResponse($httpClient);
 		}
 
-		if (! $apiResponse) {
+		if (!$apiResponse) {
 			return false;
 		}
 

@@ -1,14 +1,18 @@
 # Changelog
 
+> $Id$ ($Date$)
+
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
 For a brief few notes on what's Inane Class check out the [InaneClasses Wiki](https://git.inane.co.za:3000/Inane/tools/wiki "InaneClasses Wiki"). Will be fleshing this out over time. But don't hold your breath. If you want something specific... Ask!
 
 Check out the [README](README.md) for installation stuff.
 
-## current @2022-04-07+
+## 0.30.0 @2022-10-10
 
--
+- continued progress to move items to their own packages
+- moved config
+- clean ups
 
 ## 0.29.0 @2022-04-06
 

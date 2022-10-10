@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -13,6 +14,9 @@
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
  */
+
+declare(strict_types=1);
+
 namespace Inane\Debug;
 
 use function date;
@@ -28,7 +32,6 @@ use function print_r;
 use function strtoupper;
 use function var_dump;
 use function var_export;
-
 use const PHP_EOL;
 
 /**
@@ -41,10 +44,10 @@ class Writer {
     public const FORMAT_HTML = 'HTML';
     public const FORMAT_TEXT = 'TEXT';
     public const FORMAT_JSON = 'JSON';
-    
+
     /**
-     * Single instance of writer 
-     * 
+     * Single instance of writer
+     *
      * @var Writer
      */
     private static $logger = null;
@@ -65,14 +68,14 @@ class Writer {
 
     /**
      * Die's default
-     * 
+     *
      * @var bool
      */
     protected bool $die = true;
 
     /**
      * Buffer for write
-     * 
+     *
      * @var string
      */
     protected string $message = '';
@@ -82,20 +85,20 @@ class Writer {
      * File: path to file for write
      *
      * @var string
-    */
+     */
     protected string $optionFile = '';
     /**
      * Timestamp: timestamp added to entries when writing to file
      *
      * @var bool
-    */
+     */
     protected bool $optionTimestamp = true;
 
     /**
      * Protected Constructor
      * @return void
      */
-    protected function __construct() {   
+    protected function __construct() {
     }
 
     /**
@@ -105,41 +108,41 @@ class Writer {
      * @return Writer
      */
     protected function setFormat(?String $format): Writer {
-        if ($format && in_array(strtoupper($format), ['HTML','TEXT','JSON'])) static::$logger->format = strtoupper($format);
+        if ($format && in_array(strtoupper($format), ['HTML', 'TEXT', 'JSON'])) static::$logger->format = strtoupper($format);
         return $this;
     }
 
     /**
      * Factory: Writer::echo
-     * 
+     *
      * Creates a writer in echo mode
-     * 
+     *
      * Sends text to default output
-     * 
+     *
      * @param String|null $format: default: HTML, (TEXT, JSON)
-     * 
-     * @return Writer 
+     *
+     * @return Writer
      */
     public static function echo(?String $format = null): Writer {
         if (!static::$logger) static::$logger = new static();
         static::$logger->method = 'ECHO';
         static::$logger->setFormat($format);
 
-        if (static::$logger->message != '') static::$logger->message = "<pre>".static::$logger->message."</pre>";
+        if (static::$logger->message != '') static::$logger->message = "<pre>" . static::$logger->message . "</pre>";
         return static::$logger;
     }
 
     /**
      * Factory: Writer::buffer
-     * 
+     *
      * Creates a writer in buffer mode
      * In this mode text builds in buffer until explicitly flushed using a echo writer
-     * 
+     *
      * @TODO: Improve buffering: store in array possible that on final out format...
-     * 
+     *
      * @param String|null $format: default: HTML, (TEXT, JSON)
-     * 
-     * @return Writer 
+     *
+     * @return Writer
      */
     public static function buffer(?String $format = null): Writer {
         if (!static::$logger) static::$logger = new static();
@@ -150,12 +153,12 @@ class Writer {
 
     /**
      * Factory: Writer::file
-     * 
+     *
      * Creates a writer in file mode
      * This mode writes to a file and not to stream
-     * 
+     *
      * @param null|string $file log file, path saved for duration of session
-     * @return Writer 
+     * @return Writer
      */
     public static function file(?string $file = null): Writer {
         if (!static::$logger) static::$logger = new static();
@@ -179,10 +182,10 @@ class Writer {
         $this->optionTimestamp = $show;
         return $this;
     }
-    
+
     /**
      * Get text in message buffer
-     * 
+     *
      * @param bool $clear optionally clear the buffer after message retrieved
      * @return string the buffered text
      */
@@ -195,11 +198,11 @@ class Writer {
     /**
      * Formate Data
      * Used to massage to data to better display in selected output
-     * 
-     * @param mixed $mixed 
-     * @return mixed 
+     *
+     * @param mixed $mixed
+     * @return mixed
      */
-    protected function formateData($mixed):mixed {
+    protected function formateData($mixed): mixed {
         if (is_array($mixed)) $mixed = json_encode($mixed, JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES);
         return $mixed;
     }
@@ -207,22 +210,22 @@ class Writer {
     /**
      * Label
      * Adds label to output
-     * 
-     * @param string $label 
-     * @return void 
+     *
+     * @param string $label
+     * @return void
      */
     protected function label(string $label): void {
-        if ($this->format == 'HTML') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
-        else if ($this->format == 'TEXT' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
-        else $this->message .= "${label}: ";
+        if ($this->format == 'HTML') $this->message .= "<h3>{$label}</h3>" . PHP_EOL;
+        else if ($this->format == 'TEXT' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": {$label}: ";
+        else $this->message .= "{$label}: ";
     }
 
     /**
      * Formatter: core var_dump
-     * 
-     * @param mixed $mixed 
-     * @param null|string $label 
-     * @param null|bool $die 
+     *
+     * @param mixed $mixed
+     * @param null|string $label
+     * @param null|bool $die
      * @return Writer
      */
     public function dump($mixed, ?string $label = null, ?bool $die = null): self {
@@ -245,10 +248,10 @@ class Writer {
 
     /**
      * Formatter: core var_export
-     * 
-     * @param mixed $mixed 
-     * @param null|string $label 
-     * @param null|bool $die 
+     *
+     * @param mixed $mixed
+     * @param null|string $label
+     * @param null|bool $die
      * @return Writer
      */
     public function export($mixed, ?string $label = null, ?bool $die = null): self {
@@ -271,11 +274,11 @@ class Writer {
 
     /**
      * Formatter: core print_r
-     * 
-     * @param mixed $mixed 
-     * @param null|string $label 
-     * @param null|bool $die 
-     * @return Writer 
+     *
+     * @param mixed $mixed
+     * @param null|string $label
+     * @param null|bool $die
+     * @return Writer
      */
     public function print($mixed, ?string $label = null, ?bool $die = null): self {
         static $_die = false;
@@ -283,7 +286,7 @@ class Writer {
 
         if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
         else if ($this->format == 'JSON' && is_array($mixed)) $mixed = $this->formateData($mixed);
-    
+
         if ($label) $this->label($label);
         if ($this->format == 'HTML') $this->message .=  '<pre>';
         $this->message .= print_r($mixed, true);
@@ -310,8 +313,8 @@ class Writer {
     /**
      * Die
      *  independent of main functions die param
-     * 
-     * @param null|bool $die 
+     *
+     * @param null|bool $die
      * @return $this Writer
      */
     public function die(?bool $die = null): Writer {

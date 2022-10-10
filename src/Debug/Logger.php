@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
@@ -13,6 +14,7 @@
  *
  * @copyright 2015-2021 Philip Michael Raab <philip@inane.co.za>
  */
+
 declare(strict_types=1);
 
 namespace Inane\Debug;
@@ -201,24 +203,6 @@ class Logger {
 			echo $out;
 
 		return false;
-	}
-
-	/**
-	 * Output variable using `var_dump`
-	 *
-	 * Does a var_dump inside some formatting.
-	 *
-	 * @deprecated
-	 * @see Logger::dump
-	 *
-	 * @param mixed $var
-	 * @param string $label
-	 * @param bool $die
-	 *
-	 * @return \Inane\Debug\Logger
-	 */
-	public static function echo($var, $label = null, $die = null): Logger {
-		return static::log()->dumper($var, $label, $die);
 	}
 
 	/**

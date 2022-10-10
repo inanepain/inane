@@ -1,10 +1,11 @@
 <?php
+
 /**
  * This file is part of the InaneTools package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- * 
+ *
  * PHP version 7
  *
  * @author Philip Michael Raab <philip@inane.co.za>
@@ -14,22 +15,24 @@
  * @license https://inane.co.za/license/MIT
  *
  * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
- * 
+ *
  * @version GIT: $Id$
  */
 
+declare(strict_types=1);
+
 namespace Inane\Type;
 
-use function strlen;
 use function chr;
 use function hexdec;
 use function md5;
-use function sprintf;
-use function substr;
 use function mt_rand;
-use function str_replace;
-use function sha1;
 use function preg_match;
+use function sha1;
+use function sprintf;
+use function str_replace;
+use function strlen;
+use function substr;
 
 /**
  * UUID
@@ -37,6 +40,7 @@ use function preg_match;
  * generates VALID RFC 4211 COMPLIANT Universally Unique IDentifiers (UUID) version 3, 4 and 5.
  *
  * @package Inane\Type
+ *
  * @version 1.0.0
  */
 class UUID {
@@ -50,28 +54,26 @@ class UUID {
      * @param string $namespace another uuid
      * @param string $name text
      *
-     * @return null|string
+     * @return null|string UUIDv3
      */
     public static function v3(string $namespace, string $name): ?string {
         if (!self::isValid($namespace)) return null;
 
         // Get hexadecimal components of namespace
-        $nhex = str_replace([
+        $nHex = str_replace([
             '-',
             '{',
             '}'
         ], '', $namespace);
 
         // Binary Value
-        $nstr = '';
+        $nStr = '';
 
         // Convert Namespace UUID to bits
-        for ($i = 0; $i < strlen($nhex); $i += 2) {
-            $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
-        }
+        for ($i = 0; $i < strlen($nHex); $i += 2) $nStr .= chr(hexdec($nHex[$i] . $nHex[$i + 1]));
 
         // Calculate hash value
-        $hash = md5($nstr . $name);
+        $hash = md5($nStr . $name);
 
         return sprintf(
             '%08s-%04s-%04x-%04x-%12s',
@@ -99,7 +101,7 @@ class UUID {
     /**
      * Generates a pseudo-random uuid
      *
-     * @return string
+     * @return string UUIDv4
      */
     public static function v4(): string {
         return sprintf(
@@ -137,26 +139,26 @@ class UUID {
      * @param string $namespace another uuid
      * @param string $name text
      *
-     * @return null|string
+     * @return null|string UUIDv5
      */
     public static function v5(string $namespace, string $name): ?string {
         if (!self::isValid($namespace)) return null;
 
         // Get hexadecimal components of namespace
-        $nhex = str_replace([
+        $nHex = str_replace([
             '-',
             '{',
             '}'
         ], '', $namespace);
 
         // Binary Value
-        $nstr = '';
+        $nStr = '';
 
         // Convert Namespace UUID to bits
-        for ($i = 0; $i < strlen($nhex); $i += 2) $nstr .= chr(hexdec($nhex[$i] . $nhex[$i + 1]));
+        for ($i = 0; $i < strlen($nHex); $i += 2) $nStr .= chr(hexdec($nHex[$i] . $nHex[$i + 1]));
 
         // Calculate hash value
-        $hash = sha1($nstr . $name);
+        $hash = sha1($nStr . $name);
 
         return sprintf(
             '%08s-%04s-%04x-%04x-%12s',
@@ -184,6 +186,7 @@ class UUID {
      * Test if a uuid is valid
      *
      * @param string $uuid The universally unique identifier to validate
+     *
      * @return boolean
      */
     public static function isValid(string $uuid): bool {

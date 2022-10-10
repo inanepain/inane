@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inane\Option;
 
 use ArrayAccess;
@@ -7,16 +9,16 @@ use ArrayIterator;
 use Countable;
 use Iterator;
 
-use function reset;
 use function count;
-use function next;
 use function current;
-use function key;
 use function is_null;
+use function key;
+use function next;
+use function reset;
 
 /**
  * Properties
- * 
+ *
  * @package Inane\Option
  * @version 0.7.0
  */
@@ -24,7 +26,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * Variables
-     * 
+     *
      * @var array
      */
     private $_data = [];
@@ -42,10 +44,10 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * Assigns a value to the specified data
-     * 
+     *
      * @param string The data key to assign the value to
      * @param mixed  The value to set
-     * @access public 
+     * @access public
      */
     public function __set($key, $value) {
         $this->_data[$key] = $value;
@@ -75,8 +77,8 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * HtmlModel
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function __construct(array $data, bool $allowModifications = true) {
         foreach ($data as $key => $value) if (is_array($value)) $this->_data[$key] = new static($value);
@@ -85,7 +87,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * Current
-     * 
+     *
      * @return mixed|Properties
      */
     public function current() {
@@ -103,7 +105,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * key
-     * 
+     *
      * @return string|float|int|bool|null key
      */
     public function key() {
@@ -112,7 +114,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * valid
-     * 
+     *
      * @return bool valid
      */
     public function valid() {
@@ -121,8 +123,8 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * rewind to first item
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function rewind() {
         reset($this->_data);
@@ -130,7 +132,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * count
-     * 
+     *
      * @return int item count
      */
     public function count() {
@@ -139,7 +141,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * Key exists
-     * 
+     *
      * @param string $offset key
      * @return bool exists
      */
@@ -160,7 +162,7 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
      * set key
      * @param string $offset key
      * @param mixed $value value
-     * @return void 
+     * @return void
      */
     public function offsetSet($offset, $value) {
         if (is_null($offset)) $this->_data[] = $value;
@@ -169,9 +171,9 @@ class Properties extends ArrayIterator implements ArrayAccess, Iterator, Countab
 
     /**
      * delete key
-     * 
+     *
      * @param string $offset key
-     * @return void 
+     * @return void
      */
     public function offsetUnset($offset) {
         if ($this->offsetExists($offset))
