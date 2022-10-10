@@ -70,7 +70,7 @@ class Net {
     /**
      * Test a range of ports for open status
      *
-     * If the target ip does not exist, it classifies as port not open.
+     * If the target ip does not exist, it classifies as ports not open.
      *
      * @since 1.1.0
      *

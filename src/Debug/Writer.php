@@ -215,9 +215,9 @@ class Writer {
      * @return void
      */
     protected function label(string $label): void {
-        if ($this->format == 'HTML') $this->message .= "<h3>${label}</h3>" . PHP_EOL;
-        else if ($this->format == 'TEXT' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": ${label}: ";
-        else $this->message .= "${label}: ";
+        if ($this->format == 'HTML') $this->message .= "<h3>{$label}</h3>" . PHP_EOL;
+        else if ($this->format == 'TEXT' && $this->optionTimestamp) $this->message .= date('Y-m-d H:i:s') . ": {$label}: ";
+        else $this->message .= "{$label}: ";
     }
 
     /**

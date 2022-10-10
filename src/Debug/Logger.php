@@ -210,24 +210,6 @@ class Logger {
 	 *
 	 * Does a var_dump inside some formatting.
 	 *
-	 * @deprecated
-	 * @see Logger::dump
-	 *
-	 * @param mixed $var
-	 * @param string $label
-	 * @param bool $die
-	 *
-	 * @return \Inane\Debug\Logger
-	 */
-	public static function echo($var, $label = null, $die = null): Logger {
-		return static::log()->dumper($var, $label, $die);
-	}
-
-	/**
-	 * Output variable using `var_dump`
-	 *
-	 * Does a var_dump inside some formatting.
-	 *
 	 * @param mixed $var
 	 * @param string $label
 	 * @param bool $die

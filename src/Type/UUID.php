@@ -40,6 +40,7 @@ use function substr;
  * generates VALID RFC 4211 COMPLIANT Universally Unique IDentifiers (UUID) version 3, 4 and 5.
  *
  * @package Inane\Type
+ *
  * @version 1.0.0
  */
 class UUID {
@@ -53,7 +54,7 @@ class UUID {
      * @param string $namespace another uuid
      * @param string $name text
      *
-     * @return null|string
+     * @return null|string UUIDv3
      */
     public static function v3(string $namespace, string $name): ?string {
         if (!self::isValid($namespace)) return null;
@@ -100,7 +101,7 @@ class UUID {
     /**
      * Generates a pseudo-random uuid
      *
-     * @return string
+     * @return string UUIDv4
      */
     public static function v4(): string {
         return sprintf(
@@ -138,7 +139,7 @@ class UUID {
      * @param string $namespace another uuid
      * @param string $name text
      *
-     * @return null|string
+     * @return null|string UUIDv5
      */
     public static function v5(string $namespace, string $name): ?string {
         if (!self::isValid($namespace)) return null;
@@ -185,6 +186,7 @@ class UUID {
      * Test if a uuid is valid
      *
      * @param string $uuid The universally unique identifier to validate
+     *
      * @return boolean
      */
     public static function isValid(string $uuid): bool {
