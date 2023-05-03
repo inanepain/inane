@@ -21,6 +21,10 @@
 			"role": "Developer"
 		}
 	],
+	"deprecated": "package split into multiple libraries inanepain/*",
+	"replace": {
+		"inanepain/stdlib": "*"
+	},
 	"support": {
 		"email": "philip@inane.co.za",
 		"wiki": "https://git.inane.co.za:3000/inane/tools/wiki",
