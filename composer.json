@@ -21,6 +21,7 @@
 			"role": "Developer"
 		}
 	],
+	"abandoned": "inanepain/stdlib",
 	"deprecated": "package split into multiple libraries inanepain/*",
 	"replace": {
 		"inanepain/stdlib": "*"
