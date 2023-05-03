@@ -196,13 +196,13 @@ class Writer {
     }
 
     /**
-     * Formate Data
+     * Format Data
      * Used to massage to data to better display in selected output
      *
      * @param mixed $mixed
      * @return mixed
      */
-    protected function formateData($mixed): mixed {
+    protected function formatData($mixed): mixed {
         if (is_array($mixed)) $mixed = json_encode($mixed, JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES);
         return $mixed;
     }
@@ -232,7 +232,7 @@ class Writer {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
-        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
+        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formatData($mixed);
 
         if ($label) $this->label($label);
         if ($this->format == 'HTML') $this->message .= '<pre>';
@@ -258,7 +258,7 @@ class Writer {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
-        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
+        // if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formatData($mixed);
 
         if ($label) $this->label($label);
         if ($this->format == 'HTML') $this->message .= '<pre>';
@@ -284,8 +284,8 @@ class Writer {
         static $_die = false;
         if ($die !== null) $_die = $die;
 
-        if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formateData($mixed);
-        else if ($this->format == 'JSON' && is_array($mixed)) $mixed = $this->formateData($mixed);
+        if ($this->method == 'FILE' && is_array($mixed)) $mixed = $this->formatData($mixed);
+        else if ($this->format == 'JSON' && is_array($mixed)) $mixed = $this->formatData($mixed);
 
         if ($label) $this->label($label);
         if ($this->format == 'HTML') $this->message .=  '<pre>';

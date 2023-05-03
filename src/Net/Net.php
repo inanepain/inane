@@ -9,6 +9,7 @@
  *
  * @package Owner\Project
  * @author Philip Michael Raab<peep@inane.co.za>
+ * @category network
  *
  * @license MIT
  * @license https://raw.githubusercontent.com/CathedralCode/Builder/develop/LICENSE MIT License
